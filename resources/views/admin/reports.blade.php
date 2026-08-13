@@ -12,72 +12,73 @@
                 'icon' => 'fas fa-chart-line'
             ])
 
-<div class="bg-white rounded-lg shadow-sm overflow-hidden">
-    <!-- Header -->
-    <div class="bg-gray-100 p-6 border-b border-gray-200">
-        <h3 class="text-xl font-bold text-gray-800 mb-2">
-            <i class="fas fa-chart-line text-blue-600 me-2"></i>PSARECO Enterprise Report
-        </h3>
-        <p class="text-gray-500 text-sm mb-0">Comprehensive Financial & Operational Summary</p>
-    </div>
+            <div class="card">
+                <!-- Header -->
+                <div class="card-header bg-light">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-chart-line text-primary me-2"></i>PSARECO Enterprise Report
+                    </h3>
+                    <p class="text-muted text-sm mb-0">Comprehensive Financial & Operational Summary</p>
+                </div>
 
-    <!-- Card Body -->
-    <div class="p-6">
-        <!-- Date Filters & Actions -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 print:hidden no-print">
-            <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-1" for="startDate">Start Date</label>
-                <input type="date" id="startDate" class="w-full px-3 py-1.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-            </div>
-            <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-1" for="endDate">End Date</label>
-                <input type="date" id="endDate" class="w-full px-3 py-1.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-            </div>
-            <div class="flex items-end gap-2">
-                <!-- Generate Button (Primary Blue) -->
-                <button class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-1.5 px-3 rounded-md transition-colors duration-150 flex items-center justify-center" onclick="refreshReports()">
-                    <i class="fas fa-sync-alt me-2"></i>Generate
-                </button>
-                <!-- Print / PDF Button (Success Green) -->
-                <button class="flex-1 bg-green-600 hover:bg-green-700 text-white text-sm font-medium py-1.5 px-3 rounded-md transition-colors duration-150 flex items-center justify-center" onclick="window.print()">
-                    <i class="fas fa-print me-2"></i>Print / PDF
-                </button>
-            </div>
-        </div>
+                <!-- Card Body -->
+                <div class="card-body">
+                    <!-- Date Filters & Actions -->
+                    <div class="row mb-4 no-print">
+                        <div class="col-md-3">
+                            <label class="form-label" for="startDate">Start Date</label>
+                            <input type="date" id="startDate" class="form-control form-control-sm">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label" for="endDate">End Date</label>
+                            <input type="date" id="endDate" class="form-control form-control-sm">
+                        </div>
+                        <div class="col-md-6 d-flex align-items-end gap-2">
+                            <!-- Generate Button (Primary Blue) -->
+                            <button class="btn btn-primary btn-sm flex-fill" onclick="refreshReports()">
+                                <i class="fas fa-sync-alt me-2"></i>Generate
+                            </button>
+                            <!-- Print / PDF Button (Success Green) -->
+                            <button class="btn btn-success btn-sm flex-fill" onclick="window.print()">
+                                <i class="fas fa-print me-2"></i>Print / PDF
+                            </button>
+                        </div>
+                    </div>
 
-        <!-- Navigation Tabs -->
-        <ul class="nav nav-tabs flex border-b border-gray-200 mb-6 print:hidden no-print gap-2">
-            <li class="nav-item">
-                <button class="nav-link active font-medium px-4 py-2 text-sm text-gray-600 hover:text-blue-600 border-b-2 border-transparent focus:outline-none" data-bs-toggle="tab" data-bs-target="#financial">
-                    <i class="fas fa-dollar-sign me-2"></i>Financial
-                </button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link font-medium px-4 py-2 text-sm text-gray-600 hover:text-blue-600 border-b-2 border-transparent focus:outline-none" data-bs-toggle="tab" data-bs-target="#utilization">
-                    <i class="fas fa-chart-bar me-2"></i>Utilization
-                </button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link font-medium px-4 py-2 text-sm text-gray-600 hover:text-blue-600 border-b-2 border-transparent focus:outline-none" data-bs-toggle="tab" data-bs-target="#maintenance">
-                    <i class="fas fa-tools me-2"></i>Maintenance
-                </button>
-            </li>
-        </ul>
+                    <!-- Navigation Tabs -->
+                    <ul class="nav nav-tabs mb-4 no-print" role="tablist">
+                        <li class="nav-item">
+                            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#financial" type="button">
+                                <i class="fas fa-dollar-sign me-2"></i>Financial
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#utilization" type="button">
+                                <i class="fas fa-chart-bar me-2"></i>Utilization
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#maintenance" type="button">
+                                <i class="fas fa-tools me-2"></i>Maintenance
+                            </button>
+                        </li>
+                    </ul>
 
-        <!-- Tab Content -->
-        <div class="tab-content pt-2">
-            <div class="tab-pane fade show active" id="financial">
-                <div id="financialReportContent"></div>
+                    <!-- Tab Content -->
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="financial">
+                            <div id="financialReportContent"></div>
+                        </div>
+                        <div class="tab-pane fade" id="utilization">
+                            <div id="utilizationReportContent"></div>
+                        </div>
+                        <div class="tab-pane fade" id="maintenance">
+                            <div id="maintenanceReportContent"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="tab-pane fade" id="utilization">
-                <div id="utilizationReportContent"></div>
-            </div>
-            <div class="tab-pane fade" id="maintenance">
-                <div id="maintenanceReportContent"></div>
-            </div>
-        </div>
-    </div>
-</div>
+
         </div>
     </div>
 @endsection

@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="d-flex">
-        <div class="sidebar" id="sidebar"></div>
+        {{-- <div class="sidebar" id="sidebar"></div> --}}
 
         <div class="main-content">
             <h2 class="mb-4"><i class="fas fa-calendar-alt"></i> My Booking History</h2>
@@ -45,7 +45,7 @@
 @endsection
 
 @push('scripts')
-    <script>
+    {{-- <script>
         function loadMyBookingsPage() {
             if (!requireAuth()) return;
             if (typeof loadSidebar === 'function') loadSidebar();
@@ -112,5 +112,5 @@
         }
 
         document.addEventListener('DOMContentLoaded', loadMyBookingsPage);
-    </script>
+    </script> --}}
 @endpush

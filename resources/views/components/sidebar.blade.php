@@ -33,32 +33,32 @@
         {{-- Admin Navigation --}}
         @if (auth()->user()->hasRole('admin'))
 
-            <a href="{{ route('dashboard') }}" class="nav-link">
+            <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                 <i class="fas fa-chart-line nav-icon"></i>
                 <span class="nav-text">Dashboard</span>
             </a>
 
-            <a href="{{ route('scheduling') }}" class="nav-link">
+            <a href="{{ route('scheduling') }}" class="nav-link {{ request()->routeIs('scheduling') ? 'active' : '' }}">
                 <i class="fas fa-calendar-alt nav-icon"></i>
                 <span class="nav-text">Scheduling</span>
             </a>
 
-            <a href="{{ route('inventory') }}" class="nav-link">
+            <a href="{{ route('inventory') }}" class="nav-link {{ request()->routeIs('inventory') ? 'active' : '' }}">
                 <i class="fas fa-boxes nav-icon"></i>
                 <span class="nav-text">Inventory</span>
             </a>
 
-            <a href="{{ route('sales') }}" class="nav-link">
+            <a href="{{ route('sales') }}" class="nav-link {{ request()->routeIs('sales') ? 'active' : '' }}">
                 <i class="fas fa-shopping-cart nav-icon"></i>
                 <span class="nav-text">Sales</span>
             </a>
 
-            <a href="{{ route('reports') }}" class="nav-link">
+            <a href="{{ route('reports') }}" class="nav-link {{ request()->routeIs('reports') ? 'active' : '' }}">
                 <i class="fas fa-file-alt nav-icon"></i>
                 <span class="nav-text">Reports</span>
             </a>
 
-            <a href="{{ route('users') }}" class="nav-link">
+            <a href="{{ route('users') }}" class="nav-link {{ request()->routeIs('users') ? 'active' : '' }}">
                 <i class="fas fa-users-cog nav-icon"></i>
                 <span class="nav-text">Users</span>
             </a>
@@ -66,27 +66,27 @@
         {{-- Officer Navigation --}}
         @elseif (auth()->user()->hasRole('officer'))
 
-            <a href="{{ route('dashboard') }}" class="nav-link">
+            <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                 <i class="fas fa-chart-line nav-icon"></i>
                 <span class="nav-text">Dashboard</span>
             </a>
 
-            <a href="{{ route('scheduling') }}" class="nav-link">
+            <a href="{{ route('scheduling') }}" class="nav-link {{ request()->routeIs('scheduling') ? 'active' : '' }}">
                 <i class="fas fa-calendar-alt nav-icon"></i>
                 <span class="nav-text">Scheduling</span>
             </a>
 
-            <a href="{{ route('inventory') }}" class="nav-link">
+            <a href="{{ route('inventory') }}" class="nav-link {{ request()->routeIs('inventory') ? 'active' : '' }}">
                 <i class="fas fa-boxes nav-icon"></i>
                 <span class="nav-text">Inventory</span>
             </a>
 
-            <a href="{{ route('sales') }}" class="nav-link">
+            <a href="{{ route('sales') }}" class="nav-link {{ request()->routeIs('sales') ? 'active' : '' }}">
                 <i class="fas fa-shopping-cart nav-icon"></i>
                 <span class="nav-text">Sales</span>
             </a>
 
-            <a href="{{ route('reports') }}" class="nav-link">
+            <a href="{{ route('reports') }}" class="nav-link {{ request()->routeIs('reports') ? 'active' : '' }}">
                 <i class="fas fa-file-alt nav-icon"></i>
                 <span class="nav-text">Reports</span>
             </a>
@@ -94,17 +94,17 @@
             {{-- Farmer Navigation --}}
             @elseif (auth()->user()->hasRole('farmer'))
 
-            <a href="{{ route('scheduling') }}" class="nav-link">
+            <a href="{{ route('scheduling') }}" class="nav-link {{ request()->routeIs('scheduling') ? 'active' : '' }}">
                 <i class="fas fa-tractor nav-icon"></i>
                 <span class="nav-text">Book Machinery</span>
             </a>
 
-            <a href="{{ route('my-bookings') }}" class="nav-link">
+            <a href="{{ route('my-bookings') }}" class="nav-link {{ request()->routeIs('my-bookings') ? 'active' : '' }}">
                 <i class="fas fa-calendar-check nav-icon"></i>
                 <span class="nav-text">My Bookings</span>
             </a>
 
-            <a href="{{ route('inventory') }}" class="nav-link">
+            <a href="{{ route('inventory') }}" class="nav-link {{ request()->routeIs('inventory') ? 'active' : '' }}">
                 <i class="fas fa-box nav-icon"></i>
                 <span class="nav-text">Inventory</span>
             </a>
