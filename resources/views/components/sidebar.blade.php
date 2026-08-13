@@ -9,7 +9,7 @@
     <!-- Logo Section -->
     <div class="logo-section" style="text-align: center;">
 
-        <img src="{{ asset('assets/images/PSARECO_logo.png') }}" alt="PSARECO Logo" class="logo-image"  style="display: inline-block;" >
+        <img src="{{ asset('assets/images/PSARECO_logo.png') }}" alt="PSARECO Logo" class="logo-image"  style="display: inline-block; padding: 0;;" >
 
         <div class="logo-content">
 
@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     // Restore saved state
-    updateSidebar(isCollapsed);
+    // updateSidebar(isCollapsed);
 
 
     // Toggle

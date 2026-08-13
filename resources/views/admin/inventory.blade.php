@@ -6,18 +6,18 @@
     <div class="d-flex">
 
         <div class="main-content" style="margin-left: 250px; flex: 1; padding: 30px;">
-            <div id="backButtonContainer" style="display: none;">
-                <button class="back-btn" onclick="goBackToDashboard()"><i class="fas fa-arrow-left"></i> Back to Dashboard</button>
-            </div>
-
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2><i class="fas fa-boxes"></i> Inventory Management</h2>
+            @include('components.breadcrumb', [
+                'title' => 'Inventory Management',
+                'icon' => 'fas fa-boxes'
+            ])
+
                 <button class="btn btn-outline-success" onclick="exportInventory()"><i class="fas fa-download"></i> Export Report</button>
             </div>
 
-            <div class="search-box">
-                <i class="fas fa-search"></i>
-                <input type="text" id="searchInventory" class="form-control" placeholder="Search products..." onkeyup="filterInventory()">
+            <div class="search-box position-relative mb-4">
+                <i class="fas fa-search position-absolute" style="left: 15px; top: 50%; transform: translateY(-50%); color: #6c757d;"></i>
+                <input type="text" id="searchInventory" class="form-control ps-5" placeholder="Search products..." onkeyup="filterInventory()">
             </div>
 
             <div class="card mb-4" id="addProductCard">

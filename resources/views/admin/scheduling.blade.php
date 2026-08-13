@@ -43,7 +43,10 @@
                     <span class="badge bg-secondary" id="totalMachinesCount">0</span>
                 </div>
                 <div class="card-body">
-                    <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchMachinery" class="form-control" placeholder="Search machinery..." onkeyup="filterMachinery()"></div>
+                    <div class="search-box mb-4" style="position: relative; display: flex; align-items: center;">
+                        <i class="fas fa-search" style="position: absolute; left: 12px; color: #6c757d;"></i>
+                        <input type="text" id="searchMachinery" class="form-control" placeholder="Search machinery..." onkeyup="filterMachinery()" style="padding-left: 35px;">
+                    </div>
                     <div class="machinery-scroll-container"><div class="machinery-grid" id="machineryList">Loading...</div></div>
                 </div>
             </div>

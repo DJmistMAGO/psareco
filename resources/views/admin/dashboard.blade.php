@@ -7,15 +7,9 @@
 
         <!-- Main Content -->
         <div class="main-content" style="margin-left: 220px; flex: 1; padding: 30px; transition: margin-left 0.3s ease;">
-            <div id="backButtonContainer" style="display: none;">
-                <button class="back-btn" onclick="goBackToDashboard()">
-                    <i class="fas fa-arrow-left"></i> Back to Dashboard
-                </button>
-            </div>
-
             <div class="welcome-banner">
                 <h3 class="mb-1 fw-bold" id="welcomeName">
-                    <i class="fas fa-hand-wave"></i> Welcome back, {{ auth()->user()->name }}!
+                    <i class="fas fa-hand-wave"></i>Welcome back, {{ auth()->user()->name }}!
                 </h3>
                 <p class="mb-0 opacity-75">Manage your farm resources efficiently with PSARECO Enterprise System</p>
             </div>
@@ -23,7 +17,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-4" id="statsContainer">
                 <!-- Total Inventory Items Card -->
                 <div class="h-full">
-                    <div class="stat-card h-full bg-white rounded-lg p-6 text-center shadow-sm hover:shadow-md cursor-pointer transition-transform duration-200 hover:-translate-y-1 border-l-4 border-indigo-600">
+                    <div class="stat-card h-full bg-white rounded-lg p-6 text-center shadow-sm hover:shadow-md cursor-pointer transition-transform duration-200 hover:-translate-y-1 border-l-4 border-indigo-600" style="--card-accent: #4f46e5;">
                         <div class="stat-icon mb-3 text-4xl text-indigo-600">
                             <i class="fas fa-boxes"></i>
                         </div>
@@ -34,7 +28,7 @@
 
                 <!-- Expiring Soon Card -->
                 <div class="h-full">
-                    <div class="stat-card h-full bg-white rounded-lg p-6 text-center shadow-sm hover:shadow-md cursor-pointer transition-transform duration-200 hover:-translate-y-1 border-l-4 border-amber-400">
+                    <div class="stat-card h-full bg-white rounded-lg p-6 text-center shadow-sm hover:shadow-md cursor-pointer transition-transform duration-200 hover:-translate-y-1 border-l-4 border-amber-400" style="--card-accent: #f59e0b;">
                         <div class="stat-icon mb-3 text-4xl text-amber-400">
                             <i class="fas fa-hourglass-half"></i>
                         </div>
@@ -45,7 +39,7 @@
 
                 <!-- Low Stock Items Card -->
                 <div class="h-full">
-                    <div class="stat-card h-full bg-white rounded-lg p-6 text-center shadow-sm hover:shadow-md cursor-pointer transition-transform duration-200 hover:-translate-y-1 border-l-4 border-red-500">
+                    <div class="stat-card h-full bg-white rounded-lg p-6 text-center shadow-sm hover:shadow-md cursor-pointer transition-transform duration-200 hover:-translate-y-1 border-l-4 border-red-500" style="--card-accent: #ef4444;">
                         <div class="stat-icon mb-3 text-4xl text-red-500">
                             <i class="fas fa-exclamation-triangle"></i>
                         </div>
@@ -56,7 +50,7 @@
 
                 <!-- Total Sales Card -->
                 <div class="h-full">
-                    <div class="stat-card h-full bg-white rounded-lg p-6 text-center shadow-sm hover:shadow-md cursor-pointer transition-transform duration-200 hover:-translate-y-1 border-l-4 border-emerald-500">
+                    <div class="stat-card h-full bg-white rounded-lg p-6 text-center shadow-sm hover:shadow-md cursor-pointer transition-transform duration-200 hover:-translate-y-1 border-l-4 border-emerald-500" style="--card-accent: #10b981;">
                         <div class="stat-icon mb-3 text-4xl text-emerald-500">
                             <i class="fas fa-chart-line"></i>
                         </div>
@@ -67,7 +61,7 @@
 
                 <!-- Pending Bookings Card -->
                 <div class="h-full">
-                    <div class="stat-card h-full bg-white rounded-lg p-6 text-center shadow-sm hover:shadow-md cursor-pointer transition-transform duration-200 hover:-translate-y-1 border-l-4 border-cyan-500">
+                    <div class="stat-card h-full bg-white rounded-lg p-6 text-center shadow-sm hover:shadow-md cursor-pointer transition-transform duration-200 hover:-translate-y-1 border-l-4 border-cyan-500" style="--card-accent: #06b6d4;">
                         <div class="stat-icon mb-3 text-4xl text-cyan-500">
                             <i class="fas fa-clock"></i>
                         </div>

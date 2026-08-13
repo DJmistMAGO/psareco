@@ -79,9 +79,9 @@ h1, h2, h3, h4, h5, h6 {
 
 .sidebar .logo-section {
     text-align: center;
-    padding: 28px 20px;
+    padding: 0 5px;
     border-bottom: 1px solid var(--sidebar-border);
-    margin-bottom: 24px;
+    margin-bottom: 25px;
 }
 
 .sidebar .logo-section img {
@@ -297,6 +297,7 @@ h1, h2, h3, h4, h5, h6 {
     position: relative;
     overflow: hidden;
     box-shadow: var(--shadow-sm);
+    --card-accent: #2d6a4f;
 }
 
 .stat-card::before {
@@ -306,7 +307,7 @@ h1, h2, h3, h4, h5, h6 {
     left: 0;
     right: 0;
     height: 4px;
-    background: var(--gradient-primary);
+    background: var(--card-accent);
 }
 
 .stat-card:hover {
@@ -317,13 +318,13 @@ h1, h2, h3, h4, h5, h6 {
 .stat-card .stat-icon {
     font-size: 2.5rem;
     margin-bottom: 12px;
-    color: var(--primary);
+    /* color: var(--primary); */
 }
 
 .stat-card .stat-value {
     font-size: 2rem;
     font-weight: 800;
-    color: var(--primary);
+    /* color: var(--primary); */
     line-height: 1.2;
 }
 

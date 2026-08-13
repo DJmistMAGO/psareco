@@ -20,9 +20,9 @@
             <div class="card mb-4 no-print" id="recordSaleCard">
                 <div class="card-header"><i class="fas fa-cart-plus"></i> Add Product to Cart</div>
                 <div class="card-body">
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="productSearchInput" class="form-control" placeholder="Search product..." autocomplete="off" onkeyup="filterProductList()">
+                    <div class="search-box position-relative mb-4">
+                        <i class="fas fa-search position-absolute" style="left: 15px; top: 50%; transform: translateY(-50%); color: #6c757d;"></i>
+                        <input type="text" id="searchInventory" class="form-control ps-5" placeholder="Search products..." onkeyup="filterInventory()">
                     </div>
                     <div class="product-list-container">
                         <div id="productList"></div>
@@ -52,8 +52,10 @@
             <div class="card">
                 <div class="card-header"><i class="fas fa-history"></i> Sales History</div>
                 <div class="card-body">
-                    <div class="search-box no-print"><i class="fas fa-search"></i><input type="text" id="searchSales" class="form-control" placeholder="Search sales..." onkeyup="filterSales()"></div>
-                    <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+                    <div class="search-box position-relative mb-4">
+                        <i class="fas fa-search position-absolute" style="left: 15px; top: 50%; transform: translateY(-50%); color: #6c757d;"></i>
+                        <input type="text" id="searchSales" class="form-control ps-5" placeholder="Search sales..." onkeyup="filterSales()">
+                    </div>
                         <table class="table table-hover mb-0" id="salesHistoryTable">
                             <thead>
                                 <tr><th>Date</th><th>Items</th><th>Total</th><th>Buyer</th></tr>
