@@ -23,9 +23,6 @@
 </head>
 
 <body class="bg-[#f8faf4] text-[#173b1a] antialiased">
-
-    <x-sidebar />
-
     @yield('content')
 
     @stack('scripts')
