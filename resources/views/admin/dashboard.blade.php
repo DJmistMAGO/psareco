@@ -1,10 +1,8 @@
 @extends('layouts.app')
-
 @section('title', 'Dashboard - PSARECO')
 
 @section('content')
 
-        <!-- ================= MAIN CONTENT AREA ================= -->
         <main class="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 overflow-y-auto transition-all duration-300">
 
             <!-- Mobile Navigation Trigger Bar -->
