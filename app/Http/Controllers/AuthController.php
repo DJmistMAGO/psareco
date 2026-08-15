@@ -9,9 +9,6 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    /**
-     * Show login form
-     */
     public function showLogin()
     {
         if (Auth::check()) {
@@ -20,9 +17,6 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
-    /**
-     * Handle login
-     */
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -32,7 +26,7 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->route('dashboard')->with('success', 'Login successful');
+            return redirect()->intended('dashboard');
         }
 
         return back()->withErrors([
@@ -40,9 +34,7 @@ class AuthController extends Controller
         ])->onlyInput('email');
     }
 
-    /**
-     * Show register form
-     */
+
     public function showRegister()
     {
         if (Auth::check()) {
@@ -51,9 +43,6 @@ class AuthController extends Controller
         return view('auth.register');
     }
 
-    /**
-     * Handle registration
-     */
     public function register(Request $request)
     {
         // Check if email already exists
@@ -77,22 +66,20 @@ class AuthController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
-        // Assign farmer role
+        // Assign farmer role automatically to newly registered users
         $user->assignRole('farmer');
 
         return redirect()->route('login')
             ->with('success', 'Registration successful! Please login with your credentials.');
     }
 
-    /**
-     * Handle logout
-     */
+
     public function logout(Request $request)
     {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login');
+        return redirect()->route('home');
     }
 }
