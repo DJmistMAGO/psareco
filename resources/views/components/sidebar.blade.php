@@ -9,16 +9,16 @@
     <!-- Logo Section -->
     <div class="logo-section" style="text-align: center;">
 
-        <img src="{{ asset('assets/images/PSARECO_logo.png') }}" alt="PSARECO Logo" class="logo-image"  style="display: inline-block; padding: 0;;" >
+        <img src="{{ asset('assets/images/PSARECO_logo.png') }}" alt="PSARECO Logo" class="logo-image"  style="display: inline-block; padding: 0; margin: auto;" >
 
         <div class="logo-content">
 
             <h5 style="  color: var(--primary);  font-weight: 700; margin: 0; font-size: 1rem; "> PSARECO </h5>
             <small class="text-muted d-block mb-2" style="font-size: 0.75rem;" >
-                Farm System
+                Farm Resource System
             </small>
 
-            <span class="badge bg-primary"  style="font-size: 0.75rem;" >
+            <span class="badge bg-primary uppercase mb-3" style="font-size: 0.75rem;">
                 {{ auth()->user()->getRoleNames()->first() ?? 'User' }}
             </span>
 
