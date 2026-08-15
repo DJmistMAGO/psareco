@@ -3,195 +3,141 @@
 @section('title', 'Dashboard - PSARECO')
 
 @section('content')
-    <div class="d-flex">
 
-        <!-- Main Content -->
-        <div class="main-content" style="margin-left: 220px; flex: 1; padding: 30px; transition: margin-left 0.3s ease;">
-            <div class="welcome-banner">
-                <h3 class="mb-1 fw-bold" id="welcomeName">
-                    <i class="fas fa-hand-wave"></i>Welcome back, {{ auth()->user()->name }}!
-                </h3>
-                <p class="mb-0 opacity-75">Manage your farm resources efficiently with PSARECO Enterprise System</p>
+        <!-- ================= MAIN CONTENT AREA ================= -->
+        <main class="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 overflow-y-auto transition-all duration-300">
+
+            <!-- Mobile Navigation Trigger Bar -->
+            <div class="flex items-center justify-between mb-4 lg:hidden bg-white/60 backdrop-blur p-3 rounded-xl shadow-sm border border-emerald-100">
+                <span class="font-bold text-emerald-950 text-sm">PSARECO System</span>
+                <button @click="mobileOpen = !mobileOpen" class="p-2 text-emerald-800 hover:bg-emerald-100 rounded-lg">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-4" id="statsContainer">
-                <!-- Total Inventory Items Card -->
-                <div class="h-full">
-                    <div class="stat-card h-full bg-white rounded-lg p-6 text-center shadow-sm hover:shadow-md cursor-pointer transition-transform duration-200 hover:-translate-y-1 border-l-4 border-indigo-600" style="--card-accent: #4f46e5;">
-                        <div class="stat-icon mb-3 text-4xl text-indigo-600">
-                            <i class="fas fa-boxes"></i>
-                        </div>
-                        <h3 class="stat-value text-2xl font-bold text-gray-900 mb-2" id="totalInventory">0</h3>
-                        <small class="text-xs text-gray-500 block">Total Inventory Items</small>
+            <!-- Hero Welcome Banner -->
+            <section class="bg-gradient-to-r from-[#2c7a56] to-[#40a072] text-white rounded-2xl p-6 mb-6 shadow-sm">
+                <h2 class="text-xl sm:text-2xl font-bold tracking-tight">Welcome back, {{ $userName ?? 'Mike' }}!</h2>
+                <p class="text-emerald-100 text-xs sm:text-sm mt-1">Manage your farm resources efficiently with PSARECO Enterprise System</p>
+            </section>
+
+            <!-- Metrics / KPI Cards Grid -->
+            <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+                <!-- Card 1 -->
+                <div class="bg-white rounded-2xl p-4 shadow-sm border-t-4 border-indigo-500 text-center flex flex-col items-center justify-between transition-transform hover:-translate-y-0.5">
+                    <i class="fa-solid fa-boxes-stacked text-indigo-500 text-2xl mb-1"></i>
+                    <span class="text-2xl sm:text-3xl font-extrabold text-slate-800 my-1">{{ $totalInventory ?? '4' }}</span>
+                    <p class="text-xs font-medium text-slate-400">Total Inventory Items</p>
+                </div>
+                <!-- Card 2 -->
+                <div class="bg-white rounded-2xl p-4 shadow-sm border-t-4 border-amber-400 text-center flex flex-col items-center justify-between transition-transform hover:-translate-y-0.5">
+                    <i class="fa-solid fa-hourglass-half text-amber-400 text-2xl mb-1"></i>
+                    <span class="text-2xl sm:text-3xl font-extrabold text-slate-800 my-1">{{ $expiringCount ?? '0' }}</span>
+                    <p class="text-xs font-medium text-slate-400">Expiring Soon (&lt;30 days)</p>
+                </div>
+                <!-- Card 3 -->
+                <div class="bg-white rounded-2xl p-4 shadow-sm border-t-4 border-red-500 text-center flex flex-col items-center justify-between transition-transform hover:-translate-y-0.5">
+                    <i class="fa-solid fa-triangle-exclamation text-red-500 text-2xl mb-1"></i>
+                    <span class="text-2xl sm:text-3xl font-extrabold text-slate-800 my-1">{{ $lowStockCount ?? '0' }}</span>
+                    <p class="text-xs font-medium text-slate-400">Low Stock Items</p>
+                </div>
+                <!-- Card 4 -->
+                <div class="bg-white rounded-2xl p-4 shadow-sm border-t-4 border-emerald-500 text-center flex flex-col items-center justify-between transition-transform hover:-translate-y-0.5">
+                    <i class="fa-solid fa-chart-line text-emerald-500 text-2xl mb-1"></i>
+                    <span class="text-2xl sm:text-3xl font-extrabold text-slate-800 my-1">₱{{ number_format($totalSales ?? 0, 2) }}</span>
+                    <p class="text-xs font-medium text-slate-400">Total Sales</p>
+                </div>
+                <!-- Card 5 -->
+                <div class="bg-white rounded-2xl p-4 shadow-sm border-t-4 border-sky-400 text-center flex flex-col items-center justify-between transition-transform hover:-translate-y-0.5">
+                    <i class="fa-regular fa-clock text-sky-400 text-2xl mb-1"></i>
+                    <span class="text-2xl sm:text-3xl font-extrabold text-slate-800 my-1">{{ $pendingBookings ?? '0' }}</span>
+                    <p class="text-xs font-medium text-slate-400">Pending Bookings</p>
+                </div>
+            </section>
+
+            <!-- Dashboard Tables Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <!-- Recent Sales Table -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100/80 overflow-hidden flex flex-col">
+                    <div class="px-5 py-4 flex items-center space-x-2 border-b border-slate-100">
+                        <i class="fa-solid fa-rotate-left text-slate-600 text-sm"></i>
+                        <h3 class="font-bold text-slate-700 text-sm">Recent Sales Transactions</h3>
+                    </div>
+                    <div class="w-full overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-[#ebf4ef] text-emerald-900 text-[11px] uppercase tracking-wider font-semibold">
+                                    <th class="py-2.5 px-4">Date</th>
+                                    <th class="py-2.5 px-4">Product</th>
+                                    <th class="py-2.5 px-4">Quantity</th>
+                                    <th class="py-2.5 px-4">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-xs">
+                                <tr>
+                                    <td colspan="4" class="py-12 text-center text-slate-400">No sales recorded</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
-                <!-- Expiring Soon Card -->
-                <div class="h-full">
-                    <div class="stat-card h-full bg-white rounded-lg p-6 text-center shadow-sm hover:shadow-md cursor-pointer transition-transform duration-200 hover:-translate-y-1 border-l-4 border-amber-400" style="--card-accent: #f59e0b;">
-                        <div class="stat-icon mb-3 text-4xl text-amber-400">
-                            <i class="fas fa-hourglass-half"></i>
-                        </div>
-                        <h3 class="stat-value text-2xl font-bold text-amber-500 mb-2" id="expiringSoon">0</h3>
-                        <small class="text-xs text-gray-500 block">Expiring Soon (&le;30 days)</small>
+                <!-- Upcoming Bookings Table -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100/80 overflow-hidden flex flex-col">
+                    <div class="px-5 py-4 flex items-center space-x-2 border-b border-slate-100">
+                        <i class="fa-regular fa-calendar-days text-emerald-700 text-sm"></i>
+                        <h3 class="font-bold text-slate-700 text-sm">Upcoming Bookings</h3>
                     </div>
-                </div>
-
-                <!-- Low Stock Items Card -->
-                <div class="h-full">
-                    <div class="stat-card h-full bg-white rounded-lg p-6 text-center shadow-sm hover:shadow-md cursor-pointer transition-transform duration-200 hover:-translate-y-1 border-l-4 border-red-500" style="--card-accent: #ef4444;">
-                        <div class="stat-icon mb-3 text-4xl text-red-500">
-                            <i class="fas fa-exclamation-triangle"></i>
-                        </div>
-                        <h3 class="stat-value text-2xl font-bold text-red-500 mb-2" id="lowStock">0</h3>
-                        <small class="text-xs text-gray-500 block">Low Stock Items</small>
-                    </div>
-                </div>
-
-                <!-- Total Sales Card -->
-                <div class="h-full">
-                    <div class="stat-card h-full bg-white rounded-lg p-6 text-center shadow-sm hover:shadow-md cursor-pointer transition-transform duration-200 hover:-translate-y-1 border-l-4 border-emerald-500" style="--card-accent: #10b981;">
-                        <div class="stat-icon mb-3 text-4xl text-emerald-500">
-                            <i class="fas fa-chart-line"></i>
-                        </div>
-                        <h3 class="stat-value text-2xl font-bold text-emerald-500 mb-2" id="totalSales">₱0</h3>
-                        <small class="text-xs text-gray-500 block">Total Sales</small>
-                    </div>
-                </div>
-
-                <!-- Pending Bookings Card -->
-                <div class="h-full">
-                    <div class="stat-card h-full bg-white rounded-lg p-6 text-center shadow-sm hover:shadow-md cursor-pointer transition-transform duration-200 hover:-translate-y-1 border-l-4 border-cyan-500" style="--card-accent: #06b6d4;">
-                        <div class="stat-icon mb-3 text-4xl text-cyan-500">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <h3 class="stat-value text-2xl font-bold text-cyan-500 mb-2" id="pendingBookings">0</h3>
-                        <small class="text-xs text-gray-500 block">Pending Bookings</small>
+                    <div class="w-full overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-[#ebf4ef] text-emerald-900 text-[11px] uppercase tracking-wider font-semibold">
+                                    <th class="py-2.5 px-4">Date</th>
+                                    <th class="py-2.5 px-4">Machine</th>
+                                    <th class="py-2.5 px-4">Farmer</th>
+                                    <th class="py-2.5 px-4">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-xs">
+                                <tr>
+                                    <td colspan="4" class="py-12 text-center text-slate-400">No upcoming bookings</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
 
-            <div class="row g-4">
-                <div class="col-md-6">
-                    <div class="card h-100">
-                        <div class="card-header">
-                            <i class="fas fa-history"></i> Recent Sales Transactions
-                        </div>
-                        <div class="card-body p-0">
-                            <div class="table-responsive">
-                                <table class="table table-hover mb-0">
-                                    <thead>
-                                        <tr><th>Date</th><th>Product</th><th>Quantity</th><th>Total</th></tr>
-                                    </thead>
-                                    <tbody id="recentSalesTable">
-                                        <tr><td colspan="4" class="text-center text-muted py-4">No sales recorded</td></tr>
-                                    </tbody>
-                                </table>
+            <!-- Alerts & Chart Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Alerts -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100/80 p-5 flex flex-col min-h-[180px]">
+                    <div class="flex items-center space-x-2 pb-3 mb-4 border-b border-slate-100">
+                        <i class="fa-regular fa-bell text-emerald-700 text-sm"></i>
+                        <h3 class="font-bold text-slate-700 text-sm">Low Stock & Expiring Alerts</h3>
+                    </div>
+                    <div class="flex-1 flex items-center justify-center">
+                        <div class="flex items-center space-x-2 text-slate-500 text-xs font-medium">
+                            <div class="w-4 h-4 rounded-full bg-slate-700 text-white flex items-center justify-center text-[10px]">
+                                <i class="fa-solid fa-check"></i>
                             </div>
+                            <span>No alerts</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-md-6">
-                    <div class="card h-100">
-                        <div class="card-header">
-                            <i class="fas fa-calendar-alt"></i> Upcoming Bookings
-                        </div>
-                        <div class="card-body p-0">
-                            <div class="table-responsive">
-                                <table class="table table-hover mb-0">
-                                    <thead>
-                                        <tr><th>Date</th><th>Machine</th><th>Farmer</th><th>Status</th></tr>
-                                    </thead>
-                                    <tbody id="upcomingBookingsTable">
-                                        <tr><td colspan="4" class="text-center text-muted py-4">No upcoming bookings</td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                <!-- Monthly Sales Chart -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100/80 p-5 flex flex-col min-h-[180px]">
+                    <div class="flex items-center space-x-2 pb-3 mb-4 border-b border-slate-100">
+                        <i class="fa-solid fa-chart-line text-emerald-700 text-sm"></i>
+                        <h3 class="font-bold text-slate-700 text-sm">Monthly Sales Trend</h3>
+                    </div>
+                    <div class="flex-1 flex items-center justify-center text-slate-400 text-xs">
+                        <canvas id="salesTrendChart" class="w-full max-h-[140px]"></canvas>
                     </div>
                 </div>
             </div>
 
-            <div class="row g-4 mt-2">
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header">
-                            <i class="fas fa-bell"></i> Low Stock & Expiring Alerts
-                        </div>
-                        <div class="card-body" id="lowStockAlerts">
-                            <p class="text-muted text-center py-3"><i class="fas fa-check-circle"></i> No alerts</p>
-                        </div>
-                    </div>
-                </div>
+        </main>
 
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header">
-                            <i class="fas fa-chart-line"></i> Monthly Sales Trend
-                        </div>
-                        <div class="card-body chart-container">
-                            <canvas id="salesChart" style="max-height: 220px; width: 100%;"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 @endsection
-
-@push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Populate dashboard stat cards with data from localStorage (legacy) or from database queries
-            function initializeDashboard() {
-                // Get inventory data from localStorage for now
-                const inventory = JSON.parse(localStorage.getItem('inventory')) || [];
-                const bookings = JSON.parse(localStorage.getItem('bookings')) || [];
-                const sales = JSON.parse(localStorage.getItem('sales')) || [];
-
-                // Calculate stats
-                const totalInventory = inventory.length;
-
-                const expiringSoon = inventory.filter(item => {
-                    if (!item.expirationDate) return false;
-                    const expDate = new Date(item.expirationDate);
-                    const today = new Date();
-                    const daysDiff = Math.ceil((expDate - today) / (1000 * 60 * 60 * 24));
-                    return daysDiff > 0 && daysDiff <= 30;
-                }).length;
-
-                const lowStock = inventory.filter(item =>
-                    item.quantity <= (item.reorderLevel || 10)
-                ).length;
-
-                const totalSales = sales.reduce((sum, sale) => {
-                    return sum + (parseFloat(sale.total) || 0);
-                }, 0);
-
-                const pendingBookings = bookings.filter(b =>
-                    b.status === 'Pending' || b.status === 'Confirmed'
-                ).length;
-
-                // Update cards
-                document.getElementById('totalInventory').textContent = totalInventory;
-                document.getElementById('expiringSoon').textContent = expiringSoon;
-                document.getElementById('lowStock').textContent = lowStock;
-                document.getElementById('totalSales').textContent = '₱' + totalSales.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-                document.getElementById('pendingBookings').textContent = pendingBookings;
-
-                // Add hover effect
-                document.querySelectorAll('.stat-card').forEach(card => {
-                    card.addEventListener('mouseenter', function() {
-                        this.style.transform = 'translateY(-5px)';
-                    });
-                    card.addEventListener('mouseleave', function() {
-                        this.style.transform = 'translateY(0)';
-                    });
-                });
-            }
-
-            initializeDashboard();
-        });
-    </script>
-@endpush
