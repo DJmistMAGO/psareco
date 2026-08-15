@@ -3,107 +3,127 @@
 @section('title', 'PSARECO Login')
 
 @section('content')
-    <div class="login-container">
-        <div class="login-card">
-            <div class="text-center mb-4">
-                <a href="{{ route('home') }}">
-                    <img src="{{ asset('assets/images/PSARECO_logo.png') }}" alt="PSARECO Logo" style="width: 80px; cursor: pointer;">
-                </a>
-                <h2 class="mt-2" style="color: var(--primary); font-weight: 700;">PSARECO</h2>
-                <p class="text-muted fw-bold" style="font-size: 0.9rem;">Farm Resource Management System</p>
-                <p class="small text-muted" style="font-size: 0.75rem;">Machinery Scheduling & Inventory Monitoring</p>
-            </div>
+<div class="min-h-screen bg-[#d2e8d9] flex items-center justify-center p-4 sm:p-6 lg:p-8">
 
-            @if ($errors->any())
-                <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert" style="border-left: 4px solid #dc3545; border-radius: 0.375rem;">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <strong><i class="fas fa-exclamation-circle me-2"></i>Login Error</strong>
-                            @foreach ($errors->all() as $error)
-                                <div class="mt-2" style="font-size: 0.95rem;">{{ $error }}</div>
-                            @endforeach
-                        </div>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                </div>
-            @endif
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-xl border border-emerald-100 p-6 sm:p-8 transition-all">
 
-            @if (session('success'))
-                <div class="alert alert-success alert-dismissible fade show mb-4" role="alert" style="border-left: 4px solid #198754; border-radius: 0.375rem;">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <strong><i class="fas fa-check-circle me-2"></i>Success</strong>
-                            <div class="mt-2" style="font-size: 0.95rem;">{{ session('success') }}</div>
-                        </div>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                </div>
-            @endif
-
-            <form method="POST" action="{{ route('login') }}">
-                @csrf
-                <div class="floating-field mb-3">
-                    <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror"
-                               placeholder="" value="{{ old('email') }}" required autocomplete="off">
-                        <label for="email" class="form-label"><i class="fas fa-envelope"></i> Email Address</label>
-                        @error('email')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                </div>
-
-                <div class="floating-field mb-3">
-                        <div class="input-group">
-                            <input type="password" name="password" id="password" class="form-control @error('password') is-invalid @enderror"
-                                   placeholder="" required autocomplete="current-password">
-                            <button type="button" class="btn btn-outline-secondary border border-secondary-200" id="togglePassword" title="Show/Hide" style="border-top-right-radius: 20%; border-bottom-right-radius: 20%;">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <label for="password" class="form-label"><i class="fas fa-lock"></i> Password</label>
-                        </div>
-                        @error('password')
-                            <div class="invalid-feedback" style="display: block;">{{ $message }}</div>
-                        @enderror
-                </div>
-
-                <button type="submit" class="btn btn-primary w-100 py-3 fw-semibold" style="font-size: 1rem;">
-                    <i class="fas fa-sign-in-alt me-2"></i> Login
-                </button>
-            </form>
-
-            <div class="text-center mt-4">
-                <p class="text-muted small">Don't have an account? <a href="{{ route('register') }}" class="text-primary fw-bold text-decoration-none">Register here</a></p>
-            </div>
-
-            <hr class="my-4">
-
-            <div class="text-center">
-                <p class="text-muted small italic"><i class="fas fa-copyright"></i> <span>2026</span> PSARECO Cooperative</p>
-            </div>
+        <div class="text-center mb-6">
+            <a href="{{ route('home') }}" class="inline-block transition-transform hover:scale-105">
+                <img src="{{ asset('assets/images/PSARECO_logo.png') }}" alt="PSARECO Logo" class="w-20 h-auto mx-auto drop-shadow-sm">
+            </a>
+            <h1 class="mt-3 mb-3 text-3xl font-bold tracking-tight text-[#2c7a56]">PSARECO</h1>
+            <p class="text-xs font-bold text-slate-600 mt-1 mb-3 uppercase tracking-wide">Farm Resource Management System</p>
+            <p class="text-[11px] text-slate-400 mt-0.5 mb-3">Machinery Scheduling & Inventory Monitoring</p>
         </div>
+
+        @if ($errors->any())
+            <div x-data="{ show: true }" x-show="show" x-transition
+                 class="mb-5 bg-red-50 border-l-4 border-red-500 rounded-r-xl p-4 text-red-800 shadow-sm relative">
+                <div class="flex items-start justify-between">
+                    <div class="flex items-start space-x-2">
+                        <i class="fas fa-exclamation-circle text-red-500 mt-0.5 text-sm"></i>
+                        <div>
+                            <h4 class="font-bold text-sm">Login Error</h4>
+                            <ul class="mt-1 space-y-1 text-xs text-red-700">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                    <button @click="show = false" type="button" class="text-red-400 hover:text-red-600 transition-colors p-1">
+                        <i class="fas fa-times text-xs"></i>
+                    </button>
+                </div>
+            </div>
+        @endif
+
+        @if (session('success'))
+            <div x-data="{ show: true }" x-show="show" x-transition
+                 class="mb-5 bg-emerald-50 border-l-4 border-emerald-600 rounded-r-xl p-4 text-emerald-900 shadow-sm relative">
+                <div class="flex items-start justify-between">
+                    <div class="flex items-start space-x-2">
+                        <i class="fas fa-check-circle text-emerald-600 mt-0.5 text-sm"></i>
+                        <div>
+                            <h4 class="font-bold text-sm">Success</h4>
+                            <p class="mt-1 text-xs text-emerald-800">{{ session('success') }}</p>
+                        </div>
+                    </div>
+                    <button @click="show = false" type="button" class="text-emerald-500 hover:text-emerald-700 transition-colors p-1">
+                        <i class="fas fa-times text-xs"></i>
+                    </button>
+                </div>
+            </div>
+        @endif
+
+        <!-- Form Container -->
+        <form method="POST" action="{{ route('login') }}" class="space-y-4">
+            @csrf
+
+            <div class="relative">
+                <input type="email" name="email" id="email" value="{{ old('email') }}" required autocomplete="off" placeholder=" "
+                       class="peer w-full px-4 pt-5 pb-2 text-sm text-slate-800 bg-slate-50 border @error('email') border-red-500 focus:ring-red-500 @else border-slate-200 focus:ring-[#3d8b68] focus:border-[#3d8b68] @enderror rounded-xl focus:outline-none focus:ring-2 focus:bg-white transition-all">
+
+                <label for="email"
+                       class="absolute left-4 top-2 text-[11px] font-medium text-slate-400 transition-all peer-placeholder-shown:text-xs peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-slate-400 peer-focus:top-1.5 peer-focus:text-[10px] peer-focus:text-[#2c7a56] flex items-center space-x-1.5 pointer-events-none">
+                    <i class="fas fa-envelope text-slate-400 peer-focus:text-[#2c7a56]"></i>
+                    <span>Email Address</span>
+                </label>
+
+                @error('email')
+                    <p class="mt-1 text-xs text-red-500 font-medium flex items-center space-x-1">
+                        <span>{{ $message }}</span>
+                    </p>
+                @enderror
+            </div>
+
+            <div x-data="{ showPassword: false }" class="relative">
+                <div class="relative flex items-center">
+                    <input :type="showPassword ? 'text' : 'password'" name="password" id="password" required autocomplete="current-password" placeholder=" "
+                           class="peer w-full pl-4 pr-12 pt-5 pb-2 text-sm text-slate-800 bg-slate-50 border @error('password') border-red-500 focus:ring-red-500 @else border-slate-200 focus:ring-[#3d8b68] focus:border-[#3d8b68] @enderror rounded-xl focus:outline-none focus:ring-2 focus:bg-white transition-all">
+
+                    <label for="password"
+                           class="absolute left-4 top-2 text-[11px] font-medium text-slate-400 transition-all peer-placeholder-shown:text-xs peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-slate-400 peer-focus:top-1.5 peer-focus:text-[10px] peer-focus:text-[#2c7a56] flex items-center space-x-1.5 pointer-events-none">
+                        <i class="fas fa-lock text-slate-400 peer-focus:text-[#2c7a56]"></i>
+                        <span>Password</span>
+                    </label>
+
+                    <button type="button" @click="showPassword = !showPassword"
+                            class="absolute right-3 text-slate-400 hover:text-slate-600 p-1.5 rounded-lg transition-colors focus:outline-none">
+                        <i class="fas" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                    </button>
+                </div>
+
+                @error('password')
+                    <p class="mt-1 text-xs text-red-500 font-medium">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <button type="submit"
+                    class="w-full mt-2 bg-[#3d8b68] hover:bg-[#327356] active:bg-[#276447] text-white font-semibold py-3 px-4 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center space-x-2 text-sm">
+                <i class="fas fa-sign-in-alt text-xs"></i>
+                <span>Login</span>
+            </button>
+        </form>
+
+        <div class="text-center mt-6">
+            <p class="text-xs text-slate-500">
+                Don't have an account?
+                <a href="{{ route('register') }}" class="text-[#2c7a56] font-bold hover:underline">Register here</a>
+            </p>
+        </div>
+
+        <div class="relative my-6">
+            <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-100"></div></div>
+        </div>
+
+        <div class="text-center mt-3">
+            <p class="text-[11px] text-slate-400 italic flex items-center justify-center space-x-1 mt-2">
+                <i class="fas fa-copyright text-[10px]"></i>
+                <span>2026 PSARECO Cooperative</span>
+            </p>
+        </div>
+
     </div>
+</div>
 @endsection
-
-@push('scripts')
-    <script>
-
-        // Password toggle functionality
-        const togglePasswordBtn = document.getElementById('togglePassword');
-        const passwordField = document.getElementById('password');
-
-        if (togglePasswordBtn && passwordField) {
-            togglePasswordBtn.addEventListener('click', function () {
-                const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
-                passwordField.setAttribute('type', type);
-
-                const icon = this.querySelector('i');
-                if (type === 'text') {
-                    icon.classList.remove('fa-eye');
-                    icon.classList.add('fa-eye-slash');
-                } else {
-                    icon.classList.remove('fa-eye-slash');
-                    icon.classList.add('fa-eye');
-                }
-            });
-        }
-    </script>
-@endpush
