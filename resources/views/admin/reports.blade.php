@@ -3,17 +3,9 @@
 @section('title', 'Reports - PSARECO')
 
 @section('content')
+    <main class="w-full min-w-0 p-4 sm:p-6 lg:p-8">
+        <x-dashboard-header />
 
-    <!-- ================= MAIN CONTENT AREA ================= -->
-    <main class="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 overflow-y-auto transition-all duration-300">
-
-        <!-- Mobile Navigation Trigger Bar -->
-        <div class="flex items-center justify-between mb-4 lg:hidden bg-white/60 backdrop-blur p-3 rounded-xl shadow-sm border border-emerald-100 print:hidden">
-            <span class="font-bold text-emerald-950 text-sm">PSARECO System</span>
-            <button @click="mobileOpen = !mobileOpen" class="p-2 text-emerald-800 hover:bg-emerald-100 rounded-lg">
-                <i class="fa-solid fa-bars text-lg"></i>
-            </button>
-        </div>
 
         <!-- Hero Header & Page Title -->
         <section class="bg-gradient-to-r from-[#2c7a56] to-[#40a072] text-white rounded-2xl p-6 mb-6 shadow-sm">
