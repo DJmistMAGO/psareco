@@ -276,7 +276,7 @@
 
                     <div class="text-center">
                         <p class="text-[10px] text-slate-300">
-                            © {{ date('Y') }} PSARECO. All rights reserved.
+                            © 2026 PSARECO. All rights reserved.
                         </p>
                     </div>
 
