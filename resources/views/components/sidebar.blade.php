@@ -1,9 +1,7 @@
 <div x-show="mobileOpen" x-cloak x-transition:enter="transition-opacity ease-linear duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition-opacity ease-linear duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" @click="mobileOpen = false" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 lg:hidden" ></div>
 
 
-<aside :class="{ 'w-64': sidebarOpen, 'w-20': !sidebarOpen, '-translate-x-full lg:translate-x-0': !mobileOpen, 'translate-x-0': mobileOpen}"
-
-    class="fixed lg:static inset-y-0 left-0 z-50 bg-[#f2f8f4] flex flex-col justify-between border-r border-emerald-100/80 p-4 shrink-0 h-screen transition-all duration-300  ease-in-out" >
+<aside :class="{ 'w-64': sidebarOpen, 'w-20': !sidebarOpen, '-translate-x-full lg:translate-x-0': !mobileOpen, 'translate-x-0': mobileOpen}" class="fixed lg:static inset-y-0 left-0 z-50 bg-[#f2f8f4] flex flex-col justify-between border-r border-emerald-100/80 p-4 shrink-0 h-screen transition-all duration-300  ease-in-out" >
 
     <div>
         <div class="relative mb-6 h-10">
@@ -41,10 +39,10 @@
                 if (auth()->user()->hasRole('admin')) {
                     $menu = [
                         ['route' => 'dashboard', 'icon' => 'fa-chart-line', 'title' => 'Dashboard'],
-                        ['route' => 'scheduling', 'icon' => 'fa-calendar-alt', 'title' => 'Scheduling'],
-                        ['route' => 'inventory', 'icon' => 'fa-boxes-stacked', 'title' => 'Inventory'],
-                        ['route' => 'sales', 'icon' => 'fa-shopping-cart', 'title' => 'Sales'],
-                        ['route' => 'reports', 'icon' => 'fa-file-alt', 'title' => 'Reports'],
+                        // ['route' => 'scheduling', 'icon' => 'fa-calendar-alt', 'title' => 'Scheduling'],
+                        // ['route' => 'inventory', 'icon' => 'fa-boxes-stacked', 'title' => 'Inventory'],
+                        // ['route' => 'sales', 'icon' => 'fa-shopping-cart', 'title' => 'Sales'],
+                        ['route' => 'reports.index', 'icon' => 'fa-file-alt', 'title' => 'Reports'],
                         ['route' => 'user-management.index', 'icon' => 'fa-users-cog', 'title' => 'Users'],
                     ];
                 } elseif (auth()->user()->hasRole('officer')) {
@@ -53,7 +51,7 @@
                         ['route' => 'scheduling', 'icon' => 'fa-calendar-alt', 'title' => 'Scheduling'],
                         ['route' => 'inventory', 'icon' => 'fa-boxes-stacked', 'title' => 'Inventory'],
                         ['route' => 'sales', 'icon' => 'fa-shopping-cart', 'title' => 'Sales'],
-                        ['route' => 'reports', 'icon' => 'fa-file-alt', 'title' => 'Reports'],
+                        ['route' => 'reports.index', 'icon' => 'fa-file-alt', 'title' => 'Reports'],
                     ];
                 } elseif (auth()->user()->hasRole('farmer')) {
                     $menu = [
@@ -78,150 +76,38 @@
     </div>
 
 
-
-    <!-- =====================================================
-            USER SECTION
-    ====================================================== -->
-
-    <div
-        class="space-y-3
-                pt-4
-                border-t
-                border-slate-200/60"
-    >
-
-        <!-- User -->
-
-        <div
-            class="flex
-                    items-center
-                    space-x-3
-                    p-1.5"
-        >
-
-            <div
-                class="w-8
-                        h-8
-
-                        rounded-full
-
-                        bg-[#276447]
-
-                        text-white
-
-                        font-bold
-
-                        flex
-                        items-center
-                        justify-center
-
-                        text-xs
-
-                        shadow-sm
-
-                        shrink-0"
-            >
-
+    <div class="space-y-3 pt-4 border-t border-slate-200/60" >
+        <div class="flex items-center space-x-3 p-1.5" >
+            <div class="w-8 h-8 rounded-full bg-[#276447] text-white font-bold flex items-center justify-center text-xs shadow-sm shrink-0" >
                 {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-
             </div>
 
 
-            <div
-                x-show="sidebarOpen"
-                x-transition
-
-                class="flex-1
-                        min-w-0"
-            >
-
-                <p
-                    class="text-xs
-                            font-semibold
-                            text-slate-800
-                            truncate"
-                >
+            <div  x-show="sidebarOpen" x-transition class="flex-1 min-w-0" >
+                <p class="text-xs font-semibold text-slate-800 truncate" >
                     {{ auth()->user()->name }}
                 </p>
 
 
-                <p
-                    class="text-[10px]
-                            text-slate-500
-                            truncate"
-                >
+                <p class="text-[10px] text-slate-500 truncate" >
                     {{ auth()->user()->email }}
                 </p>
-
             </div>
-
         </div>
 
-
-
-        <!-- =================================================
-                LOGOUT
-        ================================================== -->
-
-        <form
-            method="POST"
-            action="{{ route('logout') }}"
-        >
-
+        <form method="POST" action="{{ route('logout') }}" >
             @csrf
-
             <button
                 type="submit"
+                class="w-full bg-[#fce8e6] hover:bg-[#f8d0cb] text-[#d9381e] font-medium py-2 px-3 rounded-xl flex items-center justify-center space-x-2 text-xs transition-all duration-200 active:scale-[0.98]" title="Logout"  >
 
-                class="w-full
+                <i class="fa-solid fa-right-from-bracket rotate-180 shrink-0" ></i>
 
-                        bg-[#fce8e6]
-                        hover:bg-[#f8d0cb]
-
-                        text-[#d9381e]
-
-                        font-medium
-
-                        py-2
-                        px-3
-
-                        rounded-xl
-
-                        flex
-                        items-center
-                        justify-center
-
-                        space-x-2
-
-                        text-xs
-
-                        transition-all
-                        duration-200
-
-                        active:scale-[0.98]"
-
-                title="Logout"
-            >
-
-                <i
-                    class="fa-solid
-                            fa-right-from-bracket
-                            rotate-180
-                            shrink-0"
-                ></i>
-
-
-                <span
-                    x-show="sidebarOpen"
-                    x-transition
-                >
+                <span x-show="sidebarOpen" x-transition >
                     Logout
                 </span>
 
             </button>
-
         </form>
-
     </div>
-
-    </aside>
+</aside>
