@@ -53,7 +53,7 @@
                 Home
             </a>
 
-            <a href="#machinery"
+            {{-- <a href="#machinery"
                class="text-sm font-medium text-gray-700 transition hover:text-farm-700">
                 Machinery
             </a>
@@ -61,7 +61,7 @@
             <a href="#inventory"
                class="text-sm font-medium text-gray-700 transition hover:text-farm-700">
                 Inventory
-            </a>
+            </a> --}}
 
             <a href="#how-it-works"
                class="text-sm font-medium text-gray-700 transition hover:text-farm-700">
@@ -81,17 +81,17 @@
 
             <a
                 href="{{ route('login') }}"
-                class="rounded-lg border border-farm-700 px-6 py-2.5 text-sm font-semibold text-farm-800 transition hover:bg-farm-50"
+                class="rounded-lg bg-farm-700 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-farm-700/20 transition hover:bg-farm-800"
             >
                 Login
             </a>
 
-            <a
+            {{-- <a
                 href="{{ route('register') }}"
                 class="rounded-lg bg-farm-700 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-farm-700/20 transition hover:bg-farm-800"
             >
                 Get Started
-            </a>
+            </a> --}}
 
         </div>
 
@@ -203,12 +203,12 @@
                     Login
                 </a>
 
-                <a
+                {{-- <a
                     href="{{ route('register') }}"
                     class="rounded-xl bg-farm-700 px-4 py-3 text-center text-sm font-bold text-white"
                 >
                     Get Started
-                </a>
+                </a> --}}
 
             </div>
 
@@ -284,7 +284,7 @@
             {{-- CTA --}}
             <div class="mt-7 flex w-full flex-col gap-3 sm:mt-9 sm:flex-row sm:gap-4">
 
-                <a
+                {{-- <a
                     href="#machinery"
                     class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-farm-700 px-6 py-3.5 font-bold text-white shadow-xl shadow-farm-700/20 transition hover:-translate-y-0.5 hover:bg-farm-800 sm:w-auto sm:px-7 sm:py-4"
                 >
@@ -305,7 +305,7 @@
 
                     Schedule Machinery
 
-                </a>
+                </a> --}}
 
 
                 <a
@@ -337,7 +337,7 @@
 
 
         {{-- Floating cards --}}
-        <div class="absolute right-8 top-44 hidden w-64 rounded-2xl bg-white p-5 shadow-2xl lg:block">
+        {{-- <div class="absolute right-8 top-44 hidden w-64 rounded-2xl bg-white p-5 shadow-2xl lg:block">
 
             <div class="text-xs font-semibold text-gray-500">
                 Machinery Availability
@@ -377,13 +377,13 @@
 
             </div>
 
-        </div>
+        </div> --}}
 
 
-        <div class="absolute right-8 top-80 hidden w-64 rounded-2xl bg-white p-5 shadow-2xl lg:block">
+        {{-- <div class="absolute right-8 top-80 hidden w-64 rounded-2xl bg-white p-5 shadow-2xl lg:block">
 
             <div class="text-xs font-semibold text-gray-500">
-                Upcoming Schedule
+                Date & Time
             </div>
 
             <div class="mt-3 flex items-center gap-3">
@@ -406,7 +406,7 @@
 
             </div>
 
-        </div>
+        </div> --}}
 
     </div>
 
@@ -466,12 +466,12 @@
                     {{ $item['text'] }}
                 </p>
 
-                <a
+                {{-- <a
                     href="{{ $item['href'] }}"
                     class="mt-5 inline-flex rounded-lg bg-farm-700 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-farm-800"
                 >
                     {{ $item['button'] }}
-                </a>
+                </a> --}}
 
             </div>
 
@@ -481,7 +481,7 @@
 
 </section>
 
-<section id="how-it-works" class="mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-24 lg:px-8" >
+{{-- <section id="how-it-works" class="mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-24 lg:px-8" >
 
     <div class="text-center">
 
@@ -550,15 +550,15 @@
 
     </div>
 
-</section>
+</section> --}}
 
-<section id="machinery" class="bg-farm-50 py-20 sm:py-24">
+{{-- <section id="machinery" class="bg-farm-50 py-20 sm:py-24">
 
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
         <div class="grid items-start gap-10 lg:grid-cols-5 lg:items-center lg:gap-12">
 
-            {{-- Content --}}
+            {{-- Content
             <div class="lg:col-span-2">
 
                 <span class="text-sm font-bold uppercase tracking-wider text-farm-600">
@@ -591,7 +591,7 @@
             </div>
 
 
-            {{-- Cards --}}
+            {{-- Cards
             <div class="grid gap-5 sm:grid-cols-2 lg:col-span-3 lg:grid-cols-3">
 
                 @php
@@ -671,13 +671,13 @@
 
     </div>
 
-</section>
+</section> --}}
 
-<section id="inventory" class="mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-24 lg:px-8" >
+{{-- <section id="inventory" class="mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-24 lg:px-8" >
 
     <div class="grid items-center gap-10 lg:grid-cols-2 lg:gap-12">
 
-        {{-- Image --}}
+        {{-- Image
         <div class="overflow-hidden rounded-3xl">
 
             <img
@@ -690,7 +690,7 @@
         </div>
 
 
-        {{-- Content --}}
+        {{-- Content
         <div>
 
             <span class="text-sm font-bold uppercase tracking-wider text-farm-600">
@@ -712,8 +712,7 @@
                 plan your farming activities with confidence.
             </p>
 
-
-            {{-- Mobile scroll wrapper --}}
+            {{-- Mobile scroll wrapper
             <div class="mt-8 overflow-x-auto rounded-2xl border border-farm-100 bg-white shadow-sm">
 
                 <div class="min-w-[520px]">
@@ -815,9 +814,9 @@
 
     </div>
 
-</section>
+</section> --}}
 
-<section class="bg-farm-50 py-20 sm:py-24">
+{{-- <section class="bg-farm-50 py-20 sm:py-24">
 
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
@@ -855,10 +854,10 @@
             </div>
 
 
-            {{-- Dashboard --}}
+            {{-- Dashboard
             <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl">
 
-                {{-- Header --}}
+                {{-- Header --
                 <div class="flex flex-col gap-3 border-b px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
 
                     <div class="flex items-center gap-2">
@@ -880,7 +879,7 @@
 
                 <div class="grid min-h-0 grid-cols-1 md:grid-cols-[140px_1fr]">
 
-                    {{-- Sidebar --}}
+                    {{-- Sidebar --
                     <aside class="hidden bg-farm-900 p-4 text-white md:block">
 
                         <div class="space-y-2 text-xs">
@@ -914,7 +913,7 @@
                     </aside>
 
 
-                    {{-- Mobile mini navigation --}}
+                    {{-- Mobile mini navigation
                     <div class="overflow-x-auto bg-farm-900 p-3 md:hidden">
 
                         <div class="flex min-w-max gap-2 text-[11px] text-white">
@@ -944,7 +943,7 @@
                     </div>
 
 
-                    {{-- Dashboard Content --}}
+                    {{-- Dashboard Content -
                     <div class="bg-gray-50 p-4 sm:p-5">
 
                         <h3 class="font-bold text-farm-900">
@@ -1058,9 +1057,9 @@
 
     </div>
 
-</section>
+</section> --}}
 
-<section class="mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-24 lg:px-8">
+<section id="how-it-works" class="mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-24 lg:px-8">
 
     <div class="text-center">
 
@@ -1271,12 +1270,12 @@
 
         <div class="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
 
-            <a
+            {{-- <a
                 href="{{ route('register') }}"
                 class="w-full rounded-xl bg-white px-7 py-3.5 text-center font-bold text-farm-900 transition hover:bg-farm-50 sm:w-auto"
             >
                 Get Started
-            </a>
+            </a> --}}
 
             <a
                 href="{{ route('login') }}"
@@ -1307,12 +1306,12 @@
                         </div>
                     </div>
                 </div>
-                <p class="mt-5 max-w-sm text-sm leading-6 text-farm-100/70">
+                {{-- <p class="mt-5 max-w-sm text-sm leading-6 text-farm-100/70">
                     Empowering farmers. Strengthening communities.
                     Building a better tomorrow.
-                </p>
+                </p> --}}
             </div>
-            <div>
+            {{-- <div>
                 <h3 class="font-bold"> Quick Links </h3>
                 <ul class="mt-5 space-y-3 text-sm text-farm-100/70">
                     <li>
@@ -1390,7 +1389,7 @@
 
                 </div>
 
-            </div>
+            </div> --}}
 
         </div>
 
