@@ -1,219 +1,227 @@
-<div class="sidebar" id="sidebar">
-
-    <button id="sidebarToggle" type="button" class="btn btn-sm btn-success sidebar-toggle mb-3" title="Collapse sidebar" >
-        <i class="fas fa-bars"></i>
-        <span class="toggle-text">Menu</span>
-    </button>
+<div x-show="mobileOpen" x-cloak x-transition:enter="transition-opacity ease-linear duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition-opacity ease-linear duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" @click="mobileOpen = false" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 lg:hidden" ></div>
 
 
-    <!-- Logo Section -->
-    <div class="logo-section" style="text-align: center;">
+<aside :class="{ 'w-64': sidebarOpen, 'w-20': !sidebarOpen, '-translate-x-full lg:translate-x-0': !mobileOpen, 'translate-x-0': mobileOpen}"
 
-        <img src="{{ asset('assets/images/PSARECO_logo.png') }}" alt="PSARECO Logo" class="logo-image"  style="display: inline-block; padding: 0;;" >
+    class="fixed lg:static inset-y-0 left-0 z-50 bg-[#f2f8f4] flex flex-col justify-between border-r border-emerald-100/80 p-4 shrink-0 h-screen transition-all duration-300  ease-in-out" >
 
-        <div class="logo-content">
+    <div>
+        <div class="relative mb-6 h-10">
+            {{-- eto sa desktop na toggle button --}}
+            <button type="button" @click="sidebarOpen = !sidebarOpen"  class="hidden  lg:flex absolute right-[-18px] top-1/2 -translate-y-1/2  w-10 h-10 bg-[#3d8b68] hover:bg-[#327356] text-white rounded-xl items-center justify-center transition-all duration-300 shadow-lg ring-2 ring-white/80 z-[60] focus:outline-none" title="Toggle Navigation" >
+                <i class="fa-solid text-sm transition-transform duration-300" :class=" sidebarOpen ? 'fa-angle-left' : 'fa-angle-right' "></i>
+            </button>
 
-            <h5 style="  color: var(--primary);  font-weight: 700; margin: 0; font-size: 1rem; "> PSARECO </h5>
-            <small class="text-muted d-block mb-2" style="font-size: 0.75rem;" >
-                Farm System
-            </small>
-
-            <span class="badge bg-primary"  style="font-size: 0.75rem;" >
-                {{ auth()->user()->getRoleNames()->first() ?? 'User' }}
-            </span>
-
+            {{-- eto sa mobile na toggle button --}}
+            <button type="button" @click="mobileOpen = false" class="lg:hidden absolute right-0 top-0 w-9 h-9 flex items-center justify-center  rounded-lg  text-slate-500 hover:bg-emerald-100 hover:text-emerald-800  transition" title="Close Navigation" >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
         </div>
+
+        <div class="flex flex-col items-center text-center mb-8" >
+            <div class="w-12 h-12 lg:w-14 lg:h-14 bg-white rounded-full flex items-center justify-center shadow-sm border border-emerald-100 mb-2 shrink-0 transition-all" >
+                <div class="w-full h-full rounded-full flex items-center justify-center text-amber-400 font-bold">
+                    <img src="{{ asset('assets/images/PSARECO_logo.png') }}" alt="PSARECO Logo" class="w-full h-full object-contain rounded-full" >
+                </div>
+            </div>
+
+            <div x-show="sidebarOpen" x-transition class="space-y-0.5">
+                <h1  class="font-bold text-emerald-950 text-sm tracking-tight"> PSARECO </h1>
+                <p class="text-[11px] text-slate-500 font-medium" > Farm Resource System </p>
+            </div>
+        </div>
+
+        <hr class="border-emerald-200/60 my-3">
+
+        <nav class="space-y-1.5">
+
+            @php
+                $menu = [];
+
+                if (auth()->user()->hasRole('admin')) {
+                    $menu = [
+                        ['route' => 'dashboard', 'icon' => 'fa-chart-line', 'title' => 'Dashboard'],
+                        ['route' => 'scheduling', 'icon' => 'fa-calendar-alt', 'title' => 'Scheduling'],
+                        ['route' => 'inventory', 'icon' => 'fa-boxes-stacked', 'title' => 'Inventory'],
+                        ['route' => 'sales', 'icon' => 'fa-shopping-cart', 'title' => 'Sales'],
+                        ['route' => 'reports', 'icon' => 'fa-file-alt', 'title' => 'Reports'],
+                        ['route' => 'user-management.index', 'icon' => 'fa-users-cog', 'title' => 'Users'],
+                    ];
+                } elseif (auth()->user()->hasRole('officer')) {
+                    $menu = [
+                        ['route' => 'dashboard', 'icon' => 'fa-chart-line', 'title' => 'Dashboard'],
+                        ['route' => 'scheduling', 'icon' => 'fa-calendar-alt', 'title' => 'Scheduling'],
+                        ['route' => 'inventory', 'icon' => 'fa-boxes-stacked', 'title' => 'Inventory'],
+                        ['route' => 'sales', 'icon' => 'fa-shopping-cart', 'title' => 'Sales'],
+                        ['route' => 'reports', 'icon' => 'fa-file-alt', 'title' => 'Reports'],
+                    ];
+                } elseif (auth()->user()->hasRole('farmer')) {
+                    $menu = [
+                        ['route' => 'scheduling', 'icon' => 'fa-tractor', 'title' => 'Book Machinery'],
+                        ['route' => 'my-bookings', 'icon' => 'fa-calendar-check', 'title' => 'My Bookings'],
+                        ['route' => 'inventory', 'icon' => 'fa-box', 'title' => 'Inventory'],
+                    ];
+                }
+            @endphp
+
+            @foreach ($menu as $item)
+                @php $active = request()->routeIs($item['route']); @endphp
+                <a href="{{ route($item['route']) }}"
+                title="{{ $item['title'] }}"
+                class="flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all duration-200 text-sm font-medium group {{ $active ? 'bg-[#3d8b68] text-white shadow-md' : 'text-slate-600 hover:bg-emerald-100/60 hover:text-emerald-900' }}">
+                    <i class="fa-solid {{ $item['icon'] }} w-5 text-center shrink-0 {{ $active ? 'text-white' : 'text-emerald-600 group-hover:text-emerald-700' }}"></i>
+                    <span x-show="sidebarOpen" x-transition class="truncate">{{ $item['title'] }}</span>
+                </a>
+            @endforeach
+        </nav>
 
     </div>
 
 
-    <!-- Navigation -->
-    <nav class="sidebar-nav">
 
-        {{-- Admin Navigation --}}
-        @if (auth()->user()->hasRole('admin'))
+    <!-- =====================================================
+            USER SECTION
+    ====================================================== -->
 
-            <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                <i class="fas fa-chart-line nav-icon"></i>
-                <span class="nav-text">Dashboard</span>
-            </a>
+    <div
+        class="space-y-3
+                pt-4
+                border-t
+                border-slate-200/60"
+    >
 
-            <a href="{{ route('scheduling') }}" class="nav-link {{ request()->routeIs('scheduling') ? 'active' : '' }}">
-                <i class="fas fa-calendar-alt nav-icon"></i>
-                <span class="nav-text">Scheduling</span>
-            </a>
+        <!-- User -->
 
-            <a href="{{ route('inventory') }}" class="nav-link {{ request()->routeIs('inventory') ? 'active' : '' }}">
-                <i class="fas fa-boxes nav-icon"></i>
-                <span class="nav-text">Inventory</span>
-            </a>
+        <div
+            class="flex
+                    items-center
+                    space-x-3
+                    p-1.5"
+        >
 
-            <a href="{{ route('sales') }}" class="nav-link {{ request()->routeIs('sales') ? 'active' : '' }}">
-                <i class="fas fa-shopping-cart nav-icon"></i>
-                <span class="nav-text">Sales</span>
-            </a>
+            <div
+                class="w-8
+                        h-8
 
-            <a href="{{ route('reports') }}" class="nav-link {{ request()->routeIs('reports') ? 'active' : '' }}">
-                <i class="fas fa-file-alt nav-icon"></i>
-                <span class="nav-text">Reports</span>
-            </a>
+                        rounded-full
 
-            <a href="{{ route('users') }}" class="nav-link {{ request()->routeIs('users') ? 'active' : '' }}">
-                <i class="fas fa-users-cog nav-icon"></i>
-                <span class="nav-text">Users</span>
-            </a>
+                        bg-[#276447]
 
-        {{-- Officer Navigation --}}
-        @elseif (auth()->user()->hasRole('officer'))
+                        text-white
 
-            <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                <i class="fas fa-chart-line nav-icon"></i>
-                <span class="nav-text">Dashboard</span>
-            </a>
+                        font-bold
 
-            <a href="{{ route('scheduling') }}" class="nav-link {{ request()->routeIs('scheduling') ? 'active' : '' }}">
-                <i class="fas fa-calendar-alt nav-icon"></i>
-                <span class="nav-text">Scheduling</span>
-            </a>
+                        flex
+                        items-center
+                        justify-center
 
-            <a href="{{ route('inventory') }}" class="nav-link {{ request()->routeIs('inventory') ? 'active' : '' }}">
-                <i class="fas fa-boxes nav-icon"></i>
-                <span class="nav-text">Inventory</span>
-            </a>
+                        text-xs
 
-            <a href="{{ route('sales') }}" class="nav-link {{ request()->routeIs('sales') ? 'active' : '' }}">
-                <i class="fas fa-shopping-cart nav-icon"></i>
-                <span class="nav-text">Sales</span>
-            </a>
+                        shadow-sm
 
-            <a href="{{ route('reports') }}" class="nav-link {{ request()->routeIs('reports') ? 'active' : '' }}">
-                <i class="fas fa-file-alt nav-icon"></i>
-                <span class="nav-text">Reports</span>
-            </a>
+                        shrink-0"
+            >
 
-            {{-- Farmer Navigation --}}
-            @elseif (auth()->user()->hasRole('farmer'))
+                {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
 
-            <a href="{{ route('scheduling') }}" class="nav-link {{ request()->routeIs('scheduling') ? 'active' : '' }}">
-                <i class="fas fa-tractor nav-icon"></i>
-                <span class="nav-text">Book Machinery</span>
-            </a>
-
-            <a href="{{ route('my-bookings') }}" class="nav-link {{ request()->routeIs('my-bookings') ? 'active' : '' }}">
-                <i class="fas fa-calendar-check nav-icon"></i>
-                <span class="nav-text">My Bookings</span>
-            </a>
-
-            <a href="{{ route('inventory') }}" class="nav-link {{ request()->routeIs('inventory') ? 'active' : '' }}">
-                <i class="fas fa-box nav-icon"></i>
-                <span class="nav-text">Inventory</span>
-            </a>
-
-        @endif
-
-    </nav>
-
-
-    <hr class="sidebar-divider">
-
-
-    {{-- User Info & Logout --}}
-    <div class="user-section">
-
-        <div class="d-flex align-items-center gap-2 mb-2">
-
-            <div style=" width: 35px; height: 35px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1rem; flex-shrink: 0; " >
-                {{ auth()->user()->name[0] }}
             </div>
 
-            <div class="user-details">
-                <div style=" font-weight: 600;  font-size: 0.85rem; color: #173b1a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; ">
-                    {{ auth()->user()->name }}
-                </div>
 
-                <small class="text-muted" style=" display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.75rem;" >
+            <div
+                x-show="sidebarOpen"
+                x-transition
+
+                class="flex-1
+                        min-w-0"
+            >
+
+                <p
+                    class="text-xs
+                            font-semibold
+                            text-slate-800
+                            truncate"
+                >
+                    {{ auth()->user()->name }}
+                </p>
+
+
+                <p
+                    class="text-[10px]
+                            text-slate-500
+                            truncate"
+                >
                     {{ auth()->user()->email }}
-                </small>
+                </p>
+
             </div>
 
         </div>
 
 
-        <form method="POST"  action="{{ route('logout') }}" style="margin: 0;">
+
+        <!-- =================================================
+                LOGOUT
+        ================================================== -->
+
+        <form
+            method="POST"
+            action="{{ route('logout') }}"
+        >
+
             @csrf
-            <button type="submit" class="btn btn-outline-danger btn-sm w-100 logout-btn" style="padding: 6px; font-size: 0.85rem;" >
-                <i class="fas fa-sign-out-alt"></i>
-                <span class="logout-text">Logout</span>
+
+            <button
+                type="submit"
+
+                class="w-full
+
+                        bg-[#fce8e6]
+                        hover:bg-[#f8d0cb]
+
+                        text-[#d9381e]
+
+                        font-medium
+
+                        py-2
+                        px-3
+
+                        rounded-xl
+
+                        flex
+                        items-center
+                        justify-center
+
+                        space-x-2
+
+                        text-xs
+
+                        transition-all
+                        duration-200
+
+                        active:scale-[0.98]"
+
+                title="Logout"
+            >
+
+                <i
+                    class="fa-solid
+                            fa-right-from-bracket
+                            rotate-180
+                            shrink-0"
+                ></i>
+
+
+                <span
+                    x-show="sidebarOpen"
+                    x-transition
+                >
+                    Logout
+                </span>
+
             </button>
+
         </form>
 
     </div>
 
-</div>
-
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-
-    const sidebar = document.getElementById('sidebar');
-    const toggleBtn = document.getElementById('sidebarToggle');
-    const mainContent = document.querySelector('.main-content');
-
-    const isCollapsed =
-        localStorage.getItem('sidebarCollapsed') === 'true';
-
-
-    function updateSidebar(collapsed) {
-
-        if (collapsed) {
-
-            sidebar.classList.add('collapsed');
-
-            if (mainContent) {
-                mainContent.classList.add('sidebar-collapsed');
-            }
-
-            toggleBtn.innerHTML =
-                '<i class="fas fa-chevron-right"></i>';
-
-            toggleBtn.title = 'Expand sidebar';
-
-        } else {
-
-            sidebar.classList.remove('collapsed');
-
-            if (mainContent) {
-                mainContent.classList.remove('sidebar-collapsed');
-            }
-
-            toggleBtn.innerHTML =
-                '<i class="fas fa-bars"></i>' +
-                '<span class="toggle-text">Menu</span>';
-
-            toggleBtn.title = 'Collapse sidebar';
-        }
-
-    }
-
-
-    // Restore saved state
-    // updateSidebar(isCollapsed);
-
-
-    // Toggle
-    toggleBtn.addEventListener('click', function () {
-
-        const collapsed =
-            !sidebar.classList.contains('collapsed');
-
-        updateSidebar(collapsed);
-
-        localStorage.setItem(
-            'sidebarCollapsed',
-            collapsed
-        );
-
-    });
-
-});
-</script>
+    </aside>

@@ -3,108 +3,131 @@
 @section('title', 'Reports - PSARECO')
 
 @section('content')
-    <div class="d-flex">
+    <main class="w-full min-w-0 p-4 sm:p-6 lg:p-8">
+        <x-dashboard-header />
 
 
-        <div class="main-content" style="margin-left: 250px; flex: 1; padding: 30px;">
-            @include('components.breadcrumb', [
-                'title' => 'Reports',
-                'icon' => 'fas fa-chart-line'
-            ])
+        <!-- Hero Header & Page Title -->
+        <section class="bg-gradient-to-r from-[#2c7a56] to-[#40a072] text-white rounded-2xl p-6 mb-6 shadow-sm">
+            <h2 class="text-xl sm:text-2xl font-bold tracking-tight flex items-center gap-2">
+                <i class="fa-solid fa-chart-line"></i> PSARECO Enterprise Reports
+            </h2>
+            <p class="text-emerald-100 text-xs sm:text-sm mt-1">Comprehensive financial summaries, equipment utilization, and maintenance logs</p>
+        </section>
 
-            <div class="card">
-                <!-- Header -->
-                <div class="card-header bg-light">
-                    <h3 class="card-title mb-0">
-                        <i class="fas fa-chart-line text-primary me-2"></i>PSARECO Enterprise Report
-                    </h3>
-                    <p class="text-muted text-sm mb-0">Comprehensive Financial & Operational Summary</p>
+        <!-- Main Card Wrapper -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100/80 overflow-hidden" x-data="{ activeTab: 'financial' }">
+
+            <!-- Controls & Tab Header (Hidden during Print) -->
+            <div class="p-5 border-b border-slate-100 space-y-5 print:hidden">
+
+                <!-- Date Filters & Global Action Buttons -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+                    <div>
+                        <label for="startDate" class="block text-xs font-semibold text-slate-600 mb-1">Start Date</label>
+                        <input type="date" id="startDate" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
+                    </div>
+
+                    <div>
+                        <label for="endDate" class="block text-xs font-semibold text-slate-600 mb-1">End Date</label>
+                        <input type="date" id="endDate" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
+                    </div>
+
+                    <div class="sm:col-span-2 flex items-center gap-3">
+                        <button onclick="refreshReports()" class="flex-1 inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs py-2.5 px-4 rounded-xl shadow-sm transition">
+                            <i class="fa-solid fa-rotate-right"></i> Generate Report
+                        </button>
+
+                        <button onclick="window.print()" class="flex-1 inline-flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-900 text-white font-semibold text-xs py-2.5 px-4 rounded-xl shadow-sm transition">
+                            <i class="fa-solid fa-print"></i> Print / Export PDF
+                        </button>
+                    </div>
                 </div>
 
-                <!-- Card Body -->
-                <div class="card-body">
-                    <!-- Date Filters & Actions -->
-                    <div class="row mb-4 no-print">
-                        <div class="col-md-3">
-                            <label class="form-label" for="startDate">Start Date</label>
-                            <input type="date" id="startDate" class="form-control form-control-sm">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label" for="endDate">End Date</label>
-                            <input type="date" id="endDate" class="form-control form-control-sm">
-                        </div>
-                        <div class="col-md-6 d-flex align-items-end gap-2">
-                            <!-- Generate Button (Primary Blue) -->
-                            <button class="btn btn-primary btn-sm flex-fill" onclick="refreshReports()">
-                                <i class="fas fa-sync-alt me-2"></i>Generate
-                            </button>
-                            <!-- Print / PDF Button (Success Green) -->
-                            <button class="btn btn-success btn-sm flex-fill" onclick="window.print()">
-                                <i class="fas fa-print me-2"></i>Print / PDF
-                            </button>
-                        </div>
-                    </div>
+                <!-- Modern Tab Navigation -->
+                <div class="border-b border-slate-100">
+                    <nav class="flex space-x-6 text-xs font-semibold" aria-label="Tabs">
+                        <button
+                            @click="activeTab = 'financial'"
+                            :class="activeTab === 'financial' ? 'border-emerald-600 text-emerald-700' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'"
+                            class="py-3 px-1 border-b-2 flex items-center gap-2 transition-colors">
+                            <i class="fa-solid fa-coins"></i> Financial
+                        </button>
 
-                    <!-- Navigation Tabs -->
-                    <ul class="nav nav-tabs mb-4 no-print" role="tablist">
-                        <li class="nav-item">
-                            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#financial" type="button">
-                                <i class="fas fa-dollar-sign me-2"></i>Financial
-                            </button>
-                        </li>
-                        <li class="nav-item">
-                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#utilization" type="button">
-                                <i class="fas fa-chart-bar me-2"></i>Utilization
-                            </button>
-                        </li>
-                        <li class="nav-item">
-                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#maintenance" type="button">
-                                <i class="fas fa-tools me-2"></i>Maintenance
-                            </button>
-                        </li>
-                    </ul>
+                        <button
+                            @click="activeTab = 'utilization'"
+                            :class="activeTab === 'utilization' ? 'border-emerald-600 text-emerald-700' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'"
+                            class="py-3 px-1 border-b-2 flex items-center gap-2 transition-colors">
+                            <i class="fa-solid fa-chart-column"></i> Utilization
+                        </button>
 
-                    <!-- Tab Content -->
-                    <div class="tab-content">
-                        <div class="tab-pane fade show active" id="financial">
-                            <div id="financialReportContent"></div>
-                        </div>
-                        <div class="tab-pane fade" id="utilization">
-                            <div id="utilizationReportContent"></div>
-                        </div>
-                        <div class="tab-pane fade" id="maintenance">
-                            <div id="maintenanceReportContent"></div>
-                        </div>
-                    </div>
+                        <button
+                            @click="activeTab = 'maintenance'"
+                            :class="activeTab === 'maintenance' ? 'border-emerald-600 text-emerald-700' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'"
+                            class="py-3 px-1 border-b-2 flex items-center gap-2 transition-colors">
+                            <i class="fa-solid fa-wrench"></i> Maintenance
+                        </button>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Tab Contents Container -->
+            <div class="p-5">
+                <!-- Financial Report -->
+                <div x-show="activeTab === 'financial'" id="financialReportContent">
+                    <div class="py-12 text-center text-slate-400 text-xs">Loading financial report...</div>
+                </div>
+
+                <!-- Utilization Report -->
+                <div x-show="activeTab === 'utilization'" id="utilizationReportContent" x-cloak>
+                    <div class="py-12 text-center text-slate-400 text-xs">Loading utilization report...</div>
+                </div>
+
+                <!-- Maintenance Report -->
+                <div x-show="activeTab === 'maintenance'" id="maintenanceReportContent" x-cloak>
+                    <div class="py-12 text-center text-slate-400 text-xs">Loading maintenance report...</div>
                 </div>
             </div>
 
         </div>
-    </div>
+
+    </main>
+
 @endsection
 
 @push('scripts')
-    {{-- <script>
+    <script>
         function loadReportsPage() {
-            if (!requireAuth()) return;
-            const user = getCurrentUser();
-            if (user.role === 'farmer') {
-                alert('Access restricted');
-                window.location.href = '{{ route('dashboard') }}';
-                return;
+            if (typeof requireAuth === 'function' && !requireAuth()) return;
+
+            if (typeof getCurrentUser === 'function') {
+                const user = getCurrentUser();
+                if (user && user.role === 'farmer') {
+                    alert('Access restricted');
+                    window.location.href = '{{ route('dashboard') }}';
+                    return;
+                }
             }
+
             if (typeof loadSidebar === 'function') loadSidebar();
+
             const today = new Date();
             const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
             const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-            document.getElementById('startDate').value = firstDay.toISOString().split('T')[0];
-            document.getElementById('endDate').value = lastDay.toISOString().split('T')[0];
+
+            const startInput = document.getElementById('startDate');
+            const endInput = document.getElementById('endDate');
+
+            if (startInput) startInput.value = firstDay.toISOString().split('T')[0];
+            if (endInput) endInput.value = lastDay.toISOString().split('T')[0];
+
             refreshReports();
         }
 
         function refreshReports() {
-            const start = document.getElementById('startDate').value;
-            const end = document.getElementById('endDate').value;
+            const start = document.getElementById('startDate')?.value;
+            const end = document.getElementById('endDate')?.value;
+
             if (start && end) {
                 generateFinancialReport(start, end);
                 generateUtilizationReport();
@@ -113,69 +136,210 @@
         }
 
         function generateFinancialReport(startDate, endDate) {
-            const salesData = getSalesByDateRange(startDate, endDate);
-            const fertilizerSales = getFertilizerSales(salesData);
-            const pesticideSales = getPesticideSales(salesData);
-            const fertSum = getSalesSummary(fertilizerSales);
-            const pestSum = getSalesSummary(pesticideSales);
-            const totalSum = getSalesSummary(salesData);
+            const salesData = typeof getSalesByDateRange === 'function' ? getSalesByDateRange(startDate, endDate) : [];
+            const fertilizerSales = typeof getFertilizerSales === 'function' ? getFertilizerSales(salesData) : [];
+            const pesticideSales = typeof getPesticideSales === 'function' ? getPesticideSales(salesData) : [];
 
-            document.getElementById('financialReportContent').innerHTML = `
-                <div class="row g-4 mb-4 no-print">
-                    <div class="col-md-4"><div class="stat-card"><h6>Total Sales</h6><h3 class="text-success">₱${totalSum.totalSales.toLocaleString()}</h3><small>Cost: ₱${totalSum.totalCost.toLocaleString()} | Profit: ₱${totalSum.totalProfit.toLocaleString()}</small></div></div>
-                    <div class="col-md-4"><div class="stat-card"><h6>Fertilizer Sales</h6><h3 class="text-primary">₱${fertSum.totalSales.toLocaleString()}</h3><small>Cost: ₱${fertSum.totalCost.toLocaleString()} | Profit: ₱${fertSum.totalProfit.toLocaleString()}</small></div></div>
-                    <div class="col-md-4"><div class="stat-card"><h6>Pesticide Sales</h6><h3 class="text-warning">₱${pestSum.totalSales.toLocaleString()}</h3><small>Cost: ₱${pestSum.totalCost.toLocaleString()} | Profit: ₱${pestSum.totalProfit.toLocaleString()}</small></div></div>
+            const fertSum = typeof getSalesSummary === 'function' ? getSalesSummary(fertilizerSales) : { totalSales: 0, totalCost: 0, totalProfit: 0 };
+            const pestSum = typeof getSalesSummary === 'function' ? getSalesSummary(pesticideSales) : { totalSales: 0, totalCost: 0, totalProfit: 0 };
+            const totalSum = typeof getSalesSummary === 'function' ? getSalesSummary(salesData) : { totalSales: 0, totalCost: 0, totalProfit: 0 };
+
+            const fertMargin = fertSum.totalSales ? ((fertSum.totalProfit / fertSum.totalSales) * 100).toFixed(1) : 0;
+            const pestMargin = pestSum.totalSales ? ((pestSum.totalProfit / pestSum.totalSales) * 100).toFixed(1) : 0;
+            const totalMargin = totalSum.totalSales ? ((totalSum.totalProfit / totalSum.totalSales) * 100).toFixed(1) : 0;
+
+            const container = document.getElementById('financialReportContent');
+            if (!container) return;
+
+            container.innerHTML = `
+                <!-- Stats Summary Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 print:hidden">
+                    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 border-t-4 border-t-emerald-500">
+                        <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Sales</span>
+                        <h3 class="text-2xl font-extrabold text-slate-800 my-1">₱${totalSum.totalSales.toLocaleString()}</h3>
+                        <p class="text-xs text-slate-500">Cost: ₱${totalSum.totalCost.toLocaleString()} &bull; Profit: <span class="text-emerald-600 font-semibold">₱${totalSum.totalProfit.toLocaleString()}</span></p>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 border-t-4 border-t-indigo-500">
+                        <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Fertilizer Sales</span>
+                        <h3 class="text-2xl font-extrabold text-slate-800 my-1">₱${fertSum.totalSales.toLocaleString()}</h3>
+                        <p class="text-xs text-slate-500">Cost: ₱${fertSum.totalCost.toLocaleString()} &bull; Profit: <span class="text-indigo-600 font-semibold">₱${fertSum.totalProfit.toLocaleString()}</span></p>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 border-t-4 border-t-amber-500">
+                        <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Pesticide Sales</span>
+                        <h3 class="text-2xl font-extrabold text-slate-800 my-1">₱${pestSum.totalSales.toLocaleString()}</h3>
+                        <p class="text-xs text-slate-500">Cost: ₱${pestSum.totalCost.toLocaleString()} &bull; Profit: <span class="text-amber-600 font-semibold">₱${pestSum.totalProfit.toLocaleString()}</span></p>
+                    </div>
                 </div>
-                <div class="table-responsive mt-4"><table class="table table-bordered"><thead class="table-light"><tr><th>Category</th><th>Total Sales (₱)</th><th>Total Cost (₱)</th><th>Gross Profit (₱)</th><th>Margin (%)</th></tr></thead>
-                <tbody>
-                    <tr><td>Fertilizers</td><td>₱${fertSum.totalSales.toLocaleString()}</td><td>₱${fertSum.totalCost.toLocaleString()}</td><td>₱${fertSum.totalProfit.toLocaleString()}</td><td>${fertSum.totalSales ? ((fertSum.totalProfit / fertSum.totalSales) * 100).toFixed(1) : 0}%</td></tr>
-                    <tr><td>Pesticides</td><td>₱${pestSum.totalSales.toLocaleString()}</td><td>₱${pestSum.totalCost.toLocaleString()}</td><td>₱${pestSum.totalProfit.toLocaleString()}</td><td>${pestSum.totalSales ? ((pestSum.totalProfit / pestSum.totalSales) * 100).toFixed(1) : 0}%</td></tr>
-                    <tr class="table-active"><td><strong>TOTAL</strong></td><td><strong>₱${totalSum.totalSales.toLocaleString()}</strong></td><td><strong>₱${totalSum.totalCost.toLocaleString()}</strong></td><td><strong>₱${totalSum.totalProfit.toLocaleString()}</strong></td><td><strong>${totalSum.totalSales ? ((totalSum.totalProfit / totalSum.totalSales) * 100).toFixed(1) : 0}%</strong></td></tr>
-                </tbody></table></div>
+
+                <!-- Breakdown Table -->
+                <div class="w-full overflow-x-auto rounded-xl border border-slate-100">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-[#ebf4ef] text-emerald-900 text-[11px] uppercase tracking-wider font-semibold">
+                                <th class="py-2.5 px-4">Category</th>
+                                <th class="py-2.5 px-4">Total Sales</th>
+                                <th class="py-2.5 px-4">Total Cost</th>
+                                <th class="py-2.5 px-4">Gross Profit</th>
+                                <th class="py-2.5 px-4">Profit Margin</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-xs text-slate-700">
+                            <tr class="hover:bg-slate-50/80 transition-colors">
+                                <td class="py-3 px-4 font-semibold text-slate-800">Fertilizers</td>
+                                <td class="py-3 px-4 font-medium">₱${fertSum.totalSales.toLocaleString()}</td>
+                                <td class="py-3 px-4 text-slate-500">₱${fertSum.totalCost.toLocaleString()}</td>
+                                <td class="py-3 px-4 font-semibold text-emerald-600">₱${fertSum.totalProfit.toLocaleString()}</td>
+                                <td class="py-3 px-4"><span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800">${fertMargin}%</span></td>
+                            </tr>
+                            <tr class="hover:bg-slate-50/80 transition-colors">
+                                <td class="py-3 px-4 font-semibold text-slate-800">Pesticides</td>
+                                <td class="py-3 px-4 font-medium">₱${pestSum.totalSales.toLocaleString()}</td>
+                                <td class="py-3 px-4 text-slate-500">₱${pestSum.totalCost.toLocaleString()}</td>
+                                <td class="py-3 px-4 font-semibold text-emerald-600">₱${pestSum.totalProfit.toLocaleString()}</td>
+                                <td class="py-3 px-4"><span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-100 text-amber-800">${pestMargin}%</span></td>
+                            </tr>
+                            <tr class="bg-slate-50/80 font-bold text-slate-900">
+                                <td class="py-3.5 px-4">TOTAL</td>
+                                <td class="py-3.5 px-4">₱${totalSum.totalSales.toLocaleString()}</td>
+                                <td class="py-3.5 px-4 text-slate-600">₱${totalSum.totalCost.toLocaleString()}</td>
+                                <td class="py-3.5 px-4 text-emerald-600">₱${totalSum.totalProfit.toLocaleString()}</td>
+                                <td class="py-3.5 px-4"><span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-600 text-white">${totalMargin}%</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             `;
         }
 
         function generateUtilizationReport() {
-            const report = getMachineUtilizationReport();
-            document.getElementById('utilizationReportContent').innerHTML = `
-                <div class="table-responsive"><table class="table table-bordered"><thead class="table-light"><tr><th>Machine</th><th>Status</th><th>Total Units</th><th>Currently Booked</th><th>Cumulative Booked (unit-days)</th><th>Utilization Rate</th><th>Performance</th></tr></thead><tbody>
-                    ${report.map(machine => `
-                        <tr>
-                            <td>${machine.name}</td>
-                            <td>${machine.status}</td>
-                            <td>${machine.totalUnits}</td>
-                            <td>${machine.currentBooked}</td>
-                            <td>${machine.cumulativeBookedDays}</td>
-                            <td>${machine.utilizationRate}%</td>
-                            <td>${machine.utilizationRate > 70 ? '<span class="badge bg-success">High</span>' : (machine.utilizationRate > 30 ? '<span class="badge bg-warning">Medium</span>' : '<span class="badge bg-secondary">Low</span>')}</td>
-                        </tr>
-                    `).join('')}
-                </tbody></table></div>
+            const report = typeof getMachineUtilizationReport === 'function' ? getMachineUtilizationReport() : [];
+            const container = document.getElementById('utilizationReportContent');
+            if (!container) return;
+
+            if (report.length === 0) {
+                container.innerHTML = `<div class="py-12 text-center text-slate-400 text-xs">No machine utilization data found</div>`;
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="w-full overflow-x-auto rounded-xl border border-slate-100">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-[#ebf4ef] text-emerald-900 text-[11px] uppercase tracking-wider font-semibold">
+                                <th class="py-2.5 px-4">Machine</th>
+                                <th class="py-2.5 px-4">Status</th>
+                                <th class="py-2.5 px-4">Total Units</th>
+                                <th class="py-2.5 px-4">Currently Booked</th>
+                                <th class="py-2.5 px-4">Cumulative (Unit-Days)</th>
+                                <th class="py-2.5 px-4">Utilization Rate</th>
+                                <th class="py-2.5 px-4">Performance</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-xs text-slate-700">
+                            ${report.map(machine => {
+                                let badgeClass = 'bg-slate-100 text-slate-700 border-slate-200';
+                                let perfLabel = 'Low';
+
+                                if (machine.utilizationRate > 70) {
+                                    badgeClass = 'bg-emerald-100 text-emerald-800 border-emerald-200';
+                                    perfLabel = 'High';
+                                } else if (machine.utilizationRate > 30) {
+                                    badgeClass = 'bg-amber-100 text-amber-800 border-amber-200';
+                                    perfLabel = 'Medium';
+                                }
+
+                                return `
+                                    <tr class="hover:bg-slate-50/80 transition-colors">
+                                        <td class="py-3 px-4 font-semibold text-slate-800">${machine.name}</td>
+                                        <td class="py-3 px-4 text-slate-600">${machine.status}</td>
+                                        <td class="py-3 px-4">${machine.totalUnits}</td>
+                                        <td class="py-3 px-4">${machine.currentBooked}</td>
+                                        <td class="py-3 px-4">${machine.cumulativeBookedDays}</td>
+                                        <td class="py-3 px-4 font-semibold text-slate-800">${machine.utilizationRate}%</td>
+                                        <td class="py-3 px-4">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold border ${badgeClass}">
+                                                ${perfLabel}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
             `;
         }
 
         function generateMaintenanceReport() {
-            const machines = getMachines();
-            const underMaint = getMachinesUnderMaintenance();
-            const overdue = getMachinesOverdueMaintenance(90);
-            const totalCost = getTotalMaintenanceCost();
+            const machines = typeof getMachines === 'function' ? getMachines() : [];
+            const underMaint = typeof getMachinesUnderMaintenance === 'function' ? getMachinesUnderMaintenance() : [];
+            const overdue = typeof getMachinesOverdueMaintenance === 'function' ? getMachinesOverdueMaintenance(90) : [];
+            const totalCost = typeof getTotalMaintenanceCost === 'function' ? getTotalMaintenanceCost() : 0;
 
-            document.getElementById('maintenanceReportContent').innerHTML = `
-                <div class="row g-4 mb-4 no-print">
-                    <div class="col-md-4"><div class="stat-card"><h6>Under Maintenance</h6><h3 class="text-warning">${underMaint.length}</h3><small>Machines currently being repaired</small></div></div>
-                    <div class="col-md-4"><div class="stat-card"><h6>Overdue for Maintenance</h6><h3 class="text-danger">${overdue.length}</h3><small>No maintenance in last 90 days</small></div></div>
-                    <div class="col-md-4"><div class="stat-card"><h6>Total Maintenance Cost</h6><h3 class="text-primary">₱${totalCost.toLocaleString()}</h3><small>All-time repair expenses</small></div></div>
+            const container = document.getElementById('maintenanceReportContent');
+            if (!container) return;
+
+            container.innerHTML = `
+                <!-- Stats Summary Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 print:hidden">
+                    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 border-t-4 border-t-amber-500">
+                        <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Under Maintenance</span>
+                        <h3 class="text-2xl font-extrabold text-slate-800 my-1">${underMaint.length}</h3>
+                        <p class="text-xs text-slate-500">Machines currently being repaired</p>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 border-t-4 border-t-red-500">
+                        <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Overdue Maintenance</span>
+                        <h3 class="text-2xl font-extrabold text-slate-800 my-1">${overdue.length}</h3>
+                        <p class="text-xs text-slate-500">No service in last 90 days</p>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 border-t-4 border-t-sky-500">
+                        <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Service Expenses</span>
+                        <h3 class="text-2xl font-extrabold text-slate-800 my-1">₱${totalCost.toLocaleString()}</h3>
+                        <p class="text-xs text-slate-500">Cumulative repair costs</p>
+                    </div>
                 </div>
-                <div class="table-responsive"><table class="table table-bordered"><thead class="table-light"><tr><th>Machine</th><th>Status</th><th>Last Maintenance</th><th>Total Cost (₱)</th><th>Maintenance Records</th></tr></thead><tbody>
-                    ${machines.map(machine => {
-                        const cost = getMaintenanceCost(machine.id);
-                        const records = (machine.maintenanceRecords || []).map(record => `<div><small>${new Date(record.date).toLocaleDateString()}: ${record.description} - ₱${Number(record.cost).toLocaleString()}</small></div>`).join('') || '-';
-                        return `<tr><td>${machine.name}</td><td>${machine.status}</td><td>${machine.lastMaintenanceDate ? new Date(machine.lastMaintenanceDate).toLocaleDateString() : 'Never'}</td><td class="text-end">₱${Number(cost).toLocaleString()}</td><td>${records}</td></tr>`;
-                    }).join('')}
-                </tbody></table></div>
+
+                <!-- Table -->
+                <div class="w-full overflow-x-auto rounded-xl border border-slate-100">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-[#ebf4ef] text-emerald-900 text-[11px] uppercase tracking-wider font-semibold">
+                                <th class="py-2.5 px-4">Machine</th>
+                                <th class="py-2.5 px-4">Status</th>
+                                <th class="py-2.5 px-4">Last Maintenance</th>
+                                <th class="py-2.5 px-4">Total Cost</th>
+                                <th class="py-2.5 px-4">Maintenance History</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-xs text-slate-700">
+                            ${machines.map(machine => {
+                                const cost = typeof getMaintenanceCost === 'function' ? getMaintenanceCost(machine.id) : 0;
+                                const records = (machine.maintenanceRecords || []).map(record => `
+                                    <div class="text-[11px] text-slate-600 mb-1">
+                                        <span class="font-semibold text-slate-800">${new Date(record.date).toLocaleDateString()}</span>: ${record.description} &bull; <span class="font-medium text-slate-700">₱${Number(record.cost).toLocaleString()}</span>
+                                    </div>
+                                `).join('') || '<span class="text-slate-400">—</span>';
+
+                                return `
+                                    <tr class="hover:bg-slate-50/80 transition-colors">
+                                        <td class="py-3 px-4 font-semibold text-slate-800">${machine.name}</td>
+                                        <td class="py-3 px-4 text-slate-600">${machine.status}</td>
+                                        <td class="py-3 px-4 text-slate-500">${machine.lastMaintenanceDate ? new Date(machine.lastMaintenanceDate).toLocaleDateString() : 'Never'}</td>
+                                        <td class="py-3 px-4 font-semibold text-slate-800">₱${Number(cost).toLocaleString()}</td>
+                                        <td class="py-3 px-4">${records}</td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
             `;
         }
 
         document.addEventListener('DOMContentLoaded', loadReportsPage);
-    </script> --}}
+    </script>
 @endpush
