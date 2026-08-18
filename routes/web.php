@@ -20,10 +20,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::view('/dashboard', 'admin.dashboard')->name('dashboard');
     Route::view('/inventory', 'admin.inventory')->name('inventory');
-    Route::view('/scheduling', 'admin.scheduling')->name('scheduling');
+    Route::view('/scheduling', 'admin.machinery-management')->name('machinery-management');
     Route::view('/sales', 'admin.sales')->name('sales');
     Route::view('/reports', 'admin.reports')->name('reports');
     Route::view('/my-bookings', 'farmer.my-bookings')->name('my-bookings');
+    Route::view('/machinery-bookings', 'admin.machinery-booking')->name('machinery-booking');
 
      Route::controller(FarmersController::class)
         ->prefix('farmers')

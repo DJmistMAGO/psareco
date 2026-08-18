@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Machinery Scheduling - PSARECO')
+@section('title', 'Booking History - PSARECO')
 
 @section('content')
     <main class="w-full min-w-0 p-4 sm:p-6 lg:p-8">

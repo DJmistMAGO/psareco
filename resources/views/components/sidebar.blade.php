@@ -4,17 +4,20 @@
 <aside :class="{ 'w-64': sidebarOpen, 'w-20': !sidebarOpen, '-translate-x-full lg:translate-x-0': !mobileOpen, 'translate-x-0': mobileOpen}" class="fixed lg:static inset-y-0 left-0 z-50 bg-[#f2f8f4] flex flex-col justify-between border-r border-emerald-100/80 p-4 shrink-0 h-screen transition-all duration-300  ease-in-out" >
 
     <div>
-        <div class="relative mb-6 h-10">
-            {{-- eto sa desktop na toggle button --}}
-            <button type="button" @click="sidebarOpen = !sidebarOpen"  class="hidden  lg:flex absolute right-[-18px] top-1/2 -translate-y-1/2  w-10 h-10 bg-[#3d8b68] hover:bg-[#327356] text-white rounded-xl items-center justify-center transition-all duration-300 shadow-lg ring-2 ring-white/80 z-[60] focus:outline-none" title="Toggle Navigation" >
-                <i class="fa-solid text-sm transition-transform duration-300" :class=" sidebarOpen ? 'fa-angle-left' : 'fa-angle-right' "></i>
-            </button>
+        <div class="relative mb-6">
+    {{-- desktop toggle button --}}
+    <button type="button" @click="sidebarOpen = !sidebarOpen"
+        :class="sidebarOpen ? 'w-full' : 'w-10 mx-auto'"
+        class="hidden lg:flex h-10 bg-[#3d8b68] hover:bg-[#327356] text-white rounded-xl items-center justify-center transition-all duration-300 shadow-lg ring-2 ring-white/80 z-[60] focus:outline-none"
+        title="Toggle Navigation">
+        <i class="fa-solid text-sm transition-transform duration-300" :class="sidebarOpen ? 'fa-angle-left' : 'fa-angle-right'"></i>
+    </button>
 
-            {{-- eto sa mobile na toggle button --}}
-            <button type="button" @click="mobileOpen = false" class="lg:hidden absolute right-0 top-0 w-9 h-9 flex items-center justify-center  rounded-lg  text-slate-500 hover:bg-emerald-100 hover:text-emerald-800  transition" title="Close Navigation" >
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-        </div>
+    {{-- mobile close button --}}
+    <button type="button" @click="mobileOpen = false" class="lg:hidden absolute right-0 top-0 w-9 h-9 flex items-center justify-center rounded-lg text-slate-500 hover:bg-emerald-100 hover:text-emerald-800 transition" title="Close Navigation">
+        <i class="fa-solid fa-xmark"></i>
+    </button>
+</div>
 
         <div class="flex flex-col items-center text-center mb-8" >
             <div class="w-12 h-12 lg:w-14 lg:h-14 bg-white rounded-full flex items-center justify-center shadow-sm border border-emerald-100 mb-2 shrink-0 transition-all" >
@@ -42,13 +45,14 @@
                         // ['route' => 'scheduling', 'icon' => 'fa-calendar-alt', 'title' => 'Scheduling'],
                         // ['route' => 'inventory', 'icon' => 'fa-boxes-stacked', 'title' => 'Inventory'],
                         // ['route' => 'sales', 'icon' => 'fa-shopping-cart', 'title' => 'Sales'],
-                        ['route' => 'reports.index', 'icon' => 'fa-file-alt', 'title' => 'Reports'],
+                        ['route' => 'reports', 'icon' => 'fa-file-alt', 'title' => 'Reports'],
                         ['route' => 'user-management.index', 'icon' => 'fa-users-cog', 'title' => 'Users'],
                     ];
                 } elseif (auth()->user()->hasRole('officer')) {
                     $menu = [
                         ['route' => 'dashboard', 'icon' => 'fa-chart-line', 'title' => 'Dashboard'],
-                        ['route' => 'scheduling', 'icon' => 'fa-calendar-alt', 'title' => 'Scheduling'],
+                        ['route' => 'machinery-management', 'icon' => 'fa-tractor', 'title' => 'Machinery Management'],
+                        ['route' => 'machinery-booking', 'icon' => 'fa-calendar-plus', 'title' => 'Machinery Bookings'],
                         ['route' => 'inventory', 'icon' => 'fa-boxes-stacked', 'title' => 'Inventory'],
                         ['route' => 'sales', 'icon' => 'fa-shopping-cart', 'title' => 'Sales'],
                         // ['route' => 'reports.index', 'icon' => 'fa-file-alt', 'title' => 'Reports'],
