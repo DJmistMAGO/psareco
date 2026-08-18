@@ -7,7 +7,6 @@
         <x-dashboard-header />
 
 
-        <!-- Hero Header & Actions -->
         <section
             class="bg-gradient-to-r from-[#2c7a56] to-[#40a072] text-white rounded-2xl p-6 mb-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
@@ -20,7 +19,6 @@
 
         </section>
 
-        <!-- Overdue Equipment Alert Card (Hidden by default) -->
         <div id="overdueSection"
             class="hidden bg-red-50/90 rounded-2xl shadow-sm border border-red-200 overflow-hidden mb-6 print:hidden">
             <div class="bg-red-600 text-white px-5 py-3 flex items-center gap-2 text-sm font-bold">
@@ -46,8 +44,6 @@
         </div>
 
         <div class="bg-white rounded-2xl shadow-sm border border-slate-100/80 overflow-hidden">
-
-            {{-- Header --}}
             <div class="p-5 border-b border-slate-100">
 
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -63,7 +59,6 @@
                         </p>
                     </div>
 
-                    {{-- Search --}}
                     <div class="relative w-full sm:w-64">
                         <i
                             class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
@@ -74,60 +69,54 @@
 
                 </div>
 
-                {{-- Status Tabs --}}
                 <div class="flex items-center gap-1.5 mt-5 overflow-x-auto pb-1" id="statusTabs">
 
-                    {{-- Pending --}}
                     <button type="button" data-status="pending"
                         class="status-tab inline-flex shrink-0 items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-50 text-amber-700 border border-amber-200 text-xs font-semibold transition">
                         <i class="fa-solid fa-clock text-[11px]"></i>
                         Pending
                         <span class="tab-count px-1.5 py-0.5 rounded-full bg-amber-100 text-[10px] font-bold">
-                            4
+                            1
                         </span>
                     </button>
 
-                    {{-- Confirmed --}}
                     <button type="button" data-status="confirmed"
                         class="status-tab inline-flex shrink-0 items-center gap-1.5 px-3 py-2 rounded-xl text-slate-500 border border-transparent hover:bg-emerald-50 hover:text-emerald-700 text-xs font-semibold transition">
                         <i class="fa-solid fa-circle-check text-[11px]"></i>
                         Confirmed
                         <span
-                            class="tab-count px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-500 text-[10px] font-bold">
-                            3
+                            class="tab-count px-1.5 py-0.5 rounded-full bg-emerald-100 text-slate-500 text-[10px] font-bold">
+                            1
                         </span>
                     </button>
 
-                    {{-- Rented --}}
                     <button type="button" data-status="rented"
                         class="status-tab inline-flex shrink-0 items-center gap-1.5 px-3 py-2 rounded-xl text-slate-500 border border-transparent hover:bg-emerald-50 hover:text-emerald-700 text-xs font-semibold transition">
                         <i class="fa-solid fa-tractor text-[11px]"></i>
                         Rented
                         <span
-                            class="tab-count px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-500 text-[10px] font-bold">
-                            2
+                            class="tab-count px-1.5 py-0.5 rounded-full bg-emerald-200 text-slate-500 text-[10px] font-bold">
+                            0
                         </span>
                     </button>
 
-                    {{-- Completed --}}
                     <button type="button" data-status="completed"
                         class="status-tab inline-flex shrink-0 items-center gap-1.5 px-3 py-2 rounded-xl text-slate-500 border border-transparent hover:bg-emerald-50 hover:text-emerald-700 text-xs font-semibold transition">
                         <i class="fa-solid fa-flag-checkered text-[11px]"></i>
                         Completed
                         <span
-                            class="tab-count px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-500 text-[10px] font-bold">
-                            12
+                            class="tab-count px-1.5 py-0.5 rounded-full bg-emerald-400 text-white text-[10px] font-bold">
+                            0
                         </span>
                     </button>
 
-                    {{-- Cancelled --}}
                     <button type="button" data-status="cancelled"
                         class="status-tab inline-flex shrink-0 items-center gap-1.5 px-3 py-2 rounded-xl text-slate-500 border border-transparent hover:bg-red-50 hover:text-red-700 text-xs font-semibold transition">
                         <i class="fa-solid fa-circle-xmark text-[11px]"></i>
                         Cancelled
                         <span
-                            class="tab-count px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-500 text-[10px] font-bold">
-                            1
+                            class="tab-count px-1.5 py-0.5 rounded-full bg-red-100 text-slate-500 text-[10px] font-bold">
+                            0
                         </span>
                     </button>
 
@@ -135,15 +124,10 @@
             </div>
 
 
-            {{-- Booking Table --}}
             <div class="overflow-x-auto">
-
                 <table class="w-full text-left">
-
-                    {{-- Table Header --}}
                     <thead>
                         <tr class="bg-slate-50/80 border-b border-slate-100">
-
                             <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-500">
                                 Farmer
                             </th>
@@ -176,14 +160,11 @@
                     </thead>
 
 
-                    {{-- Table Body --}}
                     <tbody class="divide-y divide-slate-100" id="bookingsTableBody">
 
-                        {{-- Booking 1 --}}
                         <tr class="hover:bg-slate-50/60 transition" data-status="pending"
                             data-search="juan dela cruz kubota four-wheel tractor l5018">
 
-                            {{-- Farmer --}}
                             <td class="px-5 py-4">
                                 <div class="flex items-center gap-3">
 
@@ -206,7 +187,6 @@
                             </td>
 
 
-                            {{-- Machinery --}}
                             <td class="px-5 py-4">
 
                                 <div class="flex items-center gap-2.5">
@@ -231,7 +211,6 @@
                             </td>
 
 
-                            {{-- Dates --}}
                             <td class="px-5 py-4">
 
                                 <div class="flex items-center gap-2 text-xs">
@@ -263,7 +242,6 @@
                             </td>
 
 
-                            {{-- Days --}}
                             <td class="px-5 py-4">
                                 <span class="text-xs font-bold text-slate-700">
                                     3 Days
@@ -271,7 +249,6 @@
                             </td>
 
 
-                            {{-- Cost --}}
                             <td class="px-5 py-4">
 
                                 <span class="text-sm font-extrabold text-emerald-700">
@@ -281,7 +258,6 @@
                             </td>
 
 
-                            {{-- Status --}}
                             <td class="px-5 py-4">
 
                                 <span
@@ -296,7 +272,6 @@
                             </td>
 
 
-                            {{-- Action --}}
                             <td class="px-5 py-4 text-right">
 
                                 <button type="button"
@@ -316,7 +291,6 @@
                         </tr>
 
 
-                        {{-- Booking 2 --}}
                         <tr class="hover:bg-slate-50/60 transition" data-status="confirmed"
                             data-search="maria santos rice combine harvester dc-70g">
 
