@@ -86,13 +86,10 @@
             <div class="w-8 h-8 rounded-full bg-[#276447] text-white font-bold flex items-center justify-center text-xs shadow-sm shrink-0" >
                 {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
             </div>
-
-
-            <div  x-show="sidebarOpen" x-transition class="flex-1 min-w-0" >
+            <div x-show="sidebarOpen" x-transition class="flex-1 min-w-0" >
                 <p class="text-xs font-semibold text-slate-800 truncate" >
                     {{ auth()->user()->name }}
                 </p>
-
 
                 <p class="text-[10px] text-slate-500 truncate" >
                     {{ auth()->user()->email }}
@@ -102,16 +99,11 @@
 
         <form method="POST" action="{{ route('logout') }}" >
             @csrf
-            <button
-                type="submit"
-                class="w-full bg-[#fce8e6] hover:bg-[#f8d0cb] text-[#d9381e] font-medium py-2 px-3 rounded-xl flex items-center justify-center space-x-2 text-xs transition-all duration-200 active:scale-[0.98]" title="Logout"  >
-
+            <button type="submit" class="w-full bg-[#fce8e6] hover:bg-[#f8d0cb] text-[#d9381e] font-medium py-2 px-3 rounded-xl flex items-center justify-center space-x-2 text-xs transition-all duration-200 active:scale-[0.98]" title="Logout"  >
                 <i class="fa-solid fa-right-from-bracket rotate-180 shrink-0" ></i>
-
                 <span x-show="sidebarOpen" x-transition >
                     Logout
                 </span>
-
             </button>
         </form>
     </div>
