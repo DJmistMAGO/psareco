@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Machinery Booking - PSARECO')
+@section('title', 'Machinery Management - PSARECO')
 
 @section('content')
     <main class="w-full min-w-0 p-4 sm:p-6 lg:p-8">
@@ -12,17 +12,12 @@
             class="bg-gradient-to-r from-[#2c7a56] to-[#40a072] text-white rounded-2xl p-6 mb-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
                 <h2 class="text-xl sm:text-2xl font-bold tracking-tight flex items-center gap-2">
-                    <i class="fa-solid fa-calendar-alt"></i> Machinery Booking
+                    <i class="fa-solid fa-tractor"></i> Machinery Management
                 </h2>
-                <p class="text-emerald-100 text-xs sm:text-sm mt-1">Book equipment, track daily rental rates, and monitor
-                    agricultural fleet availability</p>
+                <p class="text-emerald-100 text-xs sm:text-sm mt-1">Manage machinery inventory, track daily rental rates, and
+                    monitor agricultural fleet availability</p>
             </div>
 
-            {{-- <div class="flex items-center gap-2 print:hidden">
-                <button onclick="window.print()" class="inline-flex items-center gap-2 bg-white text-emerald-950 hover:bg-emerald-50 font-semibold text-xs py-2 px-3.5 rounded-xl shadow-sm transition">
-                    <i class="fa-solid fa-print"></i> Print Schedule
-                </button>
-            </div> --}}
         </section>
 
         <!-- Overdue Equipment Alert Card (Hidden by default) -->
@@ -51,88 +46,158 @@
         </div>
 
         <!-- Request Machine Booking Form -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-100/80 p-5 mb-6 print:hidden" id="bookingForm">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100/80 p-5 mb-6 print:hidden" id="machineryForm">
+
+            {{-- Header --}}
             <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
                 <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
-                    <i class="fa-solid fa-calendar-plus text-emerald-600"></i> Request Booking
+                    <i class="fa-solid fa-tractor text-emerald-600"></i>
+                    Add New Machinery
                 </h3>
-                <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">New Reservation</span>
+
+                <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                    Machinery Registration
+                </span>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
-                <!-- Select Machine -->
-                <div class="sm:col-span-4">
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Select Machinery <span
-                            class="text-red-500">*</span></label>
-                    <select id="bookingMachine" onchange="updateDailyRate()"
-                        class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
-                        <option value="">Select Machine</option>
-                    </select>
+            {{-- Form --}}
+            <form action="" method="POST" enctype="multipart/form-data">
+
+                @csrf
+
+                <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+
+                    {{-- Machinery Name --}}
+                    <div class="sm:col-span-4">
+                        <label for="machinery_name" class="block text-xs font-semibold text-slate-600 mb-1">
+                            Machinery Name <span class="text-red-500">*</span>
+                        </label>
+
+                        <input type="text" id="machinery_name" name="machinery_name" placeholder="e.g. Tractor" required
+                            class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
+                    </div>
+
+                    {{-- Model --}}
+                    <div class="sm:col-span-3">
+                        <label for="model" class="block text-xs font-semibold text-slate-600 mb-1">
+                            Model <span class="text-red-500">*</span>
+                        </label>
+
+                        <input type="text" id="model" name="model" placeholder="e.g. John Deere 5075E" required
+                            class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
+                    </div>
+
+                    {{-- Total Unit --}}
+                    <div class="sm:col-span-2">
+                        <label for="total_unit" class="block text-xs font-semibold text-slate-600 mb-1">
+                            Total Unit <span class="text-red-500">*</span>
+                        </label>
+
+                        <input type="number" id="total_unit" name="total_unit" min="1" placeholder="0" required
+                            class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 font-semibold placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
+                    </div>
+
+                    {{-- Cost Per Day --}}
+                    <div class="sm:col-span-3">
+                        <label for="rent_per_day" class="block text-xs font-semibold text-slate-600 mb-1">
+                            Rent Per Day <span class="text-red-500">*</span>
+                        </label>
+
+                        <div class="relative">
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-500">
+                                ₱
+                            </span>
+
+                            <input type="number" id="rent_per_day" name="rent_per_day" min="0" step="0.01"
+                                placeholder="0.00" required
+                                class="w-full pl-7 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 font-semibold placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
+                        </div>
+                    </div>
+
+                    {{-- Upload Image --}}
+                    <div class="sm:col-span-5">
+                        <label for="image" class="block text-xs font-semibold text-slate-600 mb-1">
+                            Upload Image
+                        </label>
+
+                        <div class="flex items-center gap-2">
+
+                            <label for="image"
+                                class="flex-1 flex items-center gap-2 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-100 transition">
+                                <i class="fa-solid fa-cloud-arrow-up text-emerald-600"></i>
+
+                                <span id="fileName" class="text-xs text-slate-500 truncate">
+                                    Choose machinery image
+                                </span>
+
+                                <input type="file" id="image" name="image" accept="image/*" class="hidden"
+                                    onchange="previewMachineryImage(event)">
+                            </label>
+
+                            {{-- Image Preview --}}
+                            <div id="imagePreview"
+                                class="hidden h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-slate-200 bg-slate-50">
+                                <img id="preview" src="" alt="Preview" class="h-full w-full object-cover">
+                            </div>
+
+                        </div>
+                    </div>
+
+                    {{-- Status --}}
+                    <div class="sm:col-span-3">
+                        <label for="status" class="block text-xs font-semibold text-slate-600 mb-1">
+                            Status <span class="text-red-500">*</span>
+                        </label>
+
+                        <select id="status" name="status" required
+                            class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
+                            <option value="available">Available</option>
+                            <option value="maintenance">Maintenance</option>
+                            <option value="unavailable">Unavailable</option>
+                        </select>
+                    </div>
+
+                    {{-- Submit --}}
+                    <div class="sm:col-span-4">
+                        <button type="submit"
+                            class="w-full inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs py-2.5 px-4 rounded-xl shadow-sm transition">
+                            <i class="fa-solid fa-plus"></i>
+                            Add Machinery
+                        </button>
+                    </div>
+
                 </div>
 
-                <!-- Booking Date -->
-                <div class="sm:col-span-3">
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Start Date <span
-                            class="text-red-500">*</span></label>
-                    <input type="text" id="date-picker" placeholder="Select Date"
-                        class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition" >
-                </div>
-
-                <!-- Days -->
-                <div class="sm:col-span-2">
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Duration (Days)</label>
-                    <input type="number" id="bookingDays" disabled placeholder="0"
-                        class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
-                </div>
-
-                <!-- Total Amount -->
-                <div class="sm:col-span-2">
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Total Estimated</label>
-                    <input type="text" id="totalAmount" readonly placeholder="₱0.00"
-                        class="w-full px-3 py-2 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-900 font-extrabold cursor-not-allowed">
-                </div>
-
-                <!-- Submit Button -->
-                <div class="sm:col-span-1">
-                    <button onclick="submitBooking()"
-                        class="w-full inline-flex items-center justify-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs py-2 px-3 rounded-xl shadow-sm transition">
-                        <i class="fa-solid fa-paper-plane"></i>
-                    </button>
-                </div>
-            </div>
+            </form>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-100/80 overflow-hidden flex flex-col mb-6">
-            <div class="px-5 py-4 flex items-center justify-between border-b border-slate-100">
-                <div class="flex items-center space-x-2">
-                    <i class="fa-solid fa-leaf text-emerald-600 text-sm"></i>
-                    <h3 class="font-bold text-slate-700 text-sm">Book Status</h3>
+
+        <!-- Machinery Fleet List & Search -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100/80 p-5">
+            <div
+                class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 mb-4 border-b border-slate-100">
+                <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-tractor text-emerald-600"></i> Machinery Fleet
+                    <span
+                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800"
+                        id="totalMachinesCount">0</span>
+                </h3>
+
+                <!-- Search Machinery Input -->
+                <div class="relative w-full sm:w-64 print:hidden">
+                    <i
+                        class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                    <input type="text" id="searchMachinery" placeholder="Search machinery..."
+                        onkeyup="filterMachinery()"
+                        class="w-full pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
                 </div>
-                <span class="bg-emerald-100 text-emerald-800 text-xs font-semibold px-2.5 py-0.5 rounded-full"
-                    id="fertilizerCount">0</span>
             </div>
-            <div class="w-full overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-[#ebf4ef] text-emerald-900 text-[11px] uppercase tracking-wider font-semibold">
-                            <th class="py-2.5 px-4">Machinery Rented</th>
-                            <th class="py-2.5 px-4">Start Date</th>
-                            <th class="py-2.5 px-4">End Date</th>
-                            <th class="py-2.5 px-4">Total Days</th>
-                            <th class="py-2.5 px-4">Cost Price</th>
-                            <th class="py-2.5 px-4">Status</th>
-                            <th class="py-2.5 px-4 text-right">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="fertilizersTableBody" class="divide-y divide-slate-100 text-xs text-slate-700">
-                        <tr>
-                            <td colspan="9" class="py-12 text-center text-slate-400">Loading List...</td>
-                        </tr>
-                    </tbody>
-                </table>
+
+            <!-- Machinery Card Grid Container -->
+            <div id="machineryList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div class="col-span-full text-center text-slate-400 py-12 text-xs">Loading machinery fleet...</div>
             </div>
         </div>
-
 
     </main>
 
@@ -140,35 +205,6 @@
 
 @push('scripts')
     <script>
-         document.addEventListener("DOMContentLoaded", function() {
-        flatpickr("#date-picker", {
-            mode: "range",
-            minDate: "today",
-            enableTime: false,
-            dateFormat: "M j, Y",
-
-            onChange: function(selectedDates) {
-                const daysInput = document.getElementById("bookingDays");
-
-                if (selectedDates.length === 2) {
-                    const startDate = selectedDates[0];
-                    const endDate = selectedDates[1];
-
-                    const timeDiff = endDate - startDate;
-
-                    const totalDays = Math.round(timeDiff / (1000 * 60 * 60 * 24));
-
-                    daysInput.value = totalDays;
-
-                    daysInput.value = totalDays + 1;
-                } else {
-                    daysInput.value = "";
-                }
-            }
-        });
-    });
-    </script>
-    {{-- <script>
         let allMachinery = [];
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -192,7 +228,7 @@
                     status: 'Operational',
                     totalUnits: 3,
                     bookedUnits: 1,
-                    image: ''
+                    image: 'https://www.gbs.com.mm/wp-content/uploads/2023/05/tcr-4wt-kbt-l4018-3.jpg'
                 },
                 {
                     id: 2,
@@ -202,7 +238,7 @@
                     status: 'Operational',
                     totalUnits: 2,
                     bookedUnits: 2,
-                    image: ''
+                    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQxMVHkM6MIbmbwN0I4MJ8YqEENJlNHDnHoK5zreC2CDLvQo9_wutjpuE&s=10'
                 },
                 {
                     id: 3,
@@ -212,7 +248,7 @@
                     status: 'Under Maintenance',
                     totalUnits: 1,
                     bookedUnits: 0,
-                    image: ''
+                    image: 'https://image.made-in-china.com/365f3j00UkWogJzIJYbp/KRT-6W-Gasoline-4L-Fuel-Walking-Paddy-Rice-Transplanter-for-sale.webp'
                 },
                 {
                     id: 4,
@@ -222,7 +258,7 @@
                     status: 'Out of Service',
                     totalUnits: 1,
                     bookedUnits: 0,
-                    image: ''
+                    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRU_1U1Wi4DI5Ib6f5JqTMyrgKli7fBfhijgQKSX4ZZ2A&s=10'
                 }
             ];
 
@@ -354,5 +390,5 @@
                 }
             }
         }
-    </script> --}}
+    </script>
 @endpush
