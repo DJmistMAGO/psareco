@@ -13,4 +13,8 @@ class FarmersController extends Controller
     public function myBookings() {
         return view('farmer.my-bookings');
     }
+
+    public function products() {
+        return view('farmer.products');
+    }
 }

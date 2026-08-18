@@ -53,7 +53,7 @@
         <div class="bg-white rounded-2xl shadow-sm border border-slate-100/80 overflow-hidden flex flex-col mb-6">
             <div class="px-5 py-4 flex items-center justify-between border-b border-slate-100">
                 <div class="flex items-center space-x-2">
-                    <i class="fa-solid fa-leaf text-emerald-600 text-sm"></i>
+                    <i class="fa-solid fa-tractor text-emerald-600 text-sm"></i>
                     <h3 class="font-bold text-slate-700 text-sm">Book Status</h3>
                 </div>
                 <span class="bg-emerald-100 text-emerald-800 text-xs font-semibold px-2.5 py-0.5 rounded-full"

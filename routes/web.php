@@ -30,6 +30,7 @@ Route::middleware('auth')->group(function () {
         ->group(function () {
             Route::get('/index', 'index')->name('farmers.index');
             Route::get('/my-bookings', 'myBookings')->name('farmers.myBookings');
+            Route::get('/products', 'products')->name('farmers.products');
         });
 
     Route::middleware('role:admin')->controller(UserManagementController::class)
