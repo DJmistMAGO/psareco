@@ -25,9 +25,11 @@ Route::middleware('auth')->group(function () {
     Route::view('/reports', 'admin.reports')->name('reports');
     Route::view('/my-bookings', 'farmer.my-bookings')->name('my-bookings');
 
-    Route::controller(FarmersController::class)->group(function() {
-
-    });
+     Route::controller(FarmersController::class)
+        ->prefix('farmers')
+        ->group(function () {
+            Route::get('/index', 'index')->name('farmers.index');
+        });
 
     Route::middleware('role:admin')->controller(UserManagementController::class)
         ->prefix('user-management')
