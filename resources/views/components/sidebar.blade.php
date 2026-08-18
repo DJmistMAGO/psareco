@@ -51,13 +51,13 @@
                         ['route' => 'scheduling', 'icon' => 'fa-calendar-alt', 'title' => 'Scheduling'],
                         ['route' => 'inventory', 'icon' => 'fa-boxes-stacked', 'title' => 'Inventory'],
                         ['route' => 'sales', 'icon' => 'fa-shopping-cart', 'title' => 'Sales'],
-                        ['route' => 'reports.index', 'icon' => 'fa-file-alt', 'title' => 'Reports'],
+                        // ['route' => 'reports.index', 'icon' => 'fa-file-alt', 'title' => 'Reports'],
                     ];
                 } elseif (auth()->user()->hasRole('farmer')) {
                     $menu = [
-                        ['route' => 'scheduling', 'icon' => 'fa-tractor', 'title' => 'Book Machinery'],
-                        ['route' => 'my-bookings', 'icon' => 'fa-calendar-check', 'title' => 'My Bookings'],
-                        ['route' => 'inventory', 'icon' => 'fa-box', 'title' => 'Inventory'],
+                        ['route' => 'farmers.index', 'icon' => 'fa-tractor', 'title' => 'Book Machinery'],
+                        ['route' => 'farmers.myBookings', 'icon' => 'fa-calendar-check', 'title' => 'Booking History'],
+                        ['route' => 'farmers.products', 'icon' => 'fa-box', 'title' => 'Products'],
                     ];
                 }
             @endphp

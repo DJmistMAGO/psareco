@@ -6,7 +6,6 @@
     <main class="w-full min-w-0 p-4 sm:p-6 lg:p-8">
         <x-dashboard-header />
 
-
         <!-- Hero Header & Page Title -->
         <section class="bg-gradient-to-r from-[#2c7a56] to-[#40a072] text-white rounded-2xl p-6 mb-6 shadow-sm">
             <h2 class="text-xl sm:text-2xl font-bold tracking-tight flex items-center gap-2">
