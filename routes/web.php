@@ -26,7 +26,7 @@ Route::middleware('auth')->group(function () {
     Route::view('/my-bookings', 'farmer.my-bookings')->name('my-bookings');
 
     Route::controller(FarmersController::class)->group(function() {
-        
+
     });
 
     Route::middleware('role:admin')->controller(UserManagementController::class)
