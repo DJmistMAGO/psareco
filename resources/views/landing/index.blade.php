@@ -412,9 +412,9 @@
 
 </section>
 
-<section class="relative z-10 mx-auto mt-6 max-w-7xl px-4 sm:px-6  lg:-mt-14 lg:px-8">
+<section class="relative z-10 mx-auto mt-6 max-w-7xl px-4 sm:px-6 lg:-mt-14 lg:px-8">
 
-    <div class="grid overflow-hidden rounded-2xl bg-white shadow-2xl sm:grid-cols-2 lg:grid-cols-4">
+    <div class="grid overflow-hidden rounded-2xl bg-white shadow-2xl sm:grid-cols-2 lg:grid-cols-3">
 
         @php
             $quickLinks = [
@@ -438,40 +438,38 @@
                     'text' => 'View upcoming machinery reservations and requests.',
                     'button' => 'View Schedule',
                     'href' => '#schedule'
-                ],
-                [
-                    'icon' => '🔔',
-                    'title' => 'Notifications',
-                    'text' => 'Stay updated about reservations, availability, and announcements.',
-                    'button' => 'View Updates',
-                    'href' => '#updates'
                 ]
             ];
         @endphp
 
-
         @foreach($quickLinks as $item)
 
-            <div class="border-b border-gray-100 p-6 text-center transition hover:bg-farm-50 sm:p-7 lg:border-b-0 lg:border-r last:border-r-0">
+            <div class="flex flex-col items-center justify-center border-b border-gray-100 px-5 py-6 text-center transition hover:bg-farm-50 sm:px-6 lg:border-b-0 lg:border-r last:border-r-0">
 
-                <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-farm-100 text-2xl sm:h-16 sm:w-16 sm:text-3xl">
+                {{-- Icon --}}
+                <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-farm-100 text-2xl">
                     {{ $item['icon'] }}
                 </div>
 
-                <h3 class="mt-4 text-base font-bold text-farm-900 sm:mt-5 sm:text-lg">
+                {{-- Title --}}
+                <h3 class="mt-3 text-base font-bold text-farm-900">
                     {{ $item['title'] }}
                 </h3>
 
-                <p class="mt-2 text-sm leading-6 text-gray-600">
+                {{-- Description --}}
+                <p class="mt-1.5 max-w-xs text-sm leading-5 text-gray-600">
                     {{ $item['text'] }}
                 </p>
 
-                {{-- <a
+                {{-- Button --}}
+                {{--
+                <a
                     href="{{ $item['href'] }}"
-                    class="mt-5 inline-flex rounded-lg bg-farm-700 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-farm-800"
+                    class="mt-4 inline-flex rounded-lg bg-farm-700 px-5 py-2 text-sm font-bold text-white transition hover:bg-farm-800"
                 >
                     {{ $item['button'] }}
-                </a> --}}
+                </a>
+                --}}
 
             </div>
 
