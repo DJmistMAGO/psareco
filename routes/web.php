@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserManagementController;
+use App\Http\Controllers\FarmersController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -23,6 +24,10 @@ Route::middleware('auth')->group(function () {
     Route::view('/sales', 'admin.sales')->name('sales');
     Route::view('/reports', 'admin.reports')->name('reports');
     Route::view('/my-bookings', 'farmer.my-bookings')->name('my-bookings');
+
+    Route::controller(FarmersController::class)->group(function() {
+        
+    });
 
     Route::middleware('role:admin')->controller(UserManagementController::class)
         ->prefix('user-management')
