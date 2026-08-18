@@ -18,34 +18,35 @@
         </p>
 
     </section>
-
-            <section class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-                <div class="bg-white rounded-2xl p-4 shadow-sm border-t-4 border-indigo-500 text-center flex flex-col items-center justify-between transition-transform hover:-translate-y-0.5">
-                    <i class="fa-solid fa-boxes-stacked text-indigo-500 text-2xl mb-1"></i>
-                    <span class="text-2xl sm:text-3xl font-extrabold text-slate-800 my-1">{{ $totalInventory ?? '4' }}</span>
-                    <p class="text-xs font-medium text-slate-400">Total Inventory Items</p>
-                </div>
-                <div class="bg-white rounded-2xl p-4 shadow-sm border-t-4 border-amber-400 text-center flex flex-col items-center justify-between transition-transform hover:-translate-y-0.5">
-                    <i class="fa-solid fa-hourglass-half text-amber-400 text-2xl mb-1"></i>
-                    <span class="text-2xl sm:text-3xl font-extrabold text-slate-800 my-1">{{ $expiringCount ?? '0' }}</span>
-                    <p class="text-xs font-medium text-slate-400">Expiring Soon (&lt;30 days)</p>
-                </div>
-                <div class="bg-white rounded-2xl p-4 shadow-sm border-t-4 border-red-500 text-center flex flex-col items-center justify-between transition-transform hover:-translate-y-0.5">
-                    <i class="fa-solid fa-triangle-exclamation text-red-500 text-2xl mb-1"></i>
-                    <span class="text-2xl sm:text-3xl font-extrabold text-slate-800 my-1">{{ $lowStockCount ?? '0' }}</span>
-                    <p class="text-xs font-medium text-slate-400">Low Stock Items</p>
-                </div>
-                <div class="bg-white rounded-2xl p-4 shadow-sm border-t-4 border-emerald-500 text-center flex flex-col items-center justify-between transition-transform hover:-translate-y-0.5">
-                    <i class="fa-solid fa-chart-line text-emerald-500 text-2xl mb-1"></i>
-                    <span class="text-2xl sm:text-3xl font-extrabold text-slate-800 my-1">₱{{ number_format($totalSales ?? 0, 2) }}</span>
-                    <p class="text-xs font-medium text-slate-400">Total Sales</p>
-                </div>
-                <div class="bg-white rounded-2xl p-4 shadow-sm border-t-4 border-sky-400 text-center flex flex-col items-center justify-between transition-transform hover:-translate-y-0.5">
-                    <i class="fa-regular fa-clock text-sky-400 text-2xl mb-1"></i>
-                    <span class="text-2xl sm:text-3xl font-extrabold text-slate-800 my-1">{{ $pendingBookings ?? '0' }}</span>
-                    <p class="text-xs font-medium text-slate-400">Pending Bookings</p>
-                </div>
-            </section>
+            @role('admin|officer')
+                <section class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+                    <div class="bg-white rounded-2xl p-4 shadow-sm border-t-4 border-indigo-500 text-center flex flex-col items-center justify-between transition-transform hover:-translate-y-0.5">
+                        <i class="fa-solid fa-boxes-stacked text-indigo-500 text-2xl mb-1"></i>
+                        <span class="text-2xl sm:text-3xl font-extrabold text-slate-800 my-1">{{ $totalInventory ?? '4' }}</span>
+                        <p class="text-xs font-medium text-slate-400">Total Inventory Items</p>
+                    </div>
+                    <div class="bg-white rounded-2xl p-4 shadow-sm border-t-4 border-amber-400 text-center flex flex-col items-center justify-between transition-transform hover:-translate-y-0.5">
+                        <i class="fa-solid fa-hourglass-half text-amber-400 text-2xl mb-1"></i>
+                        <span class="text-2xl sm:text-3xl font-extrabold text-slate-800 my-1">{{ $expiringCount ?? '0' }}</span>
+                        <p class="text-xs font-medium text-slate-400">Expiring Soon (&lt;30 days)</p>
+                    </div>
+                    <div class="bg-white rounded-2xl p-4 shadow-sm border-t-4 border-red-500 text-center flex flex-col items-center justify-between transition-transform hover:-translate-y-0.5">
+                        <i class="fa-solid fa-triangle-exclamation text-red-500 text-2xl mb-1"></i>
+                        <span class="text-2xl sm:text-3xl font-extrabold text-slate-800 my-1">{{ $lowStockCount ?? '0' }}</span>
+                        <p class="text-xs font-medium text-slate-400">Low Stock Items</p>
+                    </div>
+                    <div class="bg-white rounded-2xl p-4 shadow-sm border-t-4 border-emerald-500 text-center flex flex-col items-center justify-between transition-transform hover:-translate-y-0.5">
+                        <i class="fa-solid fa-chart-line text-emerald-500 text-2xl mb-1"></i>
+                        <span class="text-2xl sm:text-3xl font-extrabold text-slate-800 my-1">₱{{ number_format($totalSales ?? 0, 2) }}</span>
+                        <p class="text-xs font-medium text-slate-400">Total Sales</p>
+                    </div>
+                    <div class="bg-white rounded-2xl p-4 shadow-sm border-t-4 border-sky-400 text-center flex flex-col items-center justify-between transition-transform hover:-translate-y-0.5">
+                        <i class="fa-regular fa-clock text-sky-400 text-2xl mb-1"></i>
+                        <span class="text-2xl sm:text-3xl font-extrabold text-slate-800 my-1">{{ $pendingBookings ?? '0' }}</span>
+                        <p class="text-xs font-medium text-slate-400">Pending Bookings</p>
+                    </div>
+                </section>
+            @endrole
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-100/80 overflow-hidden flex flex-col">
@@ -97,32 +98,34 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-100/80 p-5 flex flex-col min-h-[180px]">
-                    <div class="flex items-center space-x-2 pb-3 mb-4 border-b border-slate-100">
-                        <i class="fa-regular fa-bell text-emerald-700 text-sm"></i>
-                        <h3 class="font-bold text-slate-700 text-sm">Low Stock & Expiring Alerts</h3>
-                    </div>
-                    <div class="flex-1 flex items-center justify-center">
-                        <div class="flex items-center space-x-2 text-slate-500 text-xs font-medium">
-                            <div class="w-4 h-4 rounded-full bg-slate-700 text-white flex items-center justify-center text-[10px]">
-                                <i class="fa-solid fa-check"></i>
+            @role('admin|officer')
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-100/80 p-5 flex flex-col min-h-[180px]">
+                        <div class="flex items-center space-x-2 pb-3 mb-4 border-b border-slate-100">
+                            <i class="fa-regular fa-bell text-emerald-700 text-sm"></i>
+                            <h3 class="font-bold text-slate-700 text-sm">Low Stock & Expiring Alerts</h3>
+                        </div>
+                        <div class="flex-1 flex items-center justify-center">
+                            <div class="flex items-center space-x-2 text-slate-500 text-xs font-medium">
+                                <div class="w-4 h-4 rounded-full bg-slate-700 text-white flex items-center justify-center text-[10px]">
+                                    <i class="fa-solid fa-check"></i>
+                                </div>
+                                <span>No alerts</span>
                             </div>
-                            <span>No alerts</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-100/80 p-5 flex flex-col min-h-[180px]">
+                        <div class="flex items-center space-x-2 pb-3 mb-4 border-b border-slate-100">
+                            <i class="fa-solid fa-chart-line text-emerald-700 text-sm"></i>
+                            <h3 class="font-bold text-slate-700 text-sm">Monthly Sales Trend</h3>
+                        </div>
+                        <div class="flex-1 flex items-center justify-center text-slate-400 text-xs">
+                            <canvas id="salesTrendChart" class="w-full max-h-[140px]"></canvas>
                         </div>
                     </div>
                 </div>
-
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-100/80 p-5 flex flex-col min-h-[180px]">
-                    <div class="flex items-center space-x-2 pb-3 mb-4 border-b border-slate-100">
-                        <i class="fa-solid fa-chart-line text-emerald-700 text-sm"></i>
-                        <h3 class="font-bold text-slate-700 text-sm">Monthly Sales Trend</h3>
-                    </div>
-                    <div class="flex-1 flex items-center justify-center text-slate-400 text-xs">
-                        <canvas id="salesTrendChart" class="w-full max-h-[140px]"></canvas>
-                    </div>
-                </div>
-            </div>
+            @endrole
 
         </main>
 

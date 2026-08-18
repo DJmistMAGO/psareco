@@ -59,6 +59,7 @@
                     ];
                 } elseif (auth()->user()->hasRole('farmer')) {
                     $menu = [
+                        ['route' => 'dashboard', 'icon' => 'fa-chart-line', 'title' => 'Dashboard'],
                         ['route' => 'farmers.index', 'icon' => 'fa-tractor', 'title' => 'Book Machinery'],
                         ['route' => 'farmers.myBookings', 'icon' => 'fa-calendar-check', 'title' => 'Booking History'],
                         ['route' => 'farmers.products', 'icon' => 'fa-box', 'title' => 'Products'],
