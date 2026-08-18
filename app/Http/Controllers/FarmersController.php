@@ -9,4 +9,8 @@ class FarmersController extends Controller
     public function index() {
         return view('farmer.book-machinery');
     }
+
+    public function myBookings() {
+        return view('farmer.my-bookings');
+    }
 }

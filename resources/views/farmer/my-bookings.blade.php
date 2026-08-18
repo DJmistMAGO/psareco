@@ -1,116 +1,90 @@
 @extends('layouts.app')
 
-@section('title', 'My Bookings - PSARECO')
+@section('title', 'Machinery Scheduling - PSARECO')
 
 @section('content')
-    <div class="d-flex">
-        {{-- <div class="sidebar" id="sidebar"></div> --}}
+    <main class="w-full min-w-0 p-4 sm:p-6 lg:p-8">
+        <x-dashboard-header />
 
-        <div class="main-content">
-            <h2 class="mb-4"><i class="fas fa-calendar-alt"></i> My Booking History</h2>
 
-            <div id="overdueBanner" style="display: none;" class="overdue-alert">
-                <i class="fas fa-exclamation-triangle fa-2x me-3" style="color: #e76f51;"></i>
-                <div>
-                    <h5 class="mb-1"><i class="fas fa-clock"></i> Overdue Equipment Return</h5>
-                    <p id="overdueMessage" class="mb-0">You have overdue machinery. Please return immediately to avoid penalties.</p>
-                </div>
+        <!-- Hero Header & Actions -->
+        <section
+            class="bg-gradient-to-r from-[#2c7a56] to-[#40a072] text-white rounded-2xl p-6 mb-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+                <h2 class="text-xl sm:text-2xl font-bold tracking-tight flex items-center gap-2">
+                    <i class="fa-solid fa-calendar-alt"></i> Machinery Booking History
+                </h2>
+                <p class="text-emerald-100 text-xs sm:text-sm mt-1">View your past machinery bookings and rental history</p>
             </div>
 
-            <div class="card">
-                <div class="card-header">
-                    <i class="fas fa-list"></i> My Booking Requests
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead>
-                                <tr>
-                                    <th>Request Date</th>
-                                    <th>Machine</th>
-                                    <th>Start Date</th>
-                                    <th>Duration</th>
-                                    <th>Return Date</th>
-                                    <th>Status / Return Status</th>
-                                    <th>Total Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody id="bookingsTable"></tbody>
-                        </table>
-                    </div>
-                </div>
+            {{-- <div class="flex items-center gap-2 print:hidden">
+                <button onclick="window.print()" class="inline-flex items-center gap-2 bg-white text-emerald-950 hover:bg-emerald-50 font-semibold text-xs py-2 px-3.5 rounded-xl shadow-sm transition">
+                    <i class="fa-solid fa-print"></i> Print Schedule
+                </button>
+            </div> --}}
+        </section>
+
+        <!-- Overdue Equipment Alert Card (Hidden by default) -->
+        <div id="overdueSection"
+            class="hidden bg-red-50/90 rounded-2xl shadow-sm border border-red-200 overflow-hidden mb-6 print:hidden">
+            <div class="bg-red-600 text-white px-5 py-3 flex items-center gap-2 text-sm font-bold">
+                <i class="fa-solid fa-triangle-exclamation"></i> Overdue Equipment
+            </div>
+            <div class="p-0 overflow-x-auto">
+                <table class="w-full text-left border-collapse text-xs">
+                    <thead>
+                        <tr class="bg-red-100/60 text-red-950 uppercase text-[10px] tracking-wider font-semibold">
+                            <th class="py-2.5 px-4">Machine</th>
+                            <th class="py-2.5 px-4">Farmer</th>
+                            <th class="py-2.5 px-4">Start Date</th>
+                            <th class="py-2.5 px-4">Return Date</th>
+                            <th class="py-2.5 px-4">Overdue Days</th>
+                            <th class="py-2.5 px-4 text-right">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="overdueTable" class="divide-y divide-red-100 text-slate-700">
+                        <!-- Dynamic rows populated via Javascript -->
+                    </tbody>
+                </table>
             </div>
         </div>
-    </div>
+
+        <!-- Request Machine Booking Form -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100/80 overflow-hidden flex flex-col mb-6">
+            <div class="px-5 py-4 flex items-center justify-between border-b border-slate-100">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-leaf text-emerald-600 text-sm"></i>
+                    <h3 class="font-bold text-slate-700 text-sm">Book Status</h3>
+                </div>
+                <span class="bg-emerald-100 text-emerald-800 text-xs font-semibold px-2.5 py-0.5 rounded-full"
+                    id="fertilizerCount">0</span>
+            </div>
+            <div class="w-full overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-[#ebf4ef] text-emerald-900 text-[11px] uppercase tracking-wider font-semibold">
+                            <th class="py-2.5 px-4">Machinery Rented</th>
+                            <th class="py-2.5 px-4">Start Date</th>
+                            <th class="py-2.5 px-4">End Date</th>
+                            <th class="py-2.5 px-4">Total Days</th>
+                            <th class="py-2.5 px-4">Cost Price</th>
+                            <th class="py-2.5 px-4">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fertilizersTableBody" class="divide-y divide-slate-100 text-xs text-slate-700">
+                        <tr>
+                            <td colspan="9" class="py-12 text-center text-slate-400">Loading List...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+    </main>
+
 @endsection
 
 @push('scripts')
-    {{-- <script>
-        function loadMyBookingsPage() {
-            if (!requireAuth()) return;
-            if (typeof loadSidebar === 'function') loadSidebar();
 
-            const user = getCurrentUser();
-            const allBookings = getBookings();
-            const myBookings = allBookings.filter(b => b.farmerId === user.id);
-
-            const overdueList = getFarmerOverdueBookings(user.id);
-            if (overdueList.length > 0) {
-                const overdueBanner = document.getElementById('overdueBanner');
-                const overdueMessage = document.getElementById('overdueMessage');
-                const machineNames = overdueList.map(b => b.machineName).join(', ');
-                overdueMessage.innerHTML = `<strong>You have ${overdueList.length} overdue booking(s):</strong> ${machineNames}. Please return the equipment immediately.`;
-                overdueBanner.style.display = 'flex';
-            } else {
-                document.getElementById('overdueBanner').style.display = 'none';
-            }
-
-            const table = document.getElementById('bookingsTable');
-            if (myBookings.length === 0) {
-                table.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-4"><i class="fas fa-calendar-times"></i> You have no bookings yet</td></tr>';
-                return;
-            }
-
-            table.innerHTML = myBookings.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).map(b => {
-                let statusClass = '';
-                let statusIcon = '';
-                let returnInfo = '';
-                let rowClass = '';
-
-                switch (b.status) {
-                    case 'Pending': statusClass = 'badge-warning'; statusIcon = '<i class="fas fa-clock"></i> '; break;
-                    case 'Confirmed': statusClass = 'badge-success'; statusIcon = '<i class="fas fa-check-circle"></i> '; break;
-                    case 'Completed': statusClass = 'badge-info'; statusIcon = '<i class="fas fa-check-double"></i> '; break;
-                    case 'Cancelled': statusClass = 'badge-danger'; statusIcon = '<i class="fas fa-times-circle"></i> '; break;
-                    default: statusClass = 'badge-secondary'; statusIcon = '<i class="fas fa-question-circle"></i> '; break;
-                }
-
-                if (b.status === 'Confirmed') {
-                    const returnStatus = getReturnStatus(b);
-                    returnInfo = `<div class="return-info mt-1 ${returnStatus.class}">${returnStatus.text}</div>`;
-                    if (returnStatus.overdue) rowClass = 'table-danger-row';
-                } else if (b.status === 'Completed') {
-                    returnInfo = '<div class="text-success"><i class="fas fa-check-circle"></i> Returned</div>';
-                }
-
-                const returnDateDisplay = b.returnDate ? new Date(b.returnDate).toLocaleDateString() : '—';
-                return `
-                    <tr class="${rowClass}">
-                        <td>${new Date(b.createdAt).toLocaleDateString()}</td>
-                        <td><strong>${b.machineName}</strong></td>
-                        <td>${new Date(b.date).toLocaleDateString()}</td>
-                        <td>${b.days} day(s)</td>
-                        <td>${returnDateDisplay}</td>
-                        <td>
-                            <span class="${statusClass}">${statusIcon}${b.status}</span>
-                            ${returnInfo}
-                        </td>
-                        <td>₱${(b.totalAmount || 0).toLocaleString()}</td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        document.addEventListener('DOMContentLoaded', loadMyBookingsPage);
-    </script> --}}
 @endpush

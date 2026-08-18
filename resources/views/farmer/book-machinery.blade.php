@@ -121,6 +121,7 @@
                             <th class="py-2.5 px-4">Total Days</th>
                             <th class="py-2.5 px-4">Cost Price</th>
                             <th class="py-2.5 px-4">Status</th>
+                            <th class="py-2.5 px-4 text-right">Action</th>
                         </tr>
                     </thead>
                     <tbody id="fertilizersTableBody" class="divide-y divide-slate-100 text-xs text-slate-700">
@@ -145,29 +146,22 @@
             minDate: "today",
             enableTime: false,
             dateFormat: "M j, Y",
-            // This triggers every time a date is selected
+
             onChange: function(selectedDates) {
                 const daysInput = document.getElementById("bookingDays");
 
-                // Check if both start and end dates are selected
                 if (selectedDates.length === 2) {
                     const startDate = selectedDates[0];
                     const endDate = selectedDates[1];
 
-                    // Calculate time difference in milliseconds
                     const timeDiff = endDate - startDate;
 
-                    // Convert milliseconds into total days
                     const totalDays = Math.round(timeDiff / (1000 * 60 * 60 * 24));
 
-                    // Put the result into the input field
                     daysInput.value = totalDays;
 
-                    // NOTE: If you want to include both days (e.g. Mon to Tue = 2 days),
-                    // change the line above to: daysInput.value = totalDays + 1;
                     daysInput.value = totalDays + 1;
                 } else {
-                    // Clear the input if the range is incomplete
                     daysInput.value = "";
                 }
             }

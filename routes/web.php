@@ -29,6 +29,7 @@ Route::middleware('auth')->group(function () {
         ->prefix('farmers')
         ->group(function () {
             Route::get('/index', 'index')->name('farmers.index');
+            Route::get('/my-bookings', 'myBookings')->name('farmers.myBookings');
         });
 
     Route::middleware('role:admin')->controller(UserManagementController::class)
