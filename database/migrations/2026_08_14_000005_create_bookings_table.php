@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('machine_id')->nullable()->constrained('machinery')->nullOnDelete();
+            $table->foreignId('machine_id')->nullable()->constrained('machineries')->nullOnDelete();
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->date('booking_date')->nullable();
             $table->unsignedInteger('days')->default(1);

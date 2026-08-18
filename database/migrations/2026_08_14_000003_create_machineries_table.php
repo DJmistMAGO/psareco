@@ -11,14 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('inventory', function (Blueprint $table) {
+        Schema::create('machineries', function (Blueprint $table) {
             $table->id();
             $table->string('name', 100);
-            $table->string('type', 20);
-            $table->integer('quantity')->default(0);
-            $table->string('unit', 20)->nullable();
-            $table->decimal('price', 10, 2)->nullable();
-            $table->integer('reorder_level')->default(10);
+            $table->string('model', 50)->nullable();
+            $table->decimal('daily_rate', 10, 2)->nullable();
+            $table->string('status', 20)->default('Available');
+            $table->string('image_url', 255)->nullable();
             $table->timestamp('created_at')->nullable()->useCurrent();
         });
     }
@@ -28,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('inventory');
+        Schema::dropIfExists('machinery');
     }
 };
