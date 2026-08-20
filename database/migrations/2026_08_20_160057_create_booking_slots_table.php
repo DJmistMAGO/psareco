@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('booking_slots', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('booking_id')->nullable()->constrained('bookings')->nullOnDelete();
+            $table->foreignId('booking_id')->constrained('bookings')->cascadeOnDelete();
+            $table->foreignId('machine_id')->constrained('machineries')->cascadeOnDelete();
             $table->date('booking_date');
-            $table->time('start_time');
-            $table->time('end_time');     
-            $table->decimal('hours', 5, 2);
+            $table->time('start_time')->nullable();
+            $table->time('end_time')->nullable();
+            $table->decimal('hours', 5, 2)->nullable();
             $table->timestamps();
         });
     }

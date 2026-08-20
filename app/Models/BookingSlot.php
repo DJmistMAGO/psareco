@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Machinery;
 
 class BookingSlot extends Model
 {
@@ -13,6 +14,7 @@ class BookingSlot extends Model
 
     protected $fillable = [
         'booking_id',
+        'machine_id',
         'booking_date',
         'start_time',
         'end_time',
@@ -52,6 +54,11 @@ class BookingSlot extends Model
     }
 
     /* --- Relationships --- */
+
+    public function machine(): BelongsTo
+    {
+        return $this->belongsTo(Machinery::class, 'machine_id');
+    }
 
     public function booking(): BelongsTo
     {

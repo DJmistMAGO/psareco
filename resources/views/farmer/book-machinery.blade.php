@@ -59,57 +59,64 @@
                 <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">New Reservation</span>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
-                <!-- Select Machine -->
-                <div class="sm:col-span-4">
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Select Machinery <span
-                            class="text-red-500">*</span></label>
-                    <select id="bookingMachine" onchange="updateDailyRate()" name="machinery_id"
-                        class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
-                        <option value="">-- Select a Machinery --</option>
+            <form id="bookingForm" method="POST" action="{{ route('farmers.bookMachinery') }}">
 
-                        @foreach($availableMachinery as $machine)
-                            <option value="{{ $machine->id }}">
-                                {{ $machine->machinery_name }} - ₱{{ number_format($machine->price, 2) }}/day
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+                @csrf
 
-                <!-- Booking Date -->
-                <div class="sm:col-span-4">
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Start Date <span
-                            class="text-red-500">*</span></label>
-                    <input type="text" id="date-picker" placeholder="Select Date"
-                        class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition" >
+                <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+                    <!-- Select Machine -->
+                    <div class="sm:col-span-4">
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Select Machinery <span
+                                class="text-red-500">*</span></label>
+                        <select id="bookingMachine" name="machine_id"
+                            class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
+                            <option value="">-- Select a Machinery --</option>
 
-                    <input type="hidden" name="start_date" id="start_date">
-                    <input type="hidden" name="end_date" id="end_date">
-                </div>
+                            @foreach ($availableMachinery as $machine)
+                                <option value="{{ $machine->id }}">
+                                    {{ $machine->machinery_name }} - ₱{{ number_format($machine->price, 2) }}/day
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
 
-                <!-- Days -->
-                <div class="sm:col-span-3">
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Duration (Days)</label>
-                    <input type="number" id="bookingDays" disabled placeholder="0"
-                        class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
-                </div>
+                    <!-- Booking Date -->
+                    <div class="sm:col-span-4">
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Start Date <span
+                                class="text-red-500">*</span></label>
+                        <input type="text" id="date-picker" placeholder="Select Date"
+                            class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
 
-                <!-- Total Amount -->
-                {{-- <div class="sm:col-span-2">
+                        <input type="hidden" name="start_date" id="start_date">
+                        <input type="hidden" name="end_date" id="end_date">
+                    </div>
+
+                    <!-- Days -->
+                    <div class="sm:col-span-3">
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Duration (Days)</label>
+                        <input type="number" id="bookingDays" disabled placeholder="0"
+                            class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
+                    </div>
+
+                    <!-- Total Amount -->
+                    {{-- <div class="sm:col-span-2">
                     <label class="block text-xs font-semibold text-slate-600 mb-1">Total Estimated</label>
                     <input type="text" id="totalAmount" readonly placeholder="₱0.00"
                         class="w-full px-3 py-2 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-900 font-extrabold cursor-not-allowed">
                 </div> --}}
 
-                <!-- Submit Button -->
-                <div class="sm:col-span-1">
-                    <button onclick="submitBooking()"
-                        class="w-full inline-flex items-center justify-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs py-2 px-3 rounded-xl shadow-sm transition">
-                        <i class="fa-solid fa-paper-plane"></i>
-                    </button>
+                    <!-- Submit Button -->
+                    <div class="sm:col-span-1">
+                        <button type="submit"
+                            class="w-full inline-flex items-center justify-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs py-2 px-3 rounded-xl shadow-sm transition">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </div>
                 </div>
-            </div>
+            </form>
         </div>
+
+
 
         <div class="bg-white rounded-2xl shadow-sm border border-slate-100/80 overflow-hidden flex flex-col mb-6">
             <div class="px-5 py-4 flex items-center justify-between border-b border-slate-100">
@@ -150,35 +157,101 @@
 @push('scripts')
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-    // Added "instance" to the function arguments below
-    flatpickr("#date-picker", {
-        mode: "range",
-        minDate: "today",
-        enableTime: false,
-        dateFormat: "M j, Y",
 
-        onChange: function(selectedDates, dateStr, instance) {
-            const daysInput = document.getElementById("bookingDays");
+            const disabledDatesByMachine = @json($disabledDatesByMachine);
 
-            document.getElementById("start_date").value = selectedDates[0] ? instance.formatDate(selectedDates[0], "Y-m-d") : '';
-            document.getElementById("end_date").value = selectedDates[1] ? instance.formatDate(selectedDates[1], "Y-m-d") : '';
+            const machineSelect = document.getElementById("bookingMachine");
 
-            if (selectedDates.length === 2) {
-                const startDate = selectedDates[0];
-                const endDate = selectedDates[1];
+            let selectedMachineId = null;
 
-                const timeDiff = endDate - startDate;
-                const totalDays = Math.round(timeDiff / (1000 * 60 * 60 * 24));
+            const fpInstance = flatpickr("#date-picker", {
+                mode: "range",
+                minDate: "today",
+                dateFormat: "M j, Y",
+                disable: [],
 
-                // FIXED: Removed the double assignment line
-                daysInput.value = totalDays + 1;
-            } else {
-                daysInput.value = "";
-            }
-        }
-    });
-});
+                onChange: function(selectedDates, dateStr, instance) {
 
+                    const startDateInput = document.getElementById("start_date");
+                    const endDateInput = document.getElementById("end_date");
+                    const daysInput = document.getElementById("bookingDays");
+
+                    startDateInput.value = "";
+                    endDateInput.value = "";
+
+                    if (daysInput) {
+                        daysInput.value = "";
+                    }
+
+                    if (selectedDates.length >= 1) {
+                        startDateInput.value = instance.formatDate(
+                            selectedDates[0],
+                            "Y-m-d"
+                        );
+                    }
+
+                    if (selectedDates.length === 2) {
+
+                        endDateInput.value = instance.formatDate(
+                            selectedDates[1],
+                            "Y-m-d"
+                        );
+
+                        const totalDays =
+                            Math.floor(
+                                (selectedDates[1] - selectedDates[0]) /
+                                (1000 * 60 * 60 * 24)
+                            ) + 1;
+
+                        if (daysInput) {
+                            daysInput.value = totalDays;
+                        }
+                    }
+                }
+            });
+
+            machineSelect.addEventListener("change", function() {
+
+                selectedMachineId = String(this.value);
+
+                fpInstance.clear();
+
+                document.getElementById("start_date").value = "";
+                document.getElementById("end_date").value = "";
+
+                const daysInput = document.getElementById("bookingDays");
+
+                if (daysInput) {
+                    daysInput.value = "";
+                }
+
+                if (!selectedMachineId) {
+                    fpInstance.set("disable", []);
+                    fpInstance.redraw();
+                    return;
+                }
+
+                const disabledDates =
+                    disabledDatesByMachine[selectedMachineId] ?? [];
+
+                console.log("Selected machine:", selectedMachineId);
+                console.log("Dates:", disabledDates);
+
+                fpInstance.set("disable", [
+                    function(date) {
+
+                        const formattedDate =
+                            fpInstance.formatDate(date, "Y-m-d");
+
+                        return disabledDates.includes(formattedDate);
+                    }
+                ]);
+
+                fpInstance.redraw();
+
+                fpInstance.open();
+            });
+        });
     </script>
     {{-- <script>
         let allMachinery = [];

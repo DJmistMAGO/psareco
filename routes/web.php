@@ -32,6 +32,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/index', 'index')->name('farmers.index');
             Route::get('/my-bookings', 'myBookings')->name('farmers.myBookings');
             Route::get('/products', 'products')->name('farmers.products');
+            Route::post('/book-machinery', 'store')->name('farmers.bookMachinery');
         });
 
     Route::controller(MachineryController::class)

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->date('start_date');
             $table->date('end_date');
             $table->unsignedInteger('days')->default(1);
+            $table->decimal('total_hours', 8, 2)->default(0);
             $table->decimal('total_amount', 10, 2)->nullable();
             $table->enum('status', ['Pending', 'Approved', 'Rejected', 'Completed'])->default('Pending');
             $table->timestamps();

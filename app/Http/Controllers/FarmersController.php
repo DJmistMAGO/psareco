@@ -2,23 +2,91 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Booking;
 use App\Models\Machinery;
+use App\Models\BookingSlot;
+use Carbon\Carbon;
+use Carbon\CarbonPeriod;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class FarmersController extends Controller
 {
-    public function index() {
+    public function index()
+    {
+        $availableMachinery = Machinery::where('status', 'Available')->get();
 
-        $availableMachinery = Machinery::where('status', 'available')->get();
+        $disabledDatesByMachine = BookingSlot::whereHas('booking', function ($query) {
+            $query->whereIn('status', ['Pending', 'Approved']);
+        })
+            ->whereDate('booking_date', '>=', Carbon::today())
+            ->get(['machine_id', 'booking_date'])
+            ->groupBy('machine_id')
+            ->map(function ($slots) {
+                return $slots
+                    ->pluck('booking_date')
+                    ->map(fn($date) => Carbon::parse($date)->format('Y-m-d'))
+                    ->unique()
+                    ->values()
+                    ->toArray();
+            })
+            ->toArray();
 
-        return view('farmer.book-machinery', compact('availableMachinery'));
+        // dd($disabledDatesByMachine);
+
+        return view('farmer.book-machinery', compact(
+            'availableMachinery',
+            'disabledDatesByMachine'
+        ));
     }
 
-    public function myBookings() {
+    public function myBookings()
+    {
         return view('farmer.my-bookings');
     }
 
-    public function products() {
+    public function products()
+    {
         return view('farmer.products');
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'machine_id' => 'required|exists:machineries,id',
+            'start_date' => 'required|date|after_or_equal:today',
+            'end_date'   => 'required|date|after_or_equal:start_date',
+            'total_amount' => 'nullable|numeric|min:0',
+        ]);
+
+
+        return DB::transaction(function () use ($validated, $request) {
+            $period = CarbonPeriod::create($validated['start_date'], $validated['end_date']);
+
+            $booking = Booking::create([
+                'machine_id'   => $validated['machine_id'],
+                'user_id'      => Auth::id(),
+                'start_date'   => $validated['start_date'],
+                'end_date'     => $validated['end_date'],
+                'days'         => $period->count(),
+                'total_amount' => $validated['total_amount'] ?? 0,
+                'status'       => 'Pending',
+            ]);
+
+            // $booking->machine->update(['status' => 'Reserved']);
+
+            foreach ($period as $date) {
+                $booking->slots()->create([
+                    'booking_date' => $date->format('Y-m-d'),
+                    'machine_id'   => $validated['machine_id'],
+                    'start_time'   => null,
+                    'end_time'     => null,
+                    'hours'        => 0,
+                ]);
+            }
+
+            return redirect()->route('farmers.index')->with('success', 'Machinery added successfully.');
+        });
     }
 }
