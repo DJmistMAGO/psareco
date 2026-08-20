@@ -3,11 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Machinery;
 
 class FarmersController extends Controller
 {
     public function index() {
-        return view('farmer.book-machinery');
+
+        $availableMachinery = Machinery::where('status', 'available')->get();
+
+        return view('farmer.book-machinery', compact('availableMachinery'));
     }
 
     public function myBookings() {

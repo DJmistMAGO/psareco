@@ -64,33 +64,42 @@
                 <div class="sm:col-span-4">
                     <label class="block text-xs font-semibold text-slate-600 mb-1">Select Machinery <span
                             class="text-red-500">*</span></label>
-                    <select id="bookingMachine" onchange="updateDailyRate()"
+                    <select id="bookingMachine" onchange="updateDailyRate()" name="machinery_id"
                         class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
-                        <option value="">Select Machine</option>
+                        <option value="">-- Select a Machinery --</option>
+
+                        @foreach($availableMachinery as $machine)
+                            <option value="{{ $machine->id }}">
+                                {{ $machine->machinery_name }} - ₱{{ number_format($machine->price, 2) }}/day
+                            </option>
+                        @endforeach
                     </select>
                 </div>
 
                 <!-- Booking Date -->
-                <div class="sm:col-span-3">
+                <div class="sm:col-span-4">
                     <label class="block text-xs font-semibold text-slate-600 mb-1">Start Date <span
                             class="text-red-500">*</span></label>
                     <input type="text" id="date-picker" placeholder="Select Date"
                         class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition" >
+
+                    <input type="hidden" name="start_date" id="start_date">
+                    <input type="hidden" name="end_date" id="end_date">
                 </div>
 
                 <!-- Days -->
-                <div class="sm:col-span-2">
+                <div class="sm:col-span-3">
                     <label class="block text-xs font-semibold text-slate-600 mb-1">Duration (Days)</label>
                     <input type="number" id="bookingDays" disabled placeholder="0"
                         class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
                 </div>
 
                 <!-- Total Amount -->
-                <div class="sm:col-span-2">
+                {{-- <div class="sm:col-span-2">
                     <label class="block text-xs font-semibold text-slate-600 mb-1">Total Estimated</label>
                     <input type="text" id="totalAmount" readonly placeholder="₱0.00"
                         class="w-full px-3 py-2 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-900 font-extrabold cursor-not-allowed">
-                </div>
+                </div> --}}
 
                 <!-- Submit Button -->
                 <div class="sm:col-span-1">
@@ -140,33 +149,36 @@
 
 @push('scripts')
     <script>
-         document.addEventListener("DOMContentLoaded", function() {
-        flatpickr("#date-picker", {
-            mode: "range",
-            minDate: "today",
-            enableTime: false,
-            dateFormat: "M j, Y",
+        document.addEventListener("DOMContentLoaded", function() {
+    // Added "instance" to the function arguments below
+    flatpickr("#date-picker", {
+        mode: "range",
+        minDate: "today",
+        enableTime: false,
+        dateFormat: "M j, Y",
 
-            onChange: function(selectedDates) {
-                const daysInput = document.getElementById("bookingDays");
+        onChange: function(selectedDates, dateStr, instance) {
+            const daysInput = document.getElementById("bookingDays");
 
-                if (selectedDates.length === 2) {
-                    const startDate = selectedDates[0];
-                    const endDate = selectedDates[1];
+            document.getElementById("start_date").value = selectedDates[0] ? instance.formatDate(selectedDates[0], "Y-m-d") : '';
+            document.getElementById("end_date").value = selectedDates[1] ? instance.formatDate(selectedDates[1], "Y-m-d") : '';
 
-                    const timeDiff = endDate - startDate;
+            if (selectedDates.length === 2) {
+                const startDate = selectedDates[0];
+                const endDate = selectedDates[1];
 
-                    const totalDays = Math.round(timeDiff / (1000 * 60 * 60 * 24));
+                const timeDiff = endDate - startDate;
+                const totalDays = Math.round(timeDiff / (1000 * 60 * 60 * 24));
 
-                    daysInput.value = totalDays;
-
-                    daysInput.value = totalDays + 1;
-                } else {
-                    daysInput.value = "";
-                }
+                // FIXED: Removed the double assignment line
+                daysInput.value = totalDays + 1;
+            } else {
+                daysInput.value = "";
             }
-        });
+        }
     });
+});
+
     </script>
     {{-- <script>
         let allMachinery = [];
