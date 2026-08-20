@@ -207,7 +207,7 @@
                             @endif
                         </td>
                         <td class="py-3 px-4 text-right">
-                            <a href="{{ route('farmers.myBookings') }}"
+                            <a href="{{ route('farmers.bookingDetails', $booking->id) }}"
                                 class="inline-flex items-center gap-1 bg-white hover:bg-emerald-50 text-slate-600 hover:text-emerald-700 font-medium text-xs py-1.5 px-3 rounded-lg border border-slate-200 hover:border-emerald-200 shadow-sm transition-all duration-150">
                                 View Details
                             </a>

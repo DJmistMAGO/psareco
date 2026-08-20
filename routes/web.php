@@ -33,6 +33,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/my-bookings', 'myBookings')->name('farmers.myBookings');
             Route::get('/products', 'products')->name('farmers.products');
             Route::post('/book-machinery', 'store')->name('farmers.bookMachinery');
+            Route::get('/booking-details/{id}', 'bookingDetails')->name('farmers.bookingDetails');
         });
 
     Route::controller(MachineryController::class)

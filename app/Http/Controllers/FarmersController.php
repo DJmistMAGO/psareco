@@ -45,6 +45,21 @@ class FarmersController extends Controller
         ));
     }
 
+    public function bookingDetails($id)
+    {
+        $booking = Booking::with('slots', 'machine')->findOrFail($id);
+
+        // Ensure the authenticated user is the owner of the booking
+        if ($booking->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        //get the booking slots for the booking
+        $bookingSlots = BookingSlot::where('booking_id', $id)->get();
+
+        return view('farmer.booking-deatils', compact('booking', 'bookingSlots'));
+    }
+
     public function myBookings()
     {
         return view('farmer.my-bookings');
