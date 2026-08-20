@@ -35,9 +35,13 @@ class FarmersController extends Controller
 
         // dd($disabledDatesByMachine);
 
+        //get all bookings for the authenticated user for pending and approved bookings
+        $userBookings = Booking::where('user_id', Auth::id())->whereIn('status', ['Pending', 'Approved'])->get();
+
         return view('farmer.book-machinery', compact(
             'availableMachinery',
-            'disabledDatesByMachine'
+            'disabledDatesByMachine',
+            'userBookings'
         ));
     }
 

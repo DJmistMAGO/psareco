@@ -118,36 +118,110 @@
 
 
 
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-100/80 overflow-hidden flex flex-col mb-6">
-            <div class="px-5 py-4 flex items-center justify-between border-b border-slate-100">
-                <div class="flex items-center space-x-2">
+        <div x-data="{ tab: 'pending' }" class="bg-white rounded-2xl shadow-sm border border-slate-100/80 overflow-hidden flex flex-col mb-6">
+    <!-- Card Header with Navigation Tabs -->
+    <div class="px-5 pt-4 border-b border-slate-100 bg-white">
+        <div class="flex items-center justify-between pb-3">
+            <div class="flex items-center space-x-2">
+                <div class="p-1.5 bg-emerald-50 rounded-lg">
                     <i class="fa-solid fa-leaf text-emerald-600 text-sm"></i>
-                    <h3 class="font-bold text-slate-700 text-sm">Book Status</h3>
                 </div>
-                <span class="bg-emerald-100 text-emerald-800 text-xs font-semibold px-2.5 py-0.5 rounded-full"
-                    id="fertilizerCount">0</span>
+                <div>
+                    <h3 class="font-bold text-slate-800 text-sm leading-none">Booking Status</h3>
+                    <p class="text-[11px] text-slate-400 mt-0.5">Manage and track your equipment rentals</p>
+                </div>
             </div>
-            <div class="w-full overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-[#ebf4ef] text-emerald-900 text-[11px] uppercase tracking-wider font-semibold">
-                            <th class="py-2.5 px-4">Machinery Rented</th>
-                            <th class="py-2.5 px-4">Start Date</th>
-                            <th class="py-2.5 px-4">End Date</th>
-                            <th class="py-2.5 px-4">Total Days</th>
-                            <th class="py-2.5 px-4">Cost Price</th>
-                            <th class="py-2.5 px-4">Status</th>
-                            <th class="py-2.5 px-4 text-right">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="fertilizersTableBody" class="divide-y divide-slate-100 text-xs text-slate-700">
-                        <tr>
-                            <td colspan="9" class="py-12 text-center text-slate-400">Loading List...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+
+            <!-- Total Count Badge -->
+            <span class="bg-emerald-50 text-emerald-700 border border-emerald-100 text-xs font-semibold px-2.5 py-0.5 rounded-full" id="fertilizerCount">
+                {{ $userBookings->count() }} Total
+            </span>
         </div>
+
+        <!-- Filter Tabs -->
+        <div class="flex space-x-1 border-b border-slate-100 -mb-px">
+            <!-- Pending Tab -->
+            <button @click="tab = 'pending'"
+                :class="tab === 'pending' ? 'border-emerald-600 text-emerald-700 bg-emerald-50/50' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'"
+                class="flex items-center gap-2 py-2.5 px-3.5 border-b-2 font-medium text-xs transition-all duration-150 rounded-t-lg">
+                <span>Pending</span>
+                <span :class="tab === 'pending' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-600'"
+                    class="text-[10px] font-bold px-1.5 py-0.5 rounded-full transition-colors">
+                    {{ $userBookings->where('status', 'Pending')->count() }}
+                </span>
+            </button>
+
+            <!-- Approved Tab -->
+            <button @click="tab = 'approved'"
+                :class="tab === 'approved' ? 'border-emerald-600 text-emerald-700 bg-emerald-50/50' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'"
+                class="flex items-center gap-2 py-2.5 px-3.5 border-b-2 font-medium text-xs transition-all duration-150 rounded-t-lg">
+                <span>Approved</span>
+                <span :class="tab === 'approved' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'"
+                    class="text-[10px] font-bold px-1.5 py-0.5 rounded-full transition-colors">
+                    {{ $userBookings->where('status', 'Approved')->count() }}
+                </span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Table Body Container -->
+    <div class="w-full overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-[#ebf4ef] text-emerald-900 text-[11px] uppercase tracking-wider font-semibold">
+                    <th class="py-3 px-4">Machinery Rented</th>
+                    <th class="py-3 px-4">Start Date</th>
+                    <th class="py-3 px-4">End Date</th>
+                    <th class="py-3 px-4">Total Days</th>
+                    <th class="py-3 px-4">Status</th>
+                    <th class="py-3 px-4 text-right">Action</th>
+                </tr>
+            </thead>
+            <tbody id="fertilizersTableBody" class="divide-y divide-slate-100 text-xs text-slate-700">
+                @forelse ($userBookings as $booking)
+                    <tr x-show="tab === '{{ strtolower($booking->status) }}'" x-cloak class="hover:bg-slate-50/60 transition-colors">
+                        <td class="py-3 px-4 font-medium text-slate-800">{{ $booking->machine->machinery_name }}</td>
+                        <td class="py-3 px-4 text-slate-600">{{ \Carbon\Carbon::parse($booking->start_date)->format('M j, Y') }}</td>
+                        <td class="py-3 px-4 text-slate-600">{{ \Carbon\Carbon::parse($booking->end_date)->format('M j, Y') }}</td>
+                        <td class="py-3 px-4 text-slate-600">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded bg-slate-100 text-slate-600 text-[11px] font-medium">
+                                {{ $booking->days }} {{ Str::plural('day', $booking->days) }}
+                            </span>
+                        </td>
+                        <td class="py-3 px-4">
+                            @if ($booking->status === 'Pending')
+                                <span class="inline-flex items-center gap-1.5 bg-amber-50 text-amber-700 border border-amber-200/60 text-[10px] font-medium px-2.5 py-1 rounded-full">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                    Pending
+                                </span>
+                            @elseif ($booking->status === 'Approved')
+                                <span class="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200/60 text-[10px] font-medium px-2.5 py-1 rounded-full">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                    Approved
+                                </span>
+                            @elseif ($booking->status === 'Rejected')
+                                <span class="inline-flex items-center gap-1.5 bg-rose-50 text-rose-700 border border-rose-200/60 text-[10px] font-medium px-2.5 py-1 rounded-full">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                                    Rejected
+                                </span>
+                            @endif
+                        </td>
+                        <td class="py-3 px-4 text-right">
+                            <a href="{{ route('farmers.myBookings') }}"
+                                class="inline-flex items-center gap-1 bg-white hover:bg-emerald-50 text-slate-600 hover:text-emerald-700 font-medium text-xs py-1.5 px-3 rounded-lg border border-slate-200 hover:border-emerald-200 shadow-sm transition-all duration-150">
+                                View Details
+                            </a>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="6" class="py-12 text-center text-slate-400">No bookings found.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
 
 
     </main>
@@ -253,191 +327,5 @@
             });
         });
     </script>
-    {{-- <script>
-        let allMachinery = [];
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const today = new Date().toISOString().split('T')[0];
-            const bookingDateInput = document.getElementById('bookingDate');
-            if (bookingDateInput) {
-                bookingDateInput.setAttribute('min', today);
-                bookingDateInput.value = today;
-            }
-
-            loadMachineryData();
-            loadOverdueBookings();
-        });
-
-        function loadMachineryData() {
-            allMachinery = typeof getMachines === 'function' ? getMachines() : [{
-                    id: 1,
-                    name: 'Kubota Four-Wheel Tractor',
-                    model: 'L5018',
-                    dailyRate: 2500,
-                    status: 'Operational',
-                    totalUnits: 3,
-                    bookedUnits: 1,
-                    image: ''
-                },
-                {
-                    id: 2,
-                    name: 'Rice Combine Harvester',
-                    model: 'DC-70G',
-                    dailyRate: 4500,
-                    status: 'Operational',
-                    totalUnits: 2,
-                    bookedUnits: 2,
-                    image: ''
-                },
-                {
-                    id: 3,
-                    name: 'Walk-Behind Rice Transplanter',
-                    model: 'SPW-48C',
-                    dailyRate: 1200,
-                    status: 'Under Maintenance',
-                    totalUnits: 1,
-                    bookedUnits: 0,
-                    image: ''
-                },
-                {
-                    id: 4,
-                    name: 'Corn Sheller Heavy Duty',
-                    model: 'CS-1000',
-                    dailyRate: 800,
-                    status: 'Out of Service',
-                    totalUnits: 1,
-                    bookedUnits: 0,
-                    image: ''
-                }
-            ];
-
-            renderMachineryList(allMachinery);
-        }
-
-        function renderMachineryList(machines) {
-            const container = document.getElementById('machineryList');
-            const select = document.getElementById('bookingMachine');
-            const countBadge = document.getElementById('totalMachinesCount');
-
-            if (countBadge) countBadge.textContent = machines.length;
-
-            if (!container) return;
-
-            if (machines.length === 0) {
-                container.innerHTML =
-                    '<div class="col-span-full text-center text-slate-400 py-10 text-xs">No machinery matching criteria.</div>';
-                if (select) select.innerHTML = '<option value="">No machinery available</option>';
-                return;
-            }
-
-            // Render Machinery Grid Cards
-            container.innerHTML = machines.map(machine => {
-                const rate = Number(machine.dailyRate || 0);
-                const placeholder =
-                    `https://placehold.co/300x200/f1f5f9/334155?text=${encodeURIComponent(machine.name)}`;
-
-                // Dynamic Tailwind badge styles
-                let statusClasses = 'bg-slate-100 text-slate-700 border-slate-200';
-                if (machine.status === 'Operational') {
-                    statusClasses = 'bg-emerald-100 text-emerald-800 border-emerald-200';
-                } else if (machine.status === 'Under Maintenance') {
-                    statusClasses = 'bg-amber-100 text-amber-800 border-amber-200';
-                } else if (machine.status === 'Out of Service') {
-                    statusClasses = 'bg-red-100 text-red-800 border-red-200';
-                }
-
-                return `
-                    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col justify-between">
-                        <div>
-                            <div class="h-36 w-full bg-slate-100 relative overflow-hidden">
-                                <img src="${machine.image || placeholder}" alt="${machine.name}" class="w-full h-full object-cover">
-                                <span class="absolute top-2 right-2 px-2.5 py-1 rounded-full text-[10px] font-bold border ${statusClasses}">
-                                    ${machine.status}
-                                </span>
-                            </div>
-                            <div class="p-4">
-                                <h4 class="font-bold text-slate-800 text-xs line-clamp-1">${machine.name}</h4>
-                                <p class="text-[11px] text-slate-400 mb-2">${machine.model || 'Model N/A'}</p>
-                                <div class="text-sm font-extrabold text-emerald-700 mb-3">
-                                    ₱${rate.toLocaleString()} <span class="text-[10px] font-normal text-slate-500">/ day</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="px-4 pb-4 pt-0">
-                            <div class="flex items-center justify-between text-[11px] bg-slate-50 p-2 rounded-xl text-slate-600 border border-slate-100">
-                                <span>Total: <strong class="text-slate-800">${machine.totalUnits || 1}</strong></span>
-                                <span>Booked: <strong class="text-emerald-700">${machine.bookedUnits || 0}</strong></span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            // Update Select Options
-            if (select) {
-                select.innerHTML = '<option value="">Select Machine</option>' + machines.map(machine =>
-                    `<option value="${machine.id}" data-rate="${machine.dailyRate}">${machine.name} - ₱${Number(machine.dailyRate || 0).toLocaleString()}/day</option>`
-                ).join('');
-            }
-        }
-
-        function filterMachinery() {
-            const term = (document.getElementById('searchMachinery')?.value || '').toLowerCase();
-            const filtered = allMachinery.filter(m =>
-                m.name.toLowerCase().includes(term) ||
-                (m.model && m.model.toLowerCase().includes(term))
-            );
-            renderMachineryList(filtered);
-        }
-
-        function updateDailyRate() {
-            const select = document.getElementById('bookingMachine');
-            const daysInput = document.getElementById('bookingDays');
-            const totalInput = document.getElementById('totalAmount');
-
-            if (!select || !daysInput || !totalInput) return;
-
-            const selectedOption = select.options[select.selectedIndex];
-            const rate = parseFloat(selectedOption?.getAttribute('data-rate') || 0);
-            const days = parseInt(daysInput.value || 0, 10);
-
-            if (rate && days > 0) {
-                totalInput.value = '₱' + (rate * days).toLocaleString();
-            } else {
-                totalInput.value = '';
-            }
-        }
-
-        function submitBooking() {
-            const machineSelect = document.getElementById('bookingMachine');
-            const dateInput = document.getElementById('bookingDate');
-            const daysInput = document.getElementById('bookingDays');
-
-            if (!machineSelect?.value) {
-                alert('Please select a machine.');
-                return;
-            }
-            if (!dateInput?.value) {
-                alert('Please pick a start date.');
-                return;
-            }
-
-            alert('Booking request submitted successfully!');
-            machineSelect.value = '';
-            daysInput.value = '1';
-            updateDailyRate();
-        }
-
-        function loadOverdueBookings() {
-            // Placeholder trigger for overdue listings if present in backend/localStorage
-            const overdueSection = document.getElementById('overdueSection');
-            if (overdueSection && typeof getOverdueBookings === 'function') {
-                const overdue = getOverdueBookings();
-                if (overdue && overdue.length > 0) {
-                    overdueSection.classList.remove('hidden');
-                }
-            }
-        }
-    </script> --}}
 @endpush
