@@ -51,7 +51,7 @@
                 } elseif (auth()->user()->hasRole('officer')) {
                     $menu = [
                         ['route' => 'dashboard', 'icon' => 'fa-chart-line', 'title' => 'Dashboard'],
-                        ['route' => 'machinery-management', 'icon' => 'fa-tractor', 'title' => 'Machinery Management'],
+                        ['route' => 'machinery.index', 'icon' => 'fa-tractor', 'title' => 'Machinery Management'],
                         ['route' => 'machinery-booking', 'icon' => 'fa-calendar-plus', 'title' => 'Machinery Bookings'],
                         ['route' => 'inventory', 'icon' => 'fa-boxes-stacked', 'title' => 'Inventory'],
                         ['route' => 'sales', 'icon' => 'fa-shopping-cart', 'title' => 'Sales'],

@@ -15,11 +15,13 @@ return new class extends Migration
             $table->id();
             $table->foreignId('machine_id')->nullable()->constrained('machineries')->nullOnDelete();
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->date('booking_date')->nullable();
+            $table->date('start_date');
+            $table->date('end_date');
             $table->unsignedInteger('days')->default(1);
+            $table->decimal('total_hours', 8, 2)->default(0);
             $table->decimal('total_amount', 10, 2)->nullable();
-            $table->string('status', 20)->default('Pending');
-            $table->timestamp('created_at')->nullable()->useCurrent();
+            $table->enum('status', ['Pending', 'Approved', 'Rejected', 'Completed'])->default('Pending');
+            $table->timestamps();
         });
     }
 

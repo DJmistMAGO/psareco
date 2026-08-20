@@ -60,19 +60,19 @@
                 </span>
             </div>
 
-            {{-- Form --}}
-            <form action="" method="POST" enctype="multipart/form-data">
-
+            <form action="{{ route('machinery.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
-                <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+                <!-- Changed items-end to items-start so text inputs align naturally -->
+                <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-start">
+
+                    {{-- --- ROW 1 --- --}}
 
                     {{-- Machinery Name --}}
                     <div class="sm:col-span-4">
                         <label for="machinery_name" class="block text-xs font-semibold text-slate-600 mb-1">
                             Machinery Name <span class="text-red-500">*</span>
                         </label>
-
                         <input type="text" id="machinery_name" name="machinery_name" placeholder="e.g. Tractor" required
                             class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
                     </div>
@@ -82,83 +82,78 @@
                         <label for="model" class="block text-xs font-semibold text-slate-600 mb-1">
                             Model <span class="text-red-500">*</span>
                         </label>
-
                         <input type="text" id="model" name="model" placeholder="e.g. John Deere 5075E" required
                             class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
                     </div>
 
                     {{-- Total Unit --}}
                     <div class="sm:col-span-2">
-                        <label for="total_unit" class="block text-xs font-semibold text-slate-600 mb-1">
-                            Total Unit <span class="text-red-500">*</span>
+                        <label for="serial_number" class="block text-xs font-semibold text-slate-600 mb-1">
+                            Serial Number <span class="text-red-500">*</span>
                         </label>
-
-                        <input type="number" id="total_unit" name="total_unit" min="1" placeholder="0" required
+                        <input type="text" id="serial_number" name="serial_number"  placeholder="e.g. TR-001" required
                             class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 font-semibold placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
                     </div>
 
-                    {{-- Cost Per Day --}}
+                    {{-- Cost Per Hour --}}
                     <div class="sm:col-span-3">
                         <label for="rent_per_day" class="block text-xs font-semibold text-slate-600 mb-1">
-                            Rent Per Day <span class="text-red-500">*</span>
+                            Rent Per Hour <span class="text-red-500">*</span>
                         </label>
-
                         <div class="relative">
                             <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-500">
                                 ₱
                             </span>
-
-                            <input type="number" id="rent_per_day" name="rent_per_day" min="0" step="0.01"
+                            <input type="number" id="rent_per_day" name="price" min="0" step="0.01"
                                 placeholder="0.00" required
                                 class="w-full pl-7 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 font-semibold placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
                         </div>
                     </div>
 
-                    {{-- Upload Image --}}
-                    <div class="sm:col-span-5">
+
+                    {{-- --- ROW 2 --- --}}
+
+                    {{-- Upload Image (Takes left side of row 2) --}}
+                    <div class="sm:col-span-6">
                         <label for="image" class="block text-xs font-semibold text-slate-600 mb-1">
                             Upload Image
                         </label>
-
-                        <div class="flex items-center gap-2">
-
+                        <div class="flex flex-col gap-2">
                             <label for="image"
-                                class="flex-1 flex items-center gap-2 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-100 transition">
+                                class="w-full flex items-center gap-2 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-100 transition">
                                 <i class="fa-solid fa-cloud-arrow-up text-emerald-600"></i>
-
                                 <span id="fileName" class="text-xs text-slate-500 truncate">
                                     Choose machinery image
                                 </span>
-
-                                <input type="file" id="image" name="image" accept="image/*" class="hidden"
+                                <input type="file" id="image" name="image_path" accept="image/*" class="hidden"
                                     onchange="previewMachineryImage(event)">
                             </label>
 
-                            {{-- Image Preview --}}
-                            <div id="imagePreview"
-                                class="hidden h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-slate-200 bg-slate-50">
-                                <img id="preview" src="" alt="Preview" class="h-full w-full object-cover">
+                            {{-- Image container limits width and keeps it looking tidy --}}
+                            <div class="mt-1 max-w-[200px]">
+                                <img id="imagePreview" src="#" alt="Preview"
+                                    class="hidden w-full max-h-32 rounded-xl border border-slate-200 object-cover">
                             </div>
-
                         </div>
                     </div>
 
-                    {{-- Status --}}
+                    {{-- Status (Right side next to image upload) --}}
                     <div class="sm:col-span-3">
                         <label for="status" class="block text-xs font-semibold text-slate-600 mb-1">
                             Status <span class="text-red-500">*</span>
                         </label>
-
                         <select id="status" name="status" required
                             class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
-                            <option value="available">Available</option>
-                            <option value="maintenance">Maintenance</option>
-                            <option value="unavailable">Unavailable</option>
+                            <option value="Available">Available</option>
+                            <option value="Reserved">Reserved</option>
+                            <option value="In Use">In Use</option>
+                            <option value="Under Maintenance">Under Maintenance</option>
+                            <option value="Unavailable">Unavailable</option>
                         </select>
                     </div>
 
-                    {{-- Submit --}}
-                    <div class="sm:col-span-4">
+                    {{-- Submit Button (Perfectly aligns next to status and matches height style) --}}
+                    <div class="sm:col-span-3 self-start sm:mt-5">
                         <button type="submit"
                             class="w-full inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs py-2.5 px-4 rounded-xl shadow-sm transition">
                             <i class="fa-solid fa-plus"></i>
@@ -167,9 +162,9 @@
                     </div>
 
                 </div>
-
             </form>
         </div>
+
 
 
         <!-- Machinery Fleet List & Search -->
@@ -220,48 +215,22 @@
         });
 
         function loadMachineryData() {
-            allMachinery = typeof getMachines === 'function' ? getMachines() : [{
-                    id: 1,
-                    name: 'Kubota Four-Wheel Tractor',
-                    model: 'L5018',
-                    dailyRate: 2500,
-                    status: 'Operational',
-                    totalUnits: 3,
-                    bookedUnits: 1,
-                    image: 'https://www.gbs.com.mm/wp-content/uploads/2023/05/tcr-4wt-kbt-l4018-3.jpg'
-                },
-                {
-                    id: 2,
-                    name: 'Rice Combine Harvester',
-                    model: 'DC-70G',
-                    dailyRate: 4500,
-                    status: 'Operational',
-                    totalUnits: 2,
-                    bookedUnits: 2,
-                    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQxMVHkM6MIbmbwN0I4MJ8YqEENJlNHDnHoK5zreC2CDLvQo9_wutjpuE&s=10'
-                },
-                {
-                    id: 3,
-                    name: 'Walk-Behind Rice Transplanter',
-                    model: 'SPW-48C',
-                    dailyRate: 1200,
-                    status: 'Under Maintenance',
-                    totalUnits: 1,
-                    bookedUnits: 0,
-                    image: 'https://image.made-in-china.com/365f3j00UkWogJzIJYbp/KRT-6W-Gasoline-4L-Fuel-Walking-Paddy-Rice-Transplanter-for-sale.webp'
-                },
-                {
-                    id: 4,
-                    name: 'Corn Sheller Heavy Duty',
-                    model: 'CS-1000',
-                    dailyRate: 800,
-                    status: 'Out of Service',
-                    totalUnits: 1,
-                    bookedUnits: 0,
-                    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRU_1U1Wi4DI5Ib6f5JqTMyrgKli7fBfhijgQKSX4ZZ2A&s=10'
-                }
-            ];
+            allMachinery = @json($machineries);
 
+            allMachinery = allMachinery.map(machine => {
+                return {
+                    id: machine.id,
+                    name: machine.machinery_name,
+                    model: machine.model,
+                    dailyRate: machine.price,
+                    status: machine.status,
+                    serialNumber: machine.serial_number,
+                    bookedUnits: 0,
+                    image: `{{ asset('storage') }}/${machine.image_path}`
+                };
+            });
+
+            // 3. Render your freshly loaded database data into the UI
             renderMachineryList(allMachinery);
         }
 
@@ -308,9 +277,9 @@
                             </div>
                             <div class="p-4">
                                 <h4 class="font-bold text-slate-800 text-xs line-clamp-1">${machine.name}</h4>
-                                <p class="text-[11px] text-slate-400 mb-2">${machine.model || 'Model N/A'}</p>
+                            <p class="text-[11px] text-slate-400 mb-2">${machine.model || 'Model N/A'} - ${machine.serialNumber || 'Serial N/A'}</p>
                                 <div class="text-sm font-extrabold text-emerald-700 mb-3">
-                                    ₱${rate.toLocaleString()} <span class="text-[10px] font-normal text-slate-500">/ day</span>
+                                    ₱${rate.toLocaleString()} <span class="text-[10px] font-normal text-slate-500">/ Hour</span>
                                 </div>
                             </div>
                         </div>
@@ -388,6 +357,34 @@
                 if (overdue && overdue.length > 0) {
                     overdueSection.classList.remove('hidden');
                 }
+            }
+        }
+
+        function previewMachineryImage(event) {
+            const input = event.target;
+            const fileNameSpan = document.getElementById('fileName');
+            const previewImg = document.getElementById('imagePreview');
+
+            // Check if the user actually selected a file
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+
+                // 1. Update the text to show the actual filename
+                fileNameSpan.textContent = file.name;
+                fileNameSpan.classList.remove('text-slate-500');
+                fileNameSpan.classList.add('text-slate-800', 'font-medium'); // Make it look active
+
+                // 2. Generate the preview URL and unhide the image tag
+                previewImg.src = URL.createObjectURL(file);
+                previewImg.classList.remove('hidden');
+            } else {
+                // Reset if they cancel or clear the selection
+                fileNameSpan.textContent = "Choose machinery image";
+                fileNameSpan.classList.add('text-slate-500');
+                fileNameSpan.classList.remove('text-slate-800', 'font-medium');
+
+                previewImg.src = "#";
+                previewImg.classList.add('hidden');
             }
         }
     </script>

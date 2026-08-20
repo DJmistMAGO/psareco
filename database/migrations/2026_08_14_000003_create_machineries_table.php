@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('machineries', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 100);
-            $table->string('model', 50)->nullable();
-            $table->decimal('daily_rate', 10, 2)->nullable();
-            $table->string('status', 20)->default('Available');
-            $table->string('image_url', 255)->nullable();
-            $table->timestamp('created_at')->nullable()->useCurrent();
+            $table->string('machinery_name');
+            $table->string('model');
+            $table->string('serial_number')->unique();
+            $table->string('price');
+            $table->string('image_path');
+            $table->enum('status', ['Available', 'Reserved', 'In Use', 'Under Maintenance', 'Unavailable'])->default('Available');
+            $table->timestamps();
         });
     }
 
