@@ -228,7 +228,7 @@
                 Request machinery rentals, monitor fertilizer and pesticide
                 inventory, and manage cooperative transactions—all in one
                 platform built for PSARECO's ARB and non-ARB farmer-members
-                in Polot and Somagongsong, Bulan, Sorsogon.
+                in Polot <em>(San Francisco)</em> and Somagongsong, Bulan, Sorsogon.
 
             </p>
 
@@ -415,7 +415,7 @@
                 <p class="mt-5 leading-7 text-gray-600">
                     The Polot Somagongsong Agrarian Reform Cooperative (PSARECO)
                     serves Agrarian Reform Beneficiaries (ARBs) and non-ARB
-                    farmer-members in Polot and Somagongsong, Bulan, Sorsogon.
+                    farmer-members in Polot <em>(San Francisco)</em> and Somagongsong, Bulan, Sorsogon.
                     This system replaces handwritten records with a centralized
                     platform for machinery scheduling, inventory monitoring, and
                     transaction recording.
