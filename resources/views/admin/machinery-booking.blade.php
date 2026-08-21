@@ -76,27 +76,17 @@
                         <i class="fa-solid fa-clock text-[11px]"></i>
                         Pending
                         <span class="tab-count px-1.5 py-0.5 rounded-full bg-amber-100 text-[10px] font-bold">
-                            1
+                            {{ $bookings->where('status', 'Pending')->count() }}
                         </span>
                     </button>
 
-                    <button type="button" data-status="confirmed"
+                    <button type="button" data-status="approved"
                         class="status-tab inline-flex shrink-0 items-center gap-1.5 px-3 py-2 rounded-xl text-slate-500 border border-transparent hover:bg-emerald-50 hover:text-emerald-700 text-xs font-semibold transition">
                         <i class="fa-solid fa-circle-check text-[11px]"></i>
-                        Confirmed
+                        Approved
                         <span
                             class="tab-count px-1.5 py-0.5 rounded-full bg-emerald-100 text-slate-500 text-[10px] font-bold">
-                            1
-                        </span>
-                    </button>
-
-                    <button type="button" data-status="rented"
-                        class="status-tab inline-flex shrink-0 items-center gap-1.5 px-3 py-2 rounded-xl text-slate-500 border border-transparent hover:bg-emerald-50 hover:text-emerald-700 text-xs font-semibold transition">
-                        <i class="fa-solid fa-tractor text-[11px]"></i>
-                        Rented
-                        <span
-                            class="tab-count px-1.5 py-0.5 rounded-full bg-emerald-200 text-slate-500 text-[10px] font-bold">
-                            0
+                            {{ $bookings->where('status', 'Approved')->count() }}
                         </span>
                     </button>
 
@@ -104,9 +94,8 @@
                         class="status-tab inline-flex shrink-0 items-center gap-1.5 px-3 py-2 rounded-xl text-slate-500 border border-transparent hover:bg-emerald-50 hover:text-emerald-700 text-xs font-semibold transition">
                         <i class="fa-solid fa-flag-checkered text-[11px]"></i>
                         Completed
-                        <span
-                            class="tab-count px-1.5 py-0.5 rounded-full bg-emerald-400 text-white text-[10px] font-bold">
-                            0
+                        <span class="tab-count px-1.5 py-0.5 rounded-full bg-emerald-400 text-white text-[10px] font-bold">
+                            {{ $bookings->where('status', 'Completed')->count() }}
                         </span>
                     </button>
 
@@ -114,9 +103,8 @@
                         class="status-tab inline-flex shrink-0 items-center gap-1.5 px-3 py-2 rounded-xl text-slate-500 border border-transparent hover:bg-red-50 hover:text-red-700 text-xs font-semibold transition">
                         <i class="fa-solid fa-circle-xmark text-[11px]"></i>
                         Cancelled
-                        <span
-                            class="tab-count px-1.5 py-0.5 rounded-full bg-red-100 text-slate-500 text-[10px] font-bold">
-                            0
+                        <span class="tab-count px-1.5 py-0.5 rounded-full bg-red-100 text-slate-500 text-[10px] font-bold">
+                            {{ $bookings->where('status', 'Cancelled')->count() }}
                         </span>
                     </button>
 
@@ -152,7 +140,7 @@
                                 Status
                             </th>
 
-                            <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-500 text-right">
+                            <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-500 text-center">
                                 Action
                             </th>
 
@@ -162,256 +150,160 @@
 
                     <tbody class="divide-y divide-slate-100" id="bookingsTableBody">
 
-                        <tr class="hover:bg-slate-50/60 transition" data-status="pending"
-                            data-search="juan dela cruz kubota four-wheel tractor l5018">
+                        @foreach ($bookings as $booking)
+                            <tr class="hover:bg-slate-50/60 transition" data-status="{{ strtolower($booking->status) }}"
+                                data-search="{{ strtolower($booking->user->name . ' ' . $booking->machine->machinery_name . ' ' . $booking->machine->model) }}">
 
-                            <td class="px-5 py-4">
-                                <div class="flex items-center gap-3">
+                                <td class="px-5 py-4">
+                                    <div class="flex items-center gap-3">
 
-                                    <div
-                                        class="h-9 w-9 shrink-0 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center">
-                                        <i class="fa-solid fa-user text-xs"></i>
+                                        <div
+                                            class="h-9 w-9 shrink-0 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                                            <i class="fa-solid fa-user text-xs"></i>
+                                        </div>
+
+                                        <div>
+                                            <p class="text-xs font-bold text-slate-800">
+                                                {{ $booking->user->name }}
+                                            </p>
+
+                                            <p class="text-[10px] text-slate-400">
+                                                Farmer
+                                            </p>
+                                        </div>
+
+                                    </div>
+                                </td>
+
+
+                                <td class="px-5 py-4">
+
+                                    <div class="flex items-center gap-2.5">
+
+                                        <div
+                                            class="h-9 w-9 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                                            <i class="fa-solid fa-tractor text-sm"></i>
+                                        </div>
+
+                                        <div>
+                                            <p class="text-xs font-semibold text-slate-800">
+                                                {{ $booking->machine->machinery_name }}
+                                            </p>
+
+                                            <p class="text-[10px] text-slate-400">
+                                                {{ $booking->machine->model }}
+                                            </p>
+                                        </div>
+
                                     </div>
 
-                                    <div>
-                                        <p class="text-xs font-bold text-slate-800">
-                                            Juan Dela Cruz
-                                        </p>
+                                </td>
 
-                                        <p class="text-[10px] text-slate-400">
-                                            Farmer
-                                        </p>
+
+                                <td class="px-5 py-4">
+
+                                    <div class="flex items-center gap-2 text-xs">
+
+                                        <div>
+                                            <p class="text-[10px] text-slate-400">
+                                                Start
+                                            </p>
+
+                                            <p class="font-semibold text-slate-700">
+                                                {{ $booking->start_date->format('M j, Y') }}
+                                            </p>
+                                        </div>
+
+                                        <i class="fa-solid fa-arrow-right text-[10px] text-slate-300"></i>
+
+                                        <div>
+                                            <p class="text-[10px] text-slate-400">
+                                                End
+                                            </p>
+
+                                            <p class="font-semibold text-slate-700">
+                                                {{ $booking->end_date->format('M j, Y') }}
+                                            </p>
+                                        </div>
+
                                     </div>
 
-                                </div>
-                            </td>
-
-
-                            <td class="px-5 py-4">
-
-                                <div class="flex items-center gap-2.5">
-
-                                    <div
-                                        class="h-9 w-9 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                                        <i class="fa-solid fa-tractor text-sm"></i>
-                                    </div>
-
-                                    <div>
-                                        <p class="text-xs font-semibold text-slate-800">
-                                            Kubota Four-Wheel Tractor
-                                        </p>
-
-                                        <p class="text-[10px] text-slate-400">
-                                            L5018
-                                        </p>
-                                    </div>
-
-                                </div>
-
-                            </td>
-
-
-                            <td class="px-5 py-4">
-
-                                <div class="flex items-center gap-2 text-xs">
-
-                                    <div>
-                                        <p class="text-[10px] text-slate-400">
-                                            Start
-                                        </p>
-
-                                        <p class="font-semibold text-slate-700">
-                                            Aug 20, 2026
-                                        </p>
-                                    </div>
-
-                                    <i class="fa-solid fa-arrow-right text-[10px] text-slate-300"></i>
-
-                                    <div>
-                                        <p class="text-[10px] text-slate-400">
-                                            End
-                                        </p>
-
-                                        <p class="font-semibold text-slate-700">
-                                            Aug 23, 2026
-                                        </p>
-                                    </div>
-
-                                </div>
-
-                            </td>
-
-
-                            <td class="px-5 py-4">
-                                <span class="text-xs font-bold text-slate-700">
-                                    3 Days
-                                </span>
-                            </td>
-
-
-                            <td class="px-5 py-4">
-
-                                <span class="text-sm font-extrabold text-emerald-700">
-                                    ₱7,500
-                                </span>
-
-                            </td>
-
-
-                            <td class="px-5 py-4">
-
-                                <span
-                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 border border-amber-200 text-[10px] font-bold">
-
-                                    <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span>
-
-                                    Pending
-
-                                </span>
-
-                            </td>
-
-
-                            <td class="px-5 py-4 text-right">
-
-                                <button type="button"
-                                    class="inline-flex items-center justify-center h-8 w-8 rounded-lg text-slate-500 hover:bg-emerald-50 hover:text-emerald-600 transition"
-                                    title="View Booking">
-                                    <i class="fa-solid fa-eye text-xs"></i>
-                                </button>
-
-                                <button type="button"
-                                    class="inline-flex items-center justify-center h-8 w-8 rounded-lg text-slate-500 hover:bg-emerald-50 hover:text-emerald-600 transition"
-                                    title="Manage Booking">
-                                    <i class="fa-solid fa-ellipsis-vertical text-xs"></i>
-                                </button>
-
-                            </td>
-
-                        </tr>
-
-
-                        <tr class="hover:bg-slate-50/60 transition" data-status="confirmed"
-                            data-search="maria santos rice combine harvester dc-70g">
-
-                            <td class="px-5 py-4">
-
-                                <div class="flex items-center gap-3">
-
-                                    <div
-                                        class="h-9 w-9 shrink-0 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center">
-                                        <i class="fa-solid fa-user text-xs"></i>
-                                    </div>
-
-                                    <div>
-                                        <p class="text-xs font-bold text-slate-800">
-                                            Maria Santos
-                                        </p>
-
-                                        <p class="text-[10px] text-slate-400">
-                                            Farmer
-                                        </p>
-                                    </div>
-
-                                </div>
-
-                            </td>
-
-                            <td class="px-5 py-4">
-
-                                <div class="flex items-center gap-2.5">
-
-                                    <div
-                                        class="h-9 w-9 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                                        <i class="fa-solid fa-tractor text-sm"></i>
-                                    </div>
-
-                                    <div>
-                                        <p class="text-xs font-semibold text-slate-800">
-                                            Rice Combine Harvester
-                                        </p>
-
-                                        <p class="text-[10px] text-slate-400">
-                                            DC-70G
-                                        </p>
-                                    </div>
-
-                                </div>
-
-                            </td>
-
-                            <td class="px-5 py-4">
-
-                                <div class="flex items-center gap-2 text-xs">
-
-                                    <div>
-                                        <p class="text-[10px] text-slate-400">
-                                            Start
-                                        </p>
-
-                                        <p class="font-semibold text-slate-700">
-                                            Aug 21, 2026
-                                        </p>
-                                    </div>
-
-                                    <i class="fa-solid fa-arrow-right text-[10px] text-slate-300"></i>
-
-                                    <div>
-                                        <p class="text-[10px] text-slate-400">
-                                            End
-                                        </p>
-
-                                        <p class="font-semibold text-slate-700">
-                                            Aug 22, 2026
-                                        </p>
-                                    </div>
-
-                                </div>
-
-                            </td>
-
-                            <td class="px-5 py-4">
-                                <span class="text-xs font-bold text-slate-700">
-                                    1 Day
-                                </span>
-                            </td>
-
-                            <td class="px-5 py-4">
-
-                                <span class="text-sm font-extrabold text-emerald-700">
-                                    ₱4,500
-                                </span>
-
-                            </td>
-
-                            <td class="px-5 py-4">
-
-                                <span
-                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 text-[10px] font-bold">
-
-                                    <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
-
-                                    Confirmed
-
-                                </span>
-
-                            </td>
-
-                            <td class="px-5 py-4 text-right">
-
-                                <button type="button"
-                                    class="inline-flex items-center justify-center h-8 w-8 rounded-lg text-slate-500 hover:bg-emerald-50 hover:text-emerald-600 transition">
-                                    <i class="fa-solid fa-eye text-xs"></i>
-                                </button>
-
-                                <button type="button"
-                                    class="inline-flex items-center justify-center h-8 w-8 rounded-lg text-slate-500 hover:bg-emerald-50 hover:text-emerald-600 transition">
-                                    <i class="fa-solid fa-ellipsis-vertical text-xs"></i>
-                                </button>
-
-                            </td>
-
-                        </tr>
+                                </td>
+
+
+                                <td class="px-5 py-4">
+                                    <span class="text-xs font-bold text-slate-700">
+                                        {{ $booking->days }} Days
+                                    </span>
+                                </td>
+
+
+                                <td class="px-5 py-4">
+
+                                    <span class="text-sm font-extrabold text-emerald-700">
+                                        {{ '₱ ' . number_format($booking->total_amount, 2) }}
+                                    </span>
+
+                                </td>
+
+
+                                <td class="px-5 py-4">
+
+                                    @if ($booking->status === 'Pending')
+                                        <span
+                                            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 border border-amber-200 text-[10px] font-bold">
+                                            <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span>
+                                            {{ $booking->status }}
+                                        </span>
+                                    @elseif ($booking->status === 'Approved')
+                                        <span
+                                            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 text-[10px] font-bold">
+                                            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                                            {{ $booking->status }}
+                                        </span>
+                                    @elseif ($booking->status === 'Completed')
+                                        <span
+                                            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-100 text-green-800 border border-green-200 text-[10px] font-bold">
+                                            <span class="h-1.5 w-1.5 rounded-full bg-green-500"></span>
+                                            {{ $booking->status }}
+                                        </span>
+                                    @elseif ($booking->status === 'Cancelled')
+                                        <span
+                                            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-100 text-red-800 border border-red-200 text-[10px] font-bold">
+                                            <span class="h-1.5 w-1.5 rounded-full bg-red-500"></span>
+                                            {{ $booking->status }}
+                                        </span>
+                                    @endif
+
+                                </td>
+
+
+                                <td class="px-5 py-4 text-center">
+
+                                    <form id="approve-form-{{ $booking->id }}"
+                                        action="{{ route('officer.approve-booking', $booking->id) }}" method="POST"
+                                        style="display: none;">
+                                        @csrf
+                                        @method('PUT')
+                                    </form>
+
+                                    <button type="button"
+                                        class="inline-flex items-center gap-1 bg-white hover:bg-emerald-50 text-slate-600 hover:text-emerald-700 font-medium text-base py-1.5 px-3 rounded-lg border border-slate-200 hover:border-emerald-200 shadow-sm transition-all duration-150"
+                                        title="Approved Booking"
+                                        onclick="approvedSubmit('approve-form-{{ $booking->id }}')">
+                                        <i class="fa-solid fa-check text-base"></i>
+                                    </button>
+
+                                    <button type="button"
+                                        class="inline-flex items-center gap-1 bg-white hover:bg-rose-50 text-red-600 hover:text-rose-700 font-medium text-base py-1.5 px-3 rounded-lg border border-slate-200 hover:border-rose-200 shadow-sm transition-all duration-150"
+                                        title="Reject Booking" onclick="rejectSubmit()">
+                                        <i class="fa-solid fa-trash-can text-base"></i>
+                                    </button>
+
+                                </td>
+
+                            </tr>
+                        @endforeach
 
                         {{-- Add data-status="rented" / "completed" / "cancelled" to future rows the same way --}}
 
@@ -492,7 +384,24 @@
 
 @push('scripts')
     <script>
+        function approvedSubmit(formId) {
+            Swal.fire({
+                title: 'Are you sure you want to approve this booking?',
+                text: "You won't be able to undo this action!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#059669',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, approve it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById(formId).submit();
+                }
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
+
             const tabs = document.querySelectorAll('.status-tab');
             const rows = document.querySelectorAll('#bookingsTableBody tr[data-status]');
             const emptyState = document.getElementById('emptyState');
@@ -501,73 +410,129 @@
             let activeStatus = 'pending';
             let searchTerm = '';
 
-            // Active-state classes per status, keyed to your existing color scheme.
             const activeClasses = {
                 pending: ['bg-amber-50', 'text-amber-700', 'border-amber-200'],
-                confirmed: ['bg-emerald-50', 'text-emerald-700', 'border-emerald-200'],
+                approved: ['bg-emerald-50', 'text-emerald-700', 'border-emerald-200'],
                 rented: ['bg-emerald-50', 'text-emerald-700', 'border-emerald-200'],
                 completed: ['bg-emerald-50', 'text-emerald-700', 'border-emerald-200'],
-                cancelled: ['bg-red-50', 'text-red-700', 'border-red-200'],
+                cancelled: ['bg-red-50', 'text-red-700', 'border-red-200']
             };
-            const inactiveClasses = ['text-slate-500', 'border-transparent'];
+
+            const inactiveClasses = [
+                'text-slate-500',
+                'border-transparent'
+            ];
+
             const allColorClasses = [
-                'bg-amber-50', 'text-amber-700', 'border-amber-200',
-                'bg-emerald-50', 'text-emerald-700', 'border-emerald-200',
-                'bg-red-50', 'text-red-700', 'border-red-200',
-                'text-slate-500', 'border-transparent',
+                'bg-amber-50',
+                'text-amber-700',
+                'border-amber-200',
+
+                'bg-emerald-50',
+                'text-emerald-700',
+                'border-emerald-200',
+
+                'bg-red-50',
+                'text-red-700',
+                'border-red-200',
+
+                'text-slate-500',
+                'border-transparent'
             ];
 
             function paintTabs() {
+
                 tabs.forEach(tab => {
+
                     const status = tab.dataset.status;
+
                     tab.classList.remove(...allColorClasses);
+
                     if (status === activeStatus) {
+
                         tab.classList.add(...activeClasses[status]);
+
                     } else {
+
                         tab.classList.add(...inactiveClasses);
+
                     }
+
                 });
+
             }
 
             function applyFilters() {
+
                 let visibleCount = 0;
 
                 rows.forEach(row => {
-                    const matchesStatus = row.dataset.status === activeStatus;
-                    const matchesSearch = searchTerm === '' ||
-                        (row.dataset.search || '').includes(searchTerm);
+
+                    const rowStatus = row.dataset.status.toLowerCase();
+
+                    const rowSearch = (row.dataset.search || '').toLowerCase();
+
+                    const matchesStatus = rowStatus === activeStatus;
+
+                    const matchesSearch =
+                        searchTerm === '' ||
+                        rowSearch.includes(searchTerm);
 
                     if (matchesStatus && matchesSearch) {
+
                         row.classList.remove('hidden');
+
                         visibleCount++;
+
                     } else {
+
                         row.classList.add('hidden');
+
                     }
+
                 });
 
                 if (emptyState) {
-                    emptyState.classList.toggle('hidden', visibleCount !== 0);
+
+                    emptyState.classList.toggle(
+                        'hidden',
+                        visibleCount !== 0
+                    );
+
                 }
+
             }
 
             tabs.forEach(tab => {
+
                 tab.addEventListener('click', function() {
-                    activeStatus = tab.dataset.status;
+
+                    activeStatus = this.dataset.status.toLowerCase();
+
                     paintTabs();
+
                     applyFilters();
+
                 });
+
             });
 
             if (searchInput) {
+
                 searchInput.addEventListener('input', function() {
-                    searchTerm = searchInput.value.trim().toLowerCase();
+
+                    searchTerm = this.value.trim().toLowerCase();
+
                     applyFilters();
+
                 });
+
             }
 
-            // Initial state on page load
             paintTabs();
+
             applyFilters();
+
         });
     </script>
 @endpush

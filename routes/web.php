@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\FarmersController;
 use App\Http\Controllers\MachineryController;
+use App\Http\Controllers\OfficerController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -23,7 +24,7 @@ Route::middleware('auth')->group(function () {
     Route::view('/inventory', 'admin.inventory')->name('inventory');
     Route::view('/sales', 'admin.sales')->name('sales');
     Route::view('/reports', 'admin.reports')->name('reports');
-    Route::view('/my-bookings', 'farmer.my-bookings')->name('my-bookings');
+    // Route::view('/my-bookings', 'farmer.my-bookings')->name('my-bookings');
     Route::view('/machinery-bookings', 'admin.machinery-booking')->name('machinery-booking');
 
     Route::controller(FarmersController::class)
@@ -34,6 +35,16 @@ Route::middleware('auth')->group(function () {
             Route::get('/products', 'products')->name('farmers.products');
             Route::post('/book-machinery', 'store')->name('farmers.bookMachinery');
             Route::get('/booking-details/{id}', 'bookingDetails')->name('farmers.bookingDetails');
+            Route::put('/update-bookingSlot/{id}', 'updateBookingSlot')->name('farmers.updateBookingSlot');
+        });
+
+    Route::controller(OfficerController::class)
+        ->prefix('officer')
+        ->group(function () {
+            Route::get('/booking/index', 'indexBooking')->name('officer.index-booking');
+            Route::put('/booking/approve/{id}', 'approveBooking')->name('officer.approve-booking');
+            Route::get('/booking/calendar', 'bookingCalendar')->name('officer.booking-calendar');
+
         });
 
     Route::controller(MachineryController::class)
