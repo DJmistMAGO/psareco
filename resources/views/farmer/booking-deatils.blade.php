@@ -89,11 +89,36 @@
                     </div>
 
                     <!-- Days -->
-                    <div class="sm:col-span-3">
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Duration (Days)</label>
+                    <div class="sm:col-span-1">
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Duration</label>
                         <input type="number" id="bookingDays" value="{{ $booking->days }}" disabled placeholder="0"
                             class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
                     </div>
+
+                    <div class="sm:col-span-1">
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Total Hours</label>
+                        <input type="number" id="totalHours" value="0" disabled placeholder="0"
+                            class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
+                    </div>
+
+                    <div class="sm:col-span-2">
+    <label class="block text-xs font-semibold text-slate-600 mb-1">
+        Total Cost
+    </label>
+
+    <div class="relative">
+        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-500">
+            ₱
+        </span>
+
+        <input type="number"
+            id="totalCost"
+            value="0"
+            disabled
+            placeholder="0"
+            class="w-full pl-7 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
+    </div>
+</div>
 
                     <!-- Total Amount -->
                     {{-- <div class="sm:col-span-2">
@@ -123,49 +148,74 @@
                             <p class="text-[11px] text-slate-400 mt-0.5">Manage and track your time rentals</p>
                         </div>
                     </div>
+                    <div>
+                        <button type="submit"
+                            class="inline-flex items-center gap-2 bg-emerald-600 text-white hover:bg-emerald-700 font-semibold text-xs py-2 px-3.5 rounded-xl shadow-sm transition">
+                            COMPLETE BOOKING <i class="fa-solid fa-tractor"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
 
             <!-- Table Body Container -->
             <div class="w-full overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-[#ebf4ef] text-emerald-900 text-[11px] uppercase tracking-wider font-semibold">
-                            <th class="py-3 px-4">Day</th>
-                            <th class="py-3 px-4">Date</th>
-                            <th class="py-3 px-4">Start Time</th>
-                            <th class="py-3 px-4">End Time</th>
-                            <th class="py-3 px-4">Total Hours</th>
-                        </tr>
-                    </thead>
-                    <tbody id="fertilizersTableBody" class="divide-y divide-slate-100 text-xs text-slate-700">
-                        @forelse ($bookingSlots as $slot)
-                            <tr class="hover:bg-slate-50/60 transition-colors">
-                                <td class="py-3 px-4 font-medium text-slate-800">Day {{ $loop->iteration }}
-                                </td>
-                                <td class="py-3 px-4 text-slate-600">
-                                    {{ \Carbon\Carbon::parse($slot->booking_date)->format('F j, Y') }}
-                                </td>
-                                <td class="py-3 px-4 text-slate-600">
-                                    <input type="time" name="start_time" id="start_time"
-                                        class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
-                                </td>
-                                <td class="py-3 px-4 text-slate-600">
-                                    <input type="time" name="end_time" id="end_time"
-                                        class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
-                                </td>
-                                <td class="py-3 px-4 text-slate-600">
-                                    <input type="number" name="end_time" id="end_time"
-                                        class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
-                                </td>
+                <form action="{{ route('farmers.updateBookingSlot', $booking->id) }}" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-[#ebf4ef] text-emerald-900 text-[11px] uppercase tracking-wider font-semibold">
+                                <th class="py-3 px-4">Day</th>
+                                <th class="py-3 px-4">Date</th>
+                                <th class="py-3 px-4">Start Time</th>
+                                <th class="py-3 px-4">End Time</th>
+                                <th class="py-3 px-4">Total Hours</th>
+                                <th class="py-3 px-4 text-center">Submit Hours</th>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="py-12 text-center text-slate-400">No bookings found.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody id="fertilizersTableBody" class="divide-y divide-slate-100 text-xs text-slate-700">
+                            @forelse ($bookingSlots as $slot)
+                                <tr class="hover:bg-slate-50/60 transition-colors">
+                                    <td class="py-3 px-4 font-medium text-slate-800">Day {{ $loop->iteration }}
+                                        <input type="hidden" name="slot_id[]" value="{{ $slot->id }}">
+                                    </td>
+                                    <td class="py-3 px-4 text-slate-600">
+                                        {{ \Carbon\Carbon::parse($slot->booking_date)->format('F j, Y') }}
+                                    </td>
+                                    <td class="py-3 px-4 text-slate-600">
+                                        <input type="time"
+                                            value="{{ $slot->start_time ? \Carbon\Carbon::parse($slot->start_time)->format('H:i') : '' }}"
+                                            name="start_time[]"
+                                            class="start-time px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
+                                    </td>
+
+                                    <td class="py-3 px-4 text-slate-600">
+                                        <input type="time"
+                                            value="{{ $slot->end_time ? \Carbon\Carbon::parse($slot->end_time)->format('H:i') : '' }}"
+                                            name="end_time[]"
+                                            class="end-time px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
+                                    </td>
+
+                                    <td class="py-3 px-4 text-slate-600">
+                                        <input type="number" value="{{ $slot->hours ?? '' }}" name="hours[]"
+                                            class="hours px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition"
+                                            step="0.01" readonly>
+                                    </td>
+                                    <td class="py-3 px-4 text-center">
+                                        <button type="submit"
+                                            class="inline-flex items-center gap-2 bg-emerald-600 text-white hover:bg-emerald-700 font-semibold text-xs py-2 px-3.5 rounded-xl shadow-sm transition">
+                                            <i class="fa-solid fa-check"></i> Submit
+                                        </button>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="py-12 text-center text-slate-400">No bookings found.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </form>
             </div>
         </div>
 
@@ -175,5 +225,60 @@
 @endsection
 
 @push('scripts')
-    <script></script>
+    <script>
+        document.querySelectorAll('tr').forEach(row => {
+
+            const startTime = row.querySelector('.start-time');
+            const endTime = row.querySelector('.end-time');
+            const totalHours = row.querySelector('.hours');
+
+            if (!startTime || !endTime || !totalHours) return;
+
+            function calculateHours() {
+
+                if (!startTime.value || !endTime.value) {
+                    totalHours.value = '';
+                    return;
+                }
+
+                const start = new Date(`1970-01-01T${startTime.value}`);
+                const end = new Date(`1970-01-01T${endTime.value}`);
+
+                let difference = (end - start) / (1000 * 60 * 60);
+
+                // If end time is past midnight
+                if (difference < 0) {
+                    difference += 24;
+                }
+
+                totalHours.value = difference.toFixed(2);
+            }
+
+            startTime.addEventListener('change', calculateHours);
+            endTime.addEventListener('change', calculateHours);
+
+            const machinePrice = {{ $booking->machine->price ?? 0 }};
+
+            function calculateTotalHours() {
+                let totalHours = 0;
+
+                document.querySelectorAll('.hours').forEach(input => {
+                    totalHours += parseFloat(input.value) || 0;
+                });
+
+                document.getElementById('totalHours').value = totalHours.toFixed(2);
+
+                // Calculate total cost
+                const totalCost = totalHours * machinePrice;
+
+                document.getElementById('totalCost').value = totalCost.toFixed(2);
+            }
+
+            calculateTotalHours();
+
+            document.querySelectorAll('.hours').forEach(input => {
+                input.addEventListener('input', calculateTotalHours);
+            });
+        });
+    </script>
 @endpush

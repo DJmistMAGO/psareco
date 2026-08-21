@@ -174,7 +174,7 @@
                     <th class="py-3 px-4">End Date</th>
                     <th class="py-3 px-4">Total Days</th>
                     <th class="py-3 px-4">Status</th>
-                    <th class="py-3 px-4 text-right">Action</th>
+                    <th class="py-3 px-4 text-center">Action</th>
                 </tr>
             </thead>
             <tbody id="fertilizersTableBody" class="divide-y divide-slate-100 text-xs text-slate-700">
@@ -206,11 +206,18 @@
                                 </span>
                             @endif
                         </td>
-                        <td class="py-3 px-4 text-right">
+                        <td class="py-3 px-4 text-center">
+                            @if($booking->status === 'Pending')
+                                <a href=""
+                                    class="inline-flex items-center gap-1 bg-white hover:bg-rose-50 text-red-600 hover:text-rose-700 font-medium text-base py-1.5 px-3 rounded-lg border border-slate-200 hover:border-rose-200 shadow-sm transition-all duration-150">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </a>
+                            @else
                             <a href="{{ route('farmers.bookingDetails', $booking->id) }}"
-                                class="inline-flex items-center gap-1 bg-white hover:bg-emerald-50 text-slate-600 hover:text-emerald-700 font-medium text-xs py-1.5 px-3 rounded-lg border border-slate-200 hover:border-emerald-200 shadow-sm transition-all duration-150">
-                                View Details
+                                class="inline-flex items-center gap-1 bg-white hover:bg-emerald-50 text-slate-600 hover:text-emerald-700 font-medium text-base py-1.5 px-3 rounded-lg border border-slate-200 hover:border-emerald-200 shadow-sm transition-all duration-150">
+                                <i class="fa-solid fa-calendar-days"></i>
                             </a>
+                            @endif
                         </td>
                     </tr>
                 @empty

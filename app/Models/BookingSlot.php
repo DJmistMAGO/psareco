@@ -23,6 +23,8 @@ class BookingSlot extends Model
 
     protected $casts = [
         'booking_date' => 'date',
+        'start_time' => 'datetime:H:i',
+        'end_time' => 'datetime:H:i',
         'hours' => 'decimal:2',
     ];
 

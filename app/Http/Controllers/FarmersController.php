@@ -60,6 +60,59 @@ class FarmersController extends Controller
         return view('farmer.booking-deatils', compact('booking', 'bookingSlots'));
     }
 
+    public function updateBookingSlot(Request $request, $slotId)
+    {
+        // dd($request->all());
+
+        $request->validate([
+            'slot_id' => 'required|array',
+            'slot_id.*' => 'required|exists:booking_slots,id',
+
+            'start_time' => 'required|array',
+            'start_time.*' => 'nullable|date_format:H:i',
+
+            'end_time' => 'required|array',
+            'end_time.*' => 'nullable|date_format:H:i',
+        ]);
+
+        // dd($request->all());
+
+        foreach ($request->slot_id as $index => $slotId) {
+
+            $startTime = $request->start_time[$index] ?? null;
+            $endTime = $request->end_time[$index] ?? null;
+
+            // Skip empty rows
+            if (empty($startTime) && empty($endTime)) {
+                continue;
+            }
+
+            // Don't allow only one time
+            if (empty($startTime) || empty($endTime)) {
+                return back()->withErrors([
+                    'time' => 'Please provide both start time and end time.'
+                ]);
+            }
+
+            $start = Carbon::createFromFormat('H:i', $startTime);
+            $end = Carbon::createFromFormat('H:i', $endTime);
+
+            if ($end->lessThan($start)) {
+                $end->addDay();
+            }
+
+            $hours = $start->diffInMinutes($end) / 60;
+
+            BookingSlot::where('id', $slotId)->update([
+                'start_time' => $startTime,
+                'end_time' => $endTime,
+                'hours' => $hours,
+            ]);
+        }
+
+        return back()->with('success', 'Booking slots updated successfully.');
+    }
+
     public function myBookings()
     {
         return view('farmer.my-bookings');
