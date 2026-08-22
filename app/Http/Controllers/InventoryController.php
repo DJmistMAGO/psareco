@@ -24,7 +24,9 @@ class InventoryController extends Controller
             $query->where('type', $request->type);
         }
 
-        $inventories = $query->latest()->get();
+        $inventories = $query->latest()
+            ->paginate(12)
+            ->withQueryString();
 
         $totalProducts = Inventory::count();
         $fertilizerCount = Inventory::where('type', 'Fertilizer')->count();
@@ -68,5 +70,62 @@ class InventoryController extends Controller
         Inventory::create($validated);
 
         return redirect()->route('inventory.index')->with('success', 'Product added successfully.');
+    }
+
+
+    public function updateProduct(Request $request, Inventory $inventory)
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'type' => ['required', 'in:Fertilizer,Pesticide'],
+            'quantity' => ['required', 'numeric', 'min:0'],
+            'unit' => ['required', 'string', 'max:50'],
+            'price' => ['required', 'numeric', 'min:0'],
+            'reorder_level' => ['required', 'numeric', 'min:0'],
+            'expiration_date' => ['nullable', 'date'],
+        ]);
+
+        $inventory->update($validated);
+
+        return redirect()->route('inventory.index')->with('success', 'Product updated successfully.');
+    }
+
+
+    public function deleteProduct(Inventory $inventory)
+    {
+        $inventory->delete();
+
+        return redirect()->route('inventory.index')->with('success', 'Product deleted successfully.');
+    }
+
+    public function trash()
+    {
+        $deletedInventories = Inventory::onlyTrashed()
+            ->latest('deleted_at')
+            ->paginate(12);
+
+        return view('admin.inventory-trash', compact('deletedInventories'));
+    }
+
+    public function restoreProduct($id)
+    {
+        $inventory = Inventory::onlyTrashed()->findOrFail($id);
+
+        $inventory->restore();
+
+        return redirect()
+            ->route('inventory.trash')
+            ->with('success', 'Product restored successfully.');
+    }
+
+    public function forceDeleteProduct($id)
+    {
+        $inventory = Inventory::onlyTrashed()->findOrFail($id);
+
+        $inventory->forceDelete();
+
+        return redirect()
+            ->route('inventory.trash')
+            ->with('success', 'Product permanently deleted.');
     }
 }
