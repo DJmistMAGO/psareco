@@ -13,18 +13,10 @@
 <header x-data="{ open: false }" class="absolute inset-x-0 top-0 z-50">
     <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 sm:py-5 lg:px-8">
 
-        {{-- Logo --}}
-        <a
-            href="{{ route('home') }}"
-            class="flex min-w-0 items-center gap-2.5 sm:gap-3"
-        >
+        <a href="{{ route('home') }}" class="flex min-w-0 items-center gap-2.5 sm:gap-3"  >
 
             <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white shadow-md sm:h-15 sm:w-15">
-                <img
-                    src="{{ asset('assets/images/PSARECO_logo.png') }}"
-                    alt="PSARECO Logo"
-                    class="h-full w-full object-contain"
-                >
+                <img src="{{ asset('assets/images/PSARECO_logo.png') }}" alt="PSARECO Logo" class="h-full w-full object-contain" >
             </div>
 
             <div class="min-w-0">
@@ -40,149 +32,71 @@
         </a>
 
 
-        {{-- Desktop Navigation --}}
         <div class="hidden items-center gap-8 lg:flex">
-
-            <a href="#home"
-               class="border-b-2 border-farm-700 pb-1 text-sm font-semibold text-farm-800">
+            <a href="#home"  class="border-b-2 border-farm-700 pb-1 text-sm font-semibold text-farm-800">
                 Home
             </a>
 
-            <a href="#how-it-works"
-               class="text-sm font-medium text-gray-700 transition hover:text-farm-700">
+            <a href="#how-it-works" ="text-sm font-medium text-gray-700 transition hover:text-farm-700">
                 How It Works
             </a>
 
-            <a href="#about"
-               class="text-sm font-medium text-gray-700 transition hover:text-farm-700">
+            <a href="#about" class="text-sm font-medium text-gray-700 transition hover:text-farm-700">
                 About PSARECO
             </a>
-
         </div>
 
 
-        {{-- Desktop Actions --}}
         <div class="hidden items-center gap-3 lg:flex">
-
-            <a
-                href="{{ route('login') }}"
-                class="rounded-lg bg-farm-700 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-farm-700/20 transition hover:bg-farm-800"
-            >
+            <a href="{{ route('login') }}" class="rounded-lg bg-farm-700 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-farm-700/20 transition hover:bg-farm-800">
                 Login
             </a>
-
         </div>
 
 
-        {{-- Mobile Menu Button --}}
-        <button
-            type="button"
-            @click="open = !open"
-            :aria-expanded="open"
-            class="flex h-11 w-11 items-center justify-center rounded-xl bg-white/90 text-farm-900 shadow-sm backdrop-blur lg:hidden"
-        >
-
-            <svg
-                x-show="!open"
-                x-cloak
-                class="h-6 w-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-            >
-                <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M4 6h16M4 12h16M4 18h16"
-                />
+        <button type="button" @click="open = !open" :aria-expanded="open" class="flex h-11 w-11 items-center justify-center rounded-xl bg-white/90 text-farm-900 shadow-sm backdrop-blur lg:hidden" >
+            <svg x-show="!open" x-cloak class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
 
-            <svg
-                x-show="open"
-                x-cloak
-                class="h-6 w-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-            >
-                <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M6 18L18 6M6 6l12 12"
-                />
+            <svg x-show="open" x-cloak class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
-
         </button>
-
     </nav>
 
 
-    {{-- Mobile Menu --}}
-    <div
-        x-show="open"
-        x-cloak
-        x-transition
-        @click.outside="open = false"
-        class="mx-3 rounded-2xl border border-gray-100 bg-white p-4 shadow-2xl sm:mx-6 lg:hidden"
-    >
-
+    <div x-show="open" x-cloak x-transition @click.outside="open = false" class="mx-3 rounded-2xl border border-gray-100 bg-white p-4 shadow-2xl sm:mx-6 lg:hidden" >
         <div class="flex flex-col">
-
-            <a
-                @click="open = false"
-                href="#home"
-                class="rounded-xl px-4 py-3 font-semibold text-farm-900 hover:bg-farm-50"
-            >
+            <a @click="open = false href="#home class="rounded-xl px-4 py-3 font-semibold text-farm-900 hover:bg-farm-50 >
                 Home
             </a>
 
-            <a
-                @click="open = false"
-                href="#how-it-works"
-                class="rounded-xl px-4 py-3 font-medium text-gray-700 hover:bg-farm-50"
-            >
+            <a @click="open = false" href="#how-it-works" class="rounded-xl px-4 py-3 font-medium text-gray-700 hover:bg-farm-50" >
                 How It Works
             </a>
 
-            <a
-                @click="open = false"
-                href="#about"
-                class="rounded-xl px-4 py-3 font-medium text-gray-700 hover:bg-farm-50"
-            >
+            <a @click="open = false" href="#about" class="rounded-xl px-4 py-3 font-medium text-gray-700 hover:bg-farm-50" >
                 About PSARECO
             </a>
 
             <div class="my-3 border-t border-gray-100"></div>
 
-            <a
-                href="{{ route('login') }}"
-                class="rounded-xl bg-farm-700 px-4 py-3 text-center text-sm font-bold text-white"
-            >
+            <a href="{{ route('login') }}" class="rounded-xl bg-farm-700 px-4 py-3 text-center text-sm font-bold text-white" >
                 Login
             </a>
-
         </div>
-
     </div>
 </header>
 
 <section id="home" class="relative min-h-[760px] overflow-hidden sm:min-h-[700px]">
 
-    {{-- Background --}}
     <div class="absolute inset-0">
 
-        <img
-            src="{{ asset('assets/images/tractor.png') }}"
-            alt="Farmer working with agricultural machinery"
-            class="h-full w-full object-cover object-center"
-        >
+        <img src="{{ asset('assets/images/tractor.png') }}" alt="Farmer working with agricultural machinery" class="h-full w-full object-cover object-center" >
 
-        {{-- Desktop gradient --}}
         <div class="absolute inset-0 bg-gradient-to-r from-white via-white/90 to-transparent"></div>
 
-        {{-- Mobile stronger overlay --}}
         <div class="absolute inset-0 bg-white/55 lg:bg-transparent"></div>
 
         <div class="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent"></div>
@@ -194,27 +108,21 @@
 
         <div class="w-full max-w-xl">
 
-            {{-- Label --}}
             <div class="mb-5 inline-flex max-w-full items-center gap-2 rounded-full bg-farm-100 px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider text-farm-800 sm:px-4 sm:text-xs">
 
                 <span class="h-2 w-2 shrink-0 rounded-full bg-farm-600"></span>
 
-                <span>
-                    Farm Resource Management System
-                </span>
+                <span> Farm Resource Management System </span>
 
             </div>
 
 
-            {{-- Heading --}}
             <h1 class="text-4xl font-black leading-[1.05] tracking-tight text-farm-900 sm:text-5xl md:text-6xl">
 
                 Smarter Farm
                 <br>
-
                 Resources.
                 <br>
-
                 <span class="text-farm-600">
                     Better Harvests.
                 </span>
@@ -222,7 +130,6 @@
             </h1>
 
 
-            {{-- Description --}}
             <p class="mt-5 max-w-lg text-base leading-7 text-gray-700 sm:mt-7 sm:text-lg sm:leading-8">
 
                 Request machinery rentals, monitor fertilizer and pesticide
@@ -233,26 +140,12 @@
             </p>
 
 
-            {{-- CTA --}}
             <div class="mt-7 flex w-full flex-col gap-3 sm:mt-9 sm:flex-row sm:gap-4">
 
-                <a
-                    href="{{ route('login') }}"
-                    class="inline-flex w-full items-center justify-center gap-2 rounded-xl border-2 border-farm-700 bg-white/90 px-6 py-3.5 font-bold text-farm-800 transition hover:bg-farm-50 sm:w-auto sm:px-7 sm:py-4"
-                >
+                <a href="{{ route('login') }}" class="inline-flex w-full items-center justify-center gap-2 rounded-xl border-2 border-farm-700 bg-white/90 px-6 py-3.5 font-bold text-farm-800 transition hover:bg-farm-50 sm:w-auto sm:px-7 sm:py-4" >
 
-                    <svg
-                        class="h-5 w-5 shrink-0"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M14 6a6 6 0 00-8.5 8.5L3 17l4 4 2.5-2.5A6 6 0 0014 10m0-4l4-4m0 0l4 4m-4-4v8"
-                        />
+                    <svg class="h-5 w-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" >
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 6a6 6 0 00-8.5 8.5L3 17l4 4 2.5-2.5A6 6 0 0014 10m0-4l4-4m0 0l4 4m-4-4v8" />
                     </svg>
 
                     Explore Resources
@@ -386,12 +279,7 @@
 
             <div class="overflow-hidden rounded-3xl">
 
-                <img
-                    src="{{ $images['about'] }}"
-                    alt="Farmers working in rice field"
-                    loading="lazy"
-                    class="h-64 w-full object-cover sm:h-80 lg:h-[420px]"
-                >
+                <img src="{{ $images['about'] }}" alt="Farmers working in rice field" loading="lazy" class="h-64 w-full object-cover sm:h-80 lg:h-[420px]" >
 
             </div>
 
