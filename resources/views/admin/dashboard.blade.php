@@ -6,18 +6,8 @@
     <main class="w-full min-w-0 p-4 sm:p-6 lg:p-8">
         <x-dashboard-header />
 
+        <x-page-header eyebrow="Dashboard" title="Welcome Back {{ auth()->user()->name ?? 'User' }}!" description=" Manage your farm resources efficiently with PSARECO Enterprise System" icon="fa-solid fa-chart-line" />
 
-    <section class="bg-gradient-to-r from-[#2c7a56] to-[#40a072] text-white rounded-2xl p-6 mb-6 shadow-sm">
-
-        <h2 class="text-xl sm:text-2xl font-bold tracking-tight">
-            Welcome back, {{ auth()->user()->name ?? 'User' }}!
-        </h2>
-
-        <p class="text-emerald-100 text-xs sm:text-sm mt-1">
-            Manage your farm resources efficiently with PSARECO Enterprise System
-        </p>
-
-    </section>
             @role('admin|officer')
                 <section class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
                     <div class="bg-white rounded-2xl p-4 shadow-sm border-t-4 border-indigo-500 text-center flex flex-col items-center justify-between transition-transform hover:-translate-y-0.5">

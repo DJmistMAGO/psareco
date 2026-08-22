@@ -42,10 +42,7 @@
                 if (auth()->user()->hasRole('admin')) {
                     $menu = [
                         ['route' => 'dashboard', 'icon' => 'fa-chart-line', 'title' => 'Dashboard'],
-                        // ['route' => 'scheduling', 'icon' => 'fa-calendar-alt', 'title' => 'Scheduling'],
-                        // ['route' => 'inventory', 'icon' => 'fa-boxes-stacked', 'title' => 'Inventory'],
-                        // ['route' => 'sales', 'icon' => 'fa-shopping-cart', 'title' => 'Sales'],
-                        ['route' => 'reports', 'icon' => 'fa-file-alt', 'title' => 'Reports'],
+                        ['route' => 'reports.index', 'icon' => 'fa-file-alt', 'title' => 'Reports'],
                         ['route' => 'user-management.index', 'icon' => 'fa-users-cog', 'title' => 'Users'],
                     ];
                 } elseif (auth()->user()->hasRole('officer')) {
@@ -54,9 +51,9 @@
                         ['route' => 'machinery.index', 'icon' => 'fa-tractor', 'title' => 'Machinery Management'],
                         ['route' => 'officer.booking-calendar', 'icon' => 'fa-calendar-alt', 'title' => 'Calendar Schedule'],
                         ['route' => 'officer.index-booking', 'icon' => 'fa-calendar-plus', 'title' => 'Machinery Bookings'],
-                        ['route' => 'inventory', 'icon' => 'fa-boxes-stacked', 'title' => 'Inventory'],
-                        ['route' => 'sales', 'icon' => 'fa-shopping-cart', 'title' => 'Sales'],
-                        // ['route' => 'reports.index', 'icon' => 'fa-file-alt', 'title' => 'Reports'],
+                        ['route' => 'inventory.index', 'icon' => 'fa-boxes-stacked', 'title' => 'Inventory'],
+                        ['route' => 'sales.index', 'icon' => 'fa-shopping-cart', 'title' => 'Sales'],
+                        ['route' => 'reports.index', 'icon' => 'fa-file-alt', 'title' => 'Reports'],
                     ];
                 } elseif (auth()->user()->hasRole('farmer')) {
                     $menu = [

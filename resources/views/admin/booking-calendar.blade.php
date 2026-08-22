@@ -5,19 +5,8 @@
 @section('content')
     <main class="w-full min-w-0 p-4 sm:p-6 lg:p-8">
         <x-dashboard-header />
+        <x-page-header eyebrow="PSARECO Booking Calendar" title="Booking Calendar" description="View and manage machinery bookings across different dates" icon="fa-solid fa-calendar" />
 
-        <!-- Hero Header & Actions -->
-        <section
-            class="bg-gradient-to-r from-[#2c7a56] to-[#40a072] text-white rounded-none p-6 mb-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-                <h2 class="text-xl sm:text-2xl font-bold tracking-tight flex items-center gap-2">
-                    <i class="fa-solid fa-tractor"></i> Booking Calendar
-                </h2>
-                <p class="text-emerald-100 text-xs sm:text-sm mt-1">View and manage machinery bookings across different dates</p>
-            </div>
-        </section>
-
-        <!-- Calendar Container (Rectangular with 20pc/5rem padding) -->
         <div class="bg-white rounded-none shadow-sm border border-slate-200 px-6 sm:px-12 lg:px-20 py-8 mb-6 print:hidden">
             <div id="calendar" class="w-full mx-auto"></div>
         </div>

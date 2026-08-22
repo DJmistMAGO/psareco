@@ -6,18 +6,7 @@
     <main class="w-full min-w-0 p-4 sm:p-6 lg:p-8">
         <x-dashboard-header />
 
-
-        <!-- Hero Header & Actions -->
-        <section class="bg-gradient-to-r from-[#2c7a56] to-[#40a072] text-white rounded-2xl p-6 mb-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-                <h2 class="text-xl sm:text-2xl font-bold tracking-tight flex items-center gap-2">
-                    <i class="fa-solid fa-jar"></i> Products Available
-                </h2>
-                <p class="text-emerald-100 text-xs sm:text-sm mt-1">List of producst available for sale</p>
-            </div>
-
-
-        </section>
+        <x-page-header eyebrow="PSARECO Products" title="Products Available" description="List of producst available for sale" icon="fa-solid fa-jar" />
 
         <!-- Overdue Equipment Alert Card (Hidden by default) -->
         <div id="overdueSection" class="hidden bg-red-50/90 rounded-2xl shadow-sm border border-red-200 overflow-hidden mb-6 print:hidden">

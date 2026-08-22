@@ -153,10 +153,7 @@
 
                         <div class="text-center mt-6">
                             <p class="text-xs text-slate-500">
-                                Don't have an account?
-                                <a href="{{ route('register') }}" class="text-[#2c7a56] font-bold hover:underline" >
-                                    Register here
-                                </a>
+                                Need an account? Please visit the PSARECO office to request your login credentials.
                             </p>
                         </div>
                     </div>
