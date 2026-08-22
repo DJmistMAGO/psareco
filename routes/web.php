@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\FarmersController;
 use App\Http\Controllers\MachineryController;
@@ -21,7 +22,7 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::view('/dashboard', 'admin.dashboard')->name('dashboard');
-    Route::view('/inventory', 'admin.inventory')->name('inventory');
+    // Route::view('/inventory', 'admin.inventory')->name('inventory');
     Route::view('/sales', 'admin.sales')->name('sales');
     Route::view('/reports', 'admin.reports')->name('reports');
     // Route::view('/my-bookings', 'farmer.my-bookings')->name('my-bookings');
@@ -54,15 +55,22 @@ Route::middleware('auth')->group(function () {
             Route::post('/store', 'store')->name('machinery.store');
         });
 
+    Route::controller(InventoryController::class)
+        ->prefix('inventory')
+        ->group(function () {
+            Route::get('/', 'index')->name('inventory.index');
+            Route::post('/addProduct', 'addProduct')->name('inventory.addProduct');
+        });
+
     Route::middleware('role:admin')->controller(UserManagementController::class)
         ->prefix('user-management')
         ->group(function () {
             Route::get('/', 'index')->name('user-management.index');
-            Route::post('/user-management/addUser', 'addUser')->name('user-management.adduser');
-            Route::post('/user-management/{id}', 'updateUser')->name('user-management.updateUser');
-            Route::post('/user-management/{id}/deactivate', 'deactivateUser')->name('user-management.deactivateUser');
-            Route::post('/user-management/{id}/reactivate', 'reactivateUser')->name('user-management.reactivateUser');
-            Route::post('/user-management/{id}/approve', 'approveUser')->name('user-management.approveUser');
-            Route::post('/user-management/{id}/reject', 'rejectUser')->name('user-management.rejectUser');
+            Route::post('/addUser', 'addUser')->name('user-management.adduser');
+            Route::post('/{id}', 'updateUser')->name('user-management.updateUser');
+            Route::post('/{id}/deactivate', 'deactivateUser')->name('user-management.deactivateUser');
+            Route::post('/{id}/reactivate', 'reactivateUser')->name('user-management.reactivateUser');
+            Route::post('/{id}/approve', 'approveUser')->name('user-management.approveUser');
+            Route::post('/{id}/reject', 'rejectUser')->name('user-management.rejectUser');
         });
 });

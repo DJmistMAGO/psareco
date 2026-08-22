@@ -6,19 +6,7 @@
     <main class="w-full min-w-0 p-4 sm:p-6 lg:p-8">
         <x-dashboard-header />
 
-
-        <!-- Hero Header & Actions -->
-        <section
-            class="bg-gradient-to-r from-[#2c7a56] to-[#40a072] text-white rounded-2xl p-6 mb-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-                <h2 class="text-xl sm:text-2xl font-bold tracking-tight flex items-center gap-2">
-                    <i class="fa-solid fa-tractor"></i> Machinery Management
-                </h2>
-                <p class="text-emerald-100 text-xs sm:text-sm mt-1">Manage machinery inventory, track daily rental rates, and
-                    monitor agricultural fleet availability</p>
-            </div>
-
-        </section>
+        <x-page-header eyebrow="PSARECO Machinery Management" title="Machinery Management" description="Manage machinery inventory, registration, and machinery details" icon="fa-solid fa-tractor" />
 
         <!-- Overdue Equipment Alert Card (Hidden by default) -->
         <div id="overdueSection"
