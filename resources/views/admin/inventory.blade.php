@@ -945,10 +945,7 @@
     </div>
 </div>
 
-
-{{-- =============================================================
-    ADD PRODUCT MODAL (unchanged)
-============================================================== --}}
+{{-- add product --}}
 <div id="addProductModal" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-labelledby="addProductTitle" role="dialog" aria-modal="true">
 
     <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm" onclick="document.getElementById('addProductModal').classList.add('hidden')"></div>
