@@ -12,15 +12,10 @@ class OfficerController extends Controller
 {
     public function indexBooking(){
 
-    $bookings = Booking::all();
+    $bookings = Booking::latest()->paginate(5);
 
     return view('admin.machinery-booking', compact('bookings'));
 
-    }
-
-    public function bookingCalendar(){
-
-    return view('admin.booking-calendar');
     }
 
     public function approveBooking($id)
@@ -28,6 +23,16 @@ class OfficerController extends Controller
         $booking = Booking::findOrFail($id);
 
         $booking->status = 'Approved';
+        $booking->save();
+
+        return redirect()->back()->with('success', 'Booking approved successfully.');
+    }
+
+    public function declineBooking($id)
+    {
+        $booking = Booking::findOrFail($id);
+
+        $booking->status = 'Declined';
         $booking->save();
 
         return redirect()->back()->with('success', 'Booking approved successfully.');

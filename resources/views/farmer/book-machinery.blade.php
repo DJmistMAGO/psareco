@@ -6,7 +6,9 @@
     <main class="w-full min-w-0 p-4 sm:p-6 lg:p-8">
         <x-dashboard-header />
 
-        <x-page-header eyebrow="PSARECO Machinery Booking" title="Machinery Booking" description="Book equipment, track daily rental rates, and monitor agricultural fleet availability" icon="fa-solid fa-calendar-alt" />
+        <x-page-header eyebrow="PSARECO Machinery Booking" title="Machinery Booking"
+            description="Book equipment, track daily rental rates, and monitor agricultural fleet availability"
+            icon="fa-solid fa-calendar-alt" />
 
         <!-- Overdue Equipment Alert Card (Hidden by default) -->
         <div id="overdueSection"
@@ -99,119 +101,144 @@
             </form>
         </div>
 
+        <x-success />
+        <x-errors />
 
+        <div x-data="{ tab: 'pending' }"
+            class="bg-white rounded-2xl shadow-sm border border-slate-100/80 overflow-hidden flex flex-col mb-6">
+            <!-- Card Header with Navigation Tabs -->
+            <div class="px-5 pt-4 border-b border-slate-100 bg-white">
+                <div class="flex items-center justify-between pb-3">
+                    <div class="flex items-center space-x-2">
+                        <div class="p-1.5 bg-emerald-50 rounded-lg">
+                            <i class="fa-solid fa-leaf text-emerald-600 text-sm"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-sm leading-none">Booking Status</h3>
+                            <p class="text-[11px] text-slate-400 mt-0.5">Manage and track your equipment rentals</p>
+                        </div>
+                    </div>
 
-        <div x-data="{ tab: 'pending' }" class="bg-white rounded-2xl shadow-sm border border-slate-100/80 overflow-hidden flex flex-col mb-6">
-    <!-- Card Header with Navigation Tabs -->
-    <div class="px-5 pt-4 border-b border-slate-100 bg-white">
-        <div class="flex items-center justify-between pb-3">
-            <div class="flex items-center space-x-2">
-                <div class="p-1.5 bg-emerald-50 rounded-lg">
-                    <i class="fa-solid fa-leaf text-emerald-600 text-sm"></i>
+                    <!-- Total Count Badge -->
+                    <span
+                        class="bg-emerald-50 text-emerald-700 border border-emerald-100 text-xs font-semibold px-2.5 py-0.5 rounded-full"
+                        id="fertilizerCount">
+                        {{ $userBookings->count() }} Total
+                    </span>
                 </div>
-                <div>
-                    <h3 class="font-bold text-slate-800 text-sm leading-none">Booking Status</h3>
-                    <p class="text-[11px] text-slate-400 mt-0.5">Manage and track your equipment rentals</p>
+
+                <!-- Filter Tabs -->
+                <div class="flex space-x-1 border-b border-slate-100 -mb-px">
+                    <!-- Pending Tab -->
+                    <button @click="tab = 'pending'"
+                        :class="tab === 'pending' ? 'border-emerald-600 text-emerald-700 bg-emerald-50/50' :
+                            'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'"
+                        class="flex items-center gap-2 py-2.5 px-3.5 border-b-2 font-medium text-xs transition-all duration-150 rounded-t-lg">
+                        <span>Pending</span>
+                        <span :class="tab === 'pending' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-600'"
+                            class="text-[10px] font-bold px-1.5 py-0.5 rounded-full transition-colors">
+                            {{ $userBookings->where('status', 'Pending')->count() }}
+                        </span>
+                    </button>
+
+                    <!-- Approved Tab -->
+                    <button @click="tab = 'approved'"
+                        :class="tab === 'approved' ? 'border-emerald-600 text-emerald-700 bg-emerald-50/50' :
+                            'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'"
+                        class="flex items-center gap-2 py-2.5 px-3.5 border-b-2 font-medium text-xs transition-all duration-150 rounded-t-lg">
+                        <span>Approved</span>
+                        <span
+                            :class="tab === 'approved' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'"
+                            class="text-[10px] font-bold px-1.5 py-0.5 rounded-full transition-colors">
+                            {{ $userBookings->where('status', 'Approved')->count() }}
+                        </span>
+                    </button>
                 </div>
             </div>
 
-            <!-- Total Count Badge -->
-            <span class="bg-emerald-50 text-emerald-700 border border-emerald-100 text-xs font-semibold px-2.5 py-0.5 rounded-full" id="fertilizerCount">
-                {{ $userBookings->count() }} Total
-            </span>
+            <!-- Table Body Container -->
+            <div class="w-full overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-[#ebf4ef] text-emerald-900 text-[11px] uppercase tracking-wider font-semibold">
+                            <th class="py-3 px-4">Machinery Rented</th>
+                            <th class="py-3 px-4">Start Date</th>
+                            <th class="py-3 px-4">End Date</th>
+                            <th class="py-3 px-4">Total Days</th>
+                            <th class="py-3 px-4">Status</th>
+                            <th class="py-3 px-4 text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fertilizersTableBody" class="divide-y divide-slate-100 text-xs text-slate-700">
+                        @forelse ($userBookings as $booking)
+                            <tr x-show="tab === '{{ strtolower($booking->status) }}'" x-cloak
+                                class="hover:bg-slate-50/60 transition-colors">
+                                <td class="py-3 px-4 font-medium text-slate-800">{{ $booking->machine->machinery_name }}
+                                </td>
+                                <td class="py-3 px-4 text-slate-600">
+                                    {{ \Carbon\Carbon::parse($booking->start_date)->format('M j, Y') }}</td>
+                                <td class="py-3 px-4 text-slate-600">
+                                    {{ \Carbon\Carbon::parse($booking->end_date)->format('M j, Y') }}</td>
+                                <td class="py-3 px-4 text-slate-600">
+                                    <span
+                                        class="inline-flex items-center px-2 py-0.5 rounded bg-slate-100 text-slate-600 text-[11px] font-medium">
+                                        {{ $booking->days }} {{ Str::plural('day', $booking->days) }}
+                                    </span>
+                                </td>
+                                <td class="py-3 px-4">
+                                    @if ($booking->status === 'Pending')
+                                        <span
+                                            class="inline-flex items-center gap-1.5 bg-amber-50 text-amber-700 border border-amber-200/60 text-[10px] font-medium px-2.5 py-1 rounded-full">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                            Pending
+                                        </span>
+                                    @elseif ($booking->status === 'Approved')
+                                        <span
+                                            class="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200/60 text-[10px] font-medium px-2.5 py-1 rounded-full">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                            Approved
+                                        </span>
+                                    @elseif ($booking->status === 'Rejected')
+                                        <span
+                                            class="inline-flex items-center gap-1.5 bg-rose-50 text-rose-700 border border-rose-200/60 text-[10px] font-medium px-2.5 py-1 rounded-full">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                                            Rejected
+                                        </span>
+                                    @endif
+                                </td>
+                                <td class="py-3 px-4 text-center">
+                                    @if ($booking->status === 'Pending')
+                                        <x-confirm-modal
+                                            title="Delete Booking"
+                                            :message="'Are you sure you want to delete this booking?'"
+                                            confirmText="Delete"
+                                            confirmClass="bg-red-600 hover:bg-red-700 text-white"
+                                            icon="shield-alert"
+                                            :action="route('farmers.deleteBooking', $booking->id)"
+                                            method="DELETE"
+                                        >
+                                            <button type="button" title="Delete product" class="inline-flex items-center gap-1 bg-white hover:bg-rose-50 text-red-600 hover:text-rose-700 font-medium text-base py-1.5 px-3 rounded-lg border border-slate-200 hover:border-rose-200 shadow-sm transition-all duration-150">
+                                                <i class="fa-solid fa-trash-can"></i>
+                                            </button>
+                                        </x-confirm-modal>
+
+                                    @else
+                                        <a href="{{ route('farmers.bookingDetails', $booking->id) }}"
+                                            class="inline-flex items-center gap-1 bg-white hover:bg-emerald-50 text-slate-600 hover:text-emerald-700 font-medium text-base py-1.5 px-3 rounded-lg border border-slate-200 hover:border-emerald-200 shadow-sm transition-all duration-150">
+                                            <i class="fa-solid fa-calendar-days"></i>
+                                        </a>
+                                    @endif
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="py-12 text-center text-slate-400">No bookings found.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
-
-        <!-- Filter Tabs -->
-        <div class="flex space-x-1 border-b border-slate-100 -mb-px">
-            <!-- Pending Tab -->
-            <button @click="tab = 'pending'"
-                :class="tab === 'pending' ? 'border-emerald-600 text-emerald-700 bg-emerald-50/50' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'"
-                class="flex items-center gap-2 py-2.5 px-3.5 border-b-2 font-medium text-xs transition-all duration-150 rounded-t-lg">
-                <span>Pending</span>
-                <span :class="tab === 'pending' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-600'"
-                    class="text-[10px] font-bold px-1.5 py-0.5 rounded-full transition-colors">
-                    {{ $userBookings->where('status', 'Pending')->count() }}
-                </span>
-            </button>
-
-            <!-- Approved Tab -->
-            <button @click="tab = 'approved'"
-                :class="tab === 'approved' ? 'border-emerald-600 text-emerald-700 bg-emerald-50/50' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'"
-                class="flex items-center gap-2 py-2.5 px-3.5 border-b-2 font-medium text-xs transition-all duration-150 rounded-t-lg">
-                <span>Approved</span>
-                <span :class="tab === 'approved' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'"
-                    class="text-[10px] font-bold px-1.5 py-0.5 rounded-full transition-colors">
-                    {{ $userBookings->where('status', 'Approved')->count() }}
-                </span>
-            </button>
-        </div>
-    </div>
-
-    <!-- Table Body Container -->
-    <div class="w-full overflow-x-auto">
-        <table class="w-full text-left border-collapse">
-            <thead>
-                <tr class="bg-[#ebf4ef] text-emerald-900 text-[11px] uppercase tracking-wider font-semibold">
-                    <th class="py-3 px-4">Machinery Rented</th>
-                    <th class="py-3 px-4">Start Date</th>
-                    <th class="py-3 px-4">End Date</th>
-                    <th class="py-3 px-4">Total Days</th>
-                    <th class="py-3 px-4">Status</th>
-                    <th class="py-3 px-4 text-center">Action</th>
-                </tr>
-            </thead>
-            <tbody id="fertilizersTableBody" class="divide-y divide-slate-100 text-xs text-slate-700">
-                @forelse ($userBookings as $booking)
-                    <tr x-show="tab === '{{ strtolower($booking->status) }}'" x-cloak class="hover:bg-slate-50/60 transition-colors">
-                        <td class="py-3 px-4 font-medium text-slate-800">{{ $booking->machine->machinery_name }}</td>
-                        <td class="py-3 px-4 text-slate-600">{{ \Carbon\Carbon::parse($booking->start_date)->format('M j, Y') }}</td>
-                        <td class="py-3 px-4 text-slate-600">{{ \Carbon\Carbon::parse($booking->end_date)->format('M j, Y') }}</td>
-                        <td class="py-3 px-4 text-slate-600">
-                            <span class="inline-flex items-center px-2 py-0.5 rounded bg-slate-100 text-slate-600 text-[11px] font-medium">
-                                {{ $booking->days }} {{ Str::plural('day', $booking->days) }}
-                            </span>
-                        </td>
-                        <td class="py-3 px-4">
-                            @if ($booking->status === 'Pending')
-                                <span class="inline-flex items-center gap-1.5 bg-amber-50 text-amber-700 border border-amber-200/60 text-[10px] font-medium px-2.5 py-1 rounded-full">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                                    Pending
-                                </span>
-                            @elseif ($booking->status === 'Approved')
-                                <span class="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200/60 text-[10px] font-medium px-2.5 py-1 rounded-full">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                    Approved
-                                </span>
-                            @elseif ($booking->status === 'Rejected')
-                                <span class="inline-flex items-center gap-1.5 bg-rose-50 text-rose-700 border border-rose-200/60 text-[10px] font-medium px-2.5 py-1 rounded-full">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
-                                    Rejected
-                                </span>
-                            @endif
-                        </td>
-                        <td class="py-3 px-4 text-center">
-                            @if($booking->status === 'Pending')
-                                <a href=""
-                                    class="inline-flex items-center gap-1 bg-white hover:bg-rose-50 text-red-600 hover:text-rose-700 font-medium text-base py-1.5 px-3 rounded-lg border border-slate-200 hover:border-rose-200 shadow-sm transition-all duration-150">
-                                    <i class="fa-solid fa-trash-can"></i>
-                                </a>
-                            @else
-                            <a href="{{ route('farmers.bookingDetails', $booking->id) }}"
-                                class="inline-flex items-center gap-1 bg-white hover:bg-emerald-50 text-slate-600 hover:text-emerald-700 font-medium text-base py-1.5 px-3 rounded-lg border border-slate-200 hover:border-emerald-200 shadow-sm transition-all duration-150">
-                                <i class="fa-solid fa-calendar-days"></i>
-                            </a>
-                            @endif
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="6" class="py-12 text-center text-slate-400">No bookings found.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-</div>
 
 
     </main>
@@ -317,5 +344,4 @@
             });
         });
     </script>
-
 @endpush
