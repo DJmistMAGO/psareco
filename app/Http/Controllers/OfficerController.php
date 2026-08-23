@@ -12,7 +12,7 @@ class OfficerController extends Controller
 {
     public function indexBooking(){
 
-    $bookings = Booking::all();
+    $bookings = Booking::latest()->paginate(5);
 
     return view('admin.machinery-booking', compact('bookings'));
 

@@ -154,14 +154,14 @@
                             font-semibold
                             transition
 
-                            {{ $activeStatus === 'cancelled'
+                            {{ $activeStatus === 'declined'
                                 ? 'bg-red-50 text-red-700 border border-red-200'
                                 : 'text-slate-500 border border-transparent hover:bg-red-50 hover:text-red-700' }}
                         ">
 
                         <i class="fa-solid fa-circle-xmark text-[11px]"></i>
 
-                        Cancelled
+                        Declined
 
                         <span class="px-1.5 py-0.5 rounded-full bg-red-100 text-slate-500 text-[10px] font-bold">
                             {{ $statusCounts['cancelled'] ?? ($statusCounts['Cancelled'] ?? 0) }}
@@ -221,69 +221,47 @@
                                 <td class="px-5 py-4">
 
                                     <div class="flex items-center gap-3">
-
                                         <div
                                             class="h-9 w-9 shrink-0 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center">
                                             <i class="fa-solid fa-user text-xs"></i>
                                         </div>
-
                                         <div>
-
                                             <p class="text-xs font-bold text-slate-800">
                                                 {{ $booking->user->name }}
                                             </p>
-
                                             <p class="text-[10px] text-slate-400">
                                                 Farmer
                                             </p>
-
                                         </div>
-
                                     </div>
-
                                 </td>
 
                                 <td class="px-5 py-4">
-
                                     <div class="flex items-center gap-2.5">
-
                                         <div
                                             class="h-9 w-9 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
                                             <i class="fa-solid fa-tractor text-sm"></i>
                                         </div>
-
                                         <div>
-
                                             <p class="text-xs font-semibold text-slate-800">
                                                 {{ $booking->machine->machinery_name }}
                                             </p>
-
                                             <p class="text-[10px] text-slate-400">
                                                 {{ $booking->machine->model }}
                                             </p>
-
                                         </div>
-
                                     </div>
-
                                 </td>
-
                                 <td class="px-5 py-4">
-
                                     <div class="flex items-center gap-2 text-xs">
-
                                         <div>
-
                                             <p class="text-[10px] text-slate-400">
                                                 Start
                                             </p>
-
                                             <p class="font-semibold text-slate-700">
                                                 {{ $booking->start_date->format('M j, Y') }}
                                             </p>
-
                                         </div>
-
                                         <i class="fa-solid fa-arrow-right text-[10px] text-slate-300"></i>
 
                                         <div>
@@ -444,9 +422,7 @@
 
             @if (method_exists($bookings, 'links'))
                 <div class="px-5 py-3 border-t border-slate-100">
-
                     {{ $bookings->withQueryString()->links() }}
-
                 </div>
             @endif
 
