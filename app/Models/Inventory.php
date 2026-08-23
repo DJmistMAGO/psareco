@@ -25,4 +25,6 @@ class Inventory extends Model
         'reorder_level' => 'decimal:2',
         'expiration_date' => 'date',
     ];
+
+
 }

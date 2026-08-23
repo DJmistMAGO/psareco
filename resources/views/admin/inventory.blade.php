@@ -181,7 +181,7 @@
                             <th class="px-5 py-3 text-[11px] font-bold uppercase tracking-wide text-slate-400">Product</th>
                             <th class="px-5 py-3 text-[11px] font-bold uppercase tracking-wide text-slate-400">Type</th>
                             <th class="px-5 py-3 text-[11px] font-bold uppercase tracking-wide text-slate-400 text-right">Stock</th>
-                            <th class="px-5 py-3 text-[11px] font-bold uppercase tracking-wide text-slate-400 text-right">Reorder At</th>
+                            <th class="px-5 py-3 text-[11px] font-bold uppercase tracking-wide text-slate-400 text-right">Threshold</th>
                             <th class="px-5 py-3 text-[11px] font-bold uppercase tracking-wide text-slate-400 text-right">Unit Price</th>
                             <th class="px-5 py-3 text-[11px] font-bold uppercase tracking-wide text-slate-400">Expiration</th>
                             <th class="px-5 py-3 text-[11px] font-bold uppercase tracking-wide text-slate-400">Status</th>
@@ -882,7 +882,7 @@
                                     Expiration Date
                                     <span class="font-normal text-slate-400">(optional)</span>
                                 </label>
-                                <input type="date" name="expiration_date" x-model="editForm.expiration_date" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+                                <input type="date" name="expiration_date" min="{{ now()->format('Y-m-d') }}" x-model="editForm.expiration_date" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
                             </div>
                         </div>
 
@@ -997,7 +997,7 @@
                                     Expiration Date
                                     <span class="font-normal text-slate-400">(optional)</span>
                                 </label>
-                                <input type="date" name="expiration_date" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+                                <input type="date" name="expiration_date" min="{{ now()->format('Y-m-d') }}" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
                                 <p class="mt-1.5 text-[11px] text-slate-400">Leave blank if the product does not have an expiration date.</p>
                             </div>
                         </div>

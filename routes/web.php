@@ -96,7 +96,10 @@ Route::middleware('auth')->group(function () {
     Route::middleware('role:officer')->controller(SalesController::class)->prefix('sales')
         ->group(function () {
             Route::get('/', 'index')->name('sales.index');
+            Route::post('/checkout', 'checkout')->name('sales.checkout');
+            Route::post('/export', 'export')->name('sales.export');
         });
+
 
     Route::middleware('role:admin')->controller(UserManagementController::class)
         ->prefix('user-management')
