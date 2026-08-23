@@ -25,6 +25,10 @@ class User extends Authenticatable
         'email',
         'password',
         'status',
+        'contact_number', 'address',
+        'rsbsa_number', 'farm_size_hectares', 'primary_crop',
+        'employee_id', 'position', 'department',
+        'must_change_password'
     ];
 
     protected $hidden = [
@@ -38,6 +42,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'farm_size_hectares'   => 'decimal:2',
+            'must_change_password' => 'boolean',
         ];
     }
 

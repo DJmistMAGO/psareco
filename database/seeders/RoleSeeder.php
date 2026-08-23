@@ -22,6 +22,7 @@ class RoleSeeder extends Seeder
             'email' => 'admin@psareco.com',
             'password' => Hash::make('admin123'),
             'status' => 'active',
+            'must_change_password' => false,
             'email_verified_at' => now(),
         ]);
         $admin->assignRole('admin');
@@ -30,6 +31,7 @@ class RoleSeeder extends Seeder
             'name' => 'Maria Santos',
             'email' => 'officer@psareco.com',
             'password' => Hash::make('officer123'),
+            'must_change_password' => false,
             'status' => 'active',
             'email_verified_at' => now(),
         ]);
@@ -39,6 +41,7 @@ class RoleSeeder extends Seeder
             'name' => 'Juan Dela Cruz',
             'email' => 'farmer@psareco.com',
             'password' => Hash::make('farmer123'),
+            'must_change_password' => false,
             'status' => 'active',
             'email_verified_at' => now(),
         ]);

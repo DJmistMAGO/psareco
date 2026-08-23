@@ -1,15 +1,16 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FarmersController;
 use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\MachineryController;
+use App\Http\Controllers\OfficerController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SalesController;
 use App\Http\Controllers\UserManagementController;
-use App\Http\Controllers\FarmersController;
-use App\Http\Controllers\MachineryController;
-use App\Http\Controllers\OfficerController;
-use App\Http\Controllers\CalendarController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -24,8 +25,9 @@ Route::post('/login', [AuthController::class, 'login']);
 
 // Protected routes or accessible lang pag nakalogin :)
 Route::middleware('auth')->group(function () {
-    Route::view('/sales', 'admin.sales')->name('sales');
+
     Route::view('/machinery-bookings', 'admin.machinery-booking')->name('machinery-booking');
+    Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
 
     Route::controller(DashboardController::class)->prefix('dashboard')
         ->group(function () {
@@ -111,8 +113,8 @@ Route::middleware('auth')->group(function () {
             Route::post('/{id}', 'updateUser')->name('user-management.updateUser');
             Route::post('/{id}/deactivate', 'deactivateUser')->name('user-management.deactivateUser');
             Route::post('/{id}/reactivate', 'reactivateUser')->name('user-management.reactivateUser');
-            Route::post('/{id}/approve', 'approveUser')->name('user-management.approveUser');
-            Route::post('/{id}/reject', 'rejectUser')->name('user-management.rejectUser');
+            // Route::post('/{id}/approve', 'approveUser')->name('user-management.approveUser');
+            // Route::post('/{id}/reject', 'rejectUser')->name('user-management.rejectUser');
         });
 
 
