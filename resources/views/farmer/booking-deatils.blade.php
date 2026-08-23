@@ -49,84 +49,87 @@
             </div>
         </div>
 
-<div class="relative bg-white rounded-2xl shadow-md border border-slate-200 mb-6 print:hidden overflow-hidden" id="bookingForm">
-    <!-- Ticket Header -->
-    <div class="bg-slate-800 text-white px-6 py-4 flex items-center justify-between">
-        <div class="flex items-center gap-2">
-            <i class="fa-solid fa-ticket text-emerald-400 text-lg"></i>
-            <span class="font-bold text-sm tracking-wide uppercase">Machinery Booking Pass</span>
-        </div>
-        <span class="text-xs bg-emerald-500/20 text-emerald-300 font-semibold px-2.5 py-1 rounded-full border border-emerald-500/30">
-            <i class="fa-solid fa-[#000] fa-circle-check mr-1"></i> Verified
-        </span>
-    </div>
-
-    <!-- Ticket Body: Main Details -->
-    <div class="p-6 grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-        <!-- Machinery Information -->
-        <div class="md:col-span-5 border-b md:border-b-0 md:border-r border-slate-100 pb-4 md:pb-0 md:pr-4">
-            <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase mb-1">Equipment</p>
-            <h4 class="text-base font-bold text-slate-800 flex items-center gap-2">
-                <i class="fa-solid fa-gear text-emerald-600"></i>
-                {{ $booking->machine->machinery_name }}
-            </h4>
-            <p class="text-xs font-semibold text-emerald-600 mt-1">
-                ₱{{ number_format($booking->machine->price, 2) }} <span class="text-slate-400 font-normal">/ hour</span>
-            </p>
-        </div>
-
-        <!-- Dates & Schedule -->
-        <div class="md:col-span-7 grid grid-cols-2 sm:grid-cols-4 gap-4 text-left">
-            <div>
-                <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase mb-1">
-                    <i class="fa-regular fa-calendar text-slate-400 mr-1"></i> Start Date
-                </p>
-                <p class="text-xs font-bold text-slate-700">{{ $booking->start_date->format('M j, Y') }}</p>
+        <div class="relative bg-white rounded-2xl shadow-md border border-slate-200 mb-6 print:hidden overflow-hidden"
+            id="bookingForm">
+            <!-- Ticket Header -->
+            <div class="bg-slate-800 text-white px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-ticket text-emerald-400 text-lg"></i>
+                    <span class="font-bold text-sm tracking-wide uppercase">Machinery Booking Pass</span>
+                </div>
+                <span
+                    class="text-xs bg-emerald-500/20 text-emerald-300 font-semibold px-2.5 py-1 rounded-full border border-emerald-500/30">
+                    <i class="fa-solid fa-[#000] fa-circle-check mr-1"></i> Verified
+                </span>
             </div>
-            <div>
-                <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase mb-1">
-                    <i class="fa-regular fa-calendar-check text-slate-400 mr-1"></i> End Date
-                </p>
-                <p class="text-xs font-bold text-slate-700">{{ $booking->end_date->format('M j, Y') }}</p>
+
+            <!-- Ticket Body: Main Details -->
+            <div class="p-6 grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                <!-- Machinery Information -->
+                <div class="md:col-span-5 border-b md:border-b-0 md:border-r border-slate-100 pb-4 md:pb-0 md:pr-4">
+                    <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase mb-1">Equipment</p>
+                    <h4 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-gear text-emerald-600"></i>
+                        {{ $booking->machine->machinery_name }}
+                    </h4>
+                    <p class="text-xs font-semibold text-emerald-600 mt-1">
+                        ₱{{ number_format($booking->machine->price, 2) }} <span class="text-slate-400 font-normal">/
+                            hour</span>
+                    </p>
+                </div>
+
+                <!-- Dates & Schedule -->
+                <div class="md:col-span-7 grid grid-cols-2 sm:grid-cols-4 gap-4 text-left">
+                    <div>
+                        <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase mb-1">
+                            <i class="fa-regular fa-calendar text-slate-400 mr-1"></i> Start Date
+                        </p>
+                        <p class="text-xs font-bold text-slate-700">{{ $booking->start_date->format('M j, Y') }}</p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase mb-1">
+                            <i class="fa-regular fa-calendar-check text-slate-400 mr-1"></i> End Date
+                        </p>
+                        <p class="text-xs font-bold text-slate-700">{{ $booking->end_date->format('M j, Y') }}</p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase mb-1">
+                            <i class="fa-regular fa-clock text-slate-400 mr-1"></i> Duration
+                        </p>
+                        <p class="text-xs font-bold text-slate-700">{{ $booking->days }} Days</p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase mb-1">
+                            <i class="fa-solid fa-hourglass-half text-slate-400 mr-1"></i> Total Hours
+                        </p>
+                        <p class="text-xs font-bold text-slate-700" id="totalHours">0 hrs</p>
+                    </div>
+                </div>
             </div>
-            <div>
-                <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase mb-1">
-                    <i class="fa-regular fa-clock text-slate-400 mr-1"></i> Duration
-                </p>
-                <p class="text-xs font-bold text-slate-700">{{ $booking->days }} Days</p>
+
+            <!-- Ticket Tear-Off Divider -->
+            <div class="relative flex items-center justify-between my-1">
+                <div class="w-4 h-8 bg-slate-100 rounded-r-full border-r border-t border-b border-slate-200"></div>
+                <div class="flex-1 border-b-2 border-dashed border-slate-200 mx-2"></div>
+                <div class="w-4 h-8 bg-slate-100 rounded-l-full border-l border-t border-b border-slate-200"></div>
             </div>
-            <div>
-                <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase mb-1">
-                    <i class="fa-solid fa-hourglass-half text-slate-400 mr-1"></i> Total Hours
-                </p>
-                <p class="text-xs font-bold text-slate-700" id="totalHours">0 hrs</p>
+
+            <!-- Ticket Stub / Footer: Pricing Details -->
+            <div class="bg-slate-50/70 px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-2 text-xs text-slate-500">
+                    <i class="fa-solid fa-receipt text-slate-400 text-sm"></i>
+                    <span>Summary computed based on selected operating hours.</span>
+                </div>
+
+                <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Amount:</span>
+                    <div class="bg-emerald-600 text-white px-4 py-2 rounded-xl flex items-center gap-1 shadow-sm">
+                        <span class="text-sm font-semibold">₱</span>
+                        <span class="text-lg font-extrabold tracking-tight" id="totalCost">0.00</span>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-
-    <!-- Ticket Tear-Off Divider -->
-    <div class="relative flex items-center justify-between my-1">
-        <div class="w-4 h-8 bg-slate-100 rounded-r-full border-r border-t border-b border-slate-200"></div>
-        <div class="flex-1 border-b-2 border-dashed border-slate-200 mx-2"></div>
-        <div class="w-4 h-8 bg-slate-100 rounded-l-full border-l border-t border-b border-slate-200"></div>
-    </div>
-
-    <!-- Ticket Stub / Footer: Pricing Details -->
-    <div class="bg-slate-50/70 px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div class="flex items-center gap-2 text-xs text-slate-500">
-            <i class="fa-solid fa-receipt text-slate-400 text-sm"></i>
-            <span>Summary computed based on selected operating hours.</span>
-        </div>
-
-        <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
-            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Amount:</span>
-            <div class="bg-emerald-600 text-white px-4 py-2 rounded-xl flex items-center gap-1 shadow-sm">
-                <span class="text-sm font-semibold">₱</span>
-                <span class="text-lg font-extrabold tracking-tight" id="totalCost">0.00</span>
-            </div>
-        </div>
-    </div>
-</div>
 
 
 
@@ -145,10 +148,18 @@
                         </div>
                     </div>
                     <div>
-                        <button type="submit"
-                            class="inline-flex items-center gap-2 bg-emerald-600 text-white hover:bg-emerald-700 font-semibold text-xs py-2 px-3.5 rounded-xl shadow-sm transition">
-                            COMPLETE BOOKING <i class="fa-solid fa-tractor"></i>
-                        </button>
+                        <form id="complete-booking-{{ $booking->id }}" action="{{ route('farmers.completeBooking', $booking->id) }}" method="POST">
+                            @csrf
+                            @method('PUT')
+
+                            <input type="hidden" name="total_hours" id="total_hours" value="">
+                            <input type="hidden" name="total_cost" id="total_cost" value="">
+
+                            <button type="button" onclick="completeBooking('complete-booking-{{ $booking->id }}')"
+                                class="inline-flex items-center gap-2 bg-emerald-600 text-white hover:bg-emerald-700 font-semibold text-xs py-2 px-3.5 rounded-xl shadow-sm transition">
+                                COMPLETE BOOKING <i class="fa-solid fa-tractor"></i>
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -222,59 +233,99 @@
 
 @push('scripts')
     <script>
-        document.querySelectorAll('tr').forEach(row => {
+    // 1. Move this function OUTSIDE the loop so it only runs correctly once
+    const machinePrice = {{ $booking->machine->price ?? 0 }};
 
-            const startTime = row.querySelector('.start-time');
-            const endTime = row.querySelector('.end-time');
-            const totalHours = row.querySelector('.hours');
+    function calculateTotalHours() {
+        let totalHours = 0;
 
-            if (!startTime || !endTime || !totalHours) return;
-
-            function calculateHours() {
-
-                if (!startTime.value || !endTime.value) {
-                    totalHours.value = '';
-                    return;
-                }
-
-                const start = new Date(`1970-01-01T${startTime.value}`);
-                const end = new Date(`1970-01-01T${endTime.value}`);
-
-                let difference = (end - start) / (1000 * 60 * 60);
-
-                // If end time is past midnight
-                if (difference < 0) {
-                    difference += 24;
-                }
-
-                totalHours.value = difference.toFixed(2);
-            }
-
-            startTime.addEventListener('change', calculateHours);
-            endTime.addEventListener('change', calculateHours);
-
-            const machinePrice = {{ $booking->machine->price ?? 0 }};
-
-            function calculateTotalHours() {
-                let totalHours = 0;
-
-                document.querySelectorAll('.hours').forEach(input => {
-                    totalHours += parseFloat(input.value) || 0;
-                });
-
-                document.getElementById('totalHours').textContent = totalHours.toFixed(2);
-
-                // Calculate total cost
-                const totalCost = totalHours * machinePrice;
-
-                document.getElementById('totalCost').textContent = totalCost.toFixed(2);
-            }
-
-            calculateTotalHours();
-
-            document.querySelectorAll('.hours').forEach(input => {
-                input.addEventListener('input', calculateTotalHours);
-            });
+        // Sum up all hours columns across all rows
+        document.querySelectorAll('.hours').forEach(input => {
+            totalHours += parseFloat(input.value) || 0;
         });
-    </script>
+
+        // Update the visual text on the page
+        const totalHoursEl = document.getElementById('totalHours');
+        const totalCostEl = document.getElementById('totalCost');
+
+        if (totalHoursEl) totalHoursEl.textContent = totalHours.toFixed(2);
+
+        // Calculate total cost
+        const totalCost = totalHours * machinePrice;
+        if (totalCostEl) totalCostEl.textContent = totalCost.toFixed(2);
+
+        // Target hidden inputs safely using their 'name' attributes instead of IDs.
+        // This prevents bugs if you have multiple forms on the same page.
+        document.querySelectorAll('input[name="total_hours"]').forEach(input => {
+            input.value = totalHours.toFixed(2);
+        });
+        document.querySelectorAll('input[name="total_cost"]').forEach(input => {
+            input.value = totalCost.toFixed(2);
+        });
+    }
+
+    // 2. Row-by-row time calculations
+    document.querySelectorAll('tr').forEach(row => {
+        const startTime = row.querySelector('.start-time');
+        const endTime = row.querySelector('.end-time');
+        const totalHours = row.querySelector('.hours');
+
+        if (!startTime || !endTime || !totalHours) return;
+
+        function calculateHours() {
+            if (!startTime.value || !endTime.value) {
+                totalHours.value = '';
+                calculateTotalHours(); // Recalculate totals if cleared
+                return;
+            }
+
+            const start = new Date(`1970-01-01T${startTime.value}`);
+            const end = new Date(`1970-01-01T${endTime.value}`);
+
+            let difference = (end - start) / (1000 * 60 * 60);
+
+            // Handle overnight times past midnight
+            if (difference < 0) {
+                difference += 24;
+            }
+
+            totalHours.value = difference.toFixed(2);
+
+            // 🔥 CRITICAL FIX: Manually trigger the total calculation
+            // because changing .value with JS doesn't fire events!
+            calculateTotalHours();
+        }
+
+        startTime.addEventListener('change', calculateHours);
+        endTime.addEventListener('change', calculateHours);
+    });
+
+    // 3. Run once on page load to catch any pre-filled data
+    document.addEventListener('DOMContentLoaded', () => {
+        calculateTotalHours();
+
+        // Also listen if a user types hours directly
+        document.querySelectorAll('.hours').forEach(input => {
+            input.addEventListener('input', calculateTotalHours);
+        });
+    });
+
+    // 4. SweetAlert Form Submission
+    function completeBooking(formId) {
+        Swal.fire({
+            title: 'Are you sure you want to complete this booking?',
+            text: "You won't be able to undo this action!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#059669',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, complete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(formId).submit();
+            }
+        });
+    }
+</script>
+
 @endpush

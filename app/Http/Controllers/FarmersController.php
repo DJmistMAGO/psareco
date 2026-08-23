@@ -113,9 +113,35 @@ class FarmersController extends Controller
         return back()->with('success', 'Booking slots updated successfully.');
     }
 
+    public function completeBooking(Request $request, $bookingId)
+    {
+
+    // dd($request);   
+
+        $booking = Booking::findOrFail($bookingId);
+
+        $validateData = $request->validate([
+            'total_hours' => 'required|numeric|min:0',
+            'total_cost' => 'required|numeric|min:0',
+        ]);
+
+        $booking->update([
+            'total_hours' => $validateData['total_hours'],
+            'total_amount' => $validateData['total_cost'],
+            'status' => 'Completed',
+        ]);
+
+        return redirect()->route('farmers.myBookings')->with('success', 'Booking completed successfully.');
+
+    }
+
     public function myBookings()
     {
-        return view('farmer.my-bookings');
+        // get user bookings completed and cancelled
+        $bookings = Booking::where('user_id', Auth::id())->whereIn('status', ['Completed', 'Cancelled'])->get();
+
+
+        return view('farmer.my-bookings', compact('bookings'));
     }
 
     public function products()

@@ -36,6 +36,7 @@ Route::middleware('auth')->group(function () {
             Route::post('/book-machinery', 'store')->name('farmers.bookMachinery');
             Route::get('/booking-details/{id}', 'bookingDetails')->name('farmers.bookingDetails');
             Route::put('/update-bookingSlot/{id}', 'updateBookingSlot')->name('farmers.updateBookingSlot');
+            Route::put('/complete-booking/{id}', 'completeBooking')->name('farmers.completeBooking');
         });
 
     Route::controller(OfficerController::class)
