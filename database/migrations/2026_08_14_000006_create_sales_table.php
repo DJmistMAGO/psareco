@@ -19,6 +19,7 @@ return new class extends Migration
             $table->decimal('total', 10, 2)->nullable();
             $table->string('buyer_name', 100)->nullable();
             $table->timestamp('sale_date')->nullable()->useCurrent();
+            $table->timestamps();
         });
     }
 

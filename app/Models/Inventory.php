@@ -16,6 +16,7 @@ class Inventory extends Model
         'price',
         'reorder_level',
         'expiration_date',
+        'image_path',
     ];
 
     protected $casts = [
@@ -24,4 +25,6 @@ class Inventory extends Model
         'reorder_level' => 'decimal:2',
         'expiration_date' => 'date',
     ];
+
+
 }

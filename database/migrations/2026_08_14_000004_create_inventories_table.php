@@ -17,6 +17,7 @@ return new class extends Migration
             $table->decimal('price', 10, 2)->nullable();
             $table->integer('reorder_level')->default(10);
             $table->date('expiration_date');
+            $table->string('image_path')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
