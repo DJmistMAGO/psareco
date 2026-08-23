@@ -8,6 +8,9 @@
 
         <x-page-header eyebrow="PSARECO User Management" title="User Management" description="Manage system administrators, cooperative officers, and farmer account approvals" icon="fa-solid fa-users-gear" >
             <x-slot:actions>
+                <button type="button" @click="$dispatch('open-add-user-modal')" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-600 text-white text-sm font-bold shadow-sm hover:bg-emerald-700 transition">
+                    <i class="fa-solid fa-user-plus"></i> Add User
+                </button>
                 <button type="button" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white text-emerald-700 text-sm font-bold shadow-sm hover:bg-emerald-50 transition" >
                     <a href="{{-- route('users.export') --}}" >
                         <i class="fa-solid fa-file-export"></i> Export CSV
@@ -16,102 +19,261 @@
             </x-slot:actions>
         </x-page-header>
 
+        <x-errors />
+        <x-success />
 
+        {{-- Add User modal --}}
+        <div x-data="{
+                open: {{ $errors->any() && old('_form') === 'add_user' ? 'true' : 'false' }},
+                generatePassword() {
+                    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%';
+                    let pw = '';
+                    for (let i = 0; i < 12; i++) {
+                        pw += chars.charAt(Math.floor(Math.random() * chars.length));
+                    }
+                    this.$refs.passwordInput.value = pw;
+                    this.$refs.passwordInput.type = 'text';
+                }
+            }"
+            @open-add-user-modal.window="open = true"
+            x-show="open"
+            x-cloak
+            class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4"
+        >
+            <div @click.outside="open = false" class="w-full max-w-2xl bg-white rounded-2xl shadow-xl">
+                <div class="flex items-center justify-between p-5 border-b border-slate-100">
+                    <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-user-plus text-emerald-600"></i> Register New User Account
+                    </h3>
+                    <button type="button" @click="open = false" class="text-slate-400 hover:text-slate-600">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
 
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-100/80 p-5 mb-6 print:hidden">
-            <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
-                <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
-                    <i class="fa-solid fa-user-plus text-emerald-600"></i> Register New User Account
-                </h3>
-                <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Internal User</span>
-            </div>
+                <form action="{{ route('user-management.adduser') }}" method="POST" class="p-5">
+                    @csrf
+                    <input type="hidden" name="_form" value="add_user">
 
-            <form action="{{ route('user-management.adduser') }}" method="POST">
-                @csrf
-                <div class="grid grid-cols-1 sm:grid-cols-12 gap-x-3 gap-y-4 items-start">
-
-                    <div class="sm:col-span-3">
-                        <label for="name" class="block text-xs font-semibold text-slate-600 mb-1">
-                            Full Name <span class="text-red-500">*</span>
-                        </label>
-                        <div class="relative">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-4">
+                        <div>
+                            <label for="name" class="block text-xs font-semibold text-slate-600 mb-1">
+                                Full Name <span class="text-red-500">*</span>
+                            </label>
                             <input type="text" id="name" name="name" value="{{ old('name') }}" placeholder="e.g. Juan Dela Cruz" required class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs text-slate-800 focus:outline-none transition {{ $errors->has('name') ? 'border-red-500 bg-red-50/30 focus:ring-2 focus:ring-red-400' : 'border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:bg-white' }}" >
+                            @error('name')
+                                <p class="mt-1 text-red-500 text-[11px] font-medium flex items-center gap-1">
+                                    <i class="fa-solid fa-circle-info text-[10px]"></i> {{ $message }}
+                                </p>
+                            @enderror
                         </div>
-                        @error('name')
-                            <p class="mt-1 text-red-500 text-[11px] font-medium flex items-center gap-1">
-                                <i class="fa-solid fa-circle-info text-[10px]"></i> {{ $message }}
-                            </p>
-                        @enderror
-                    </div>
 
-                    <div class="sm:col-span-3">
-                        <label for="email" class="block text-xs font-semibold text-slate-600 mb-1">
-                            Email Address <span class="text-red-500">*</span>
-                        </label>
-                        <div class="relative">
+                        <div>
+                            <label for="email" class="block text-xs font-semibold text-slate-600 mb-1">
+                                Email Address <span class="text-red-500">*</span>
+                            </label>
                             <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="name@psareco.org" required class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs text-slate-800 focus:outline-none transition {{ $errors->has('email') ? 'border-red-500 bg-red-50/30 focus:ring-2 focus:ring-red-400' : 'border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:bg-white' }}" >
+                            @error('email')
+                                <p class="mt-1 text-red-500 text-[11px] font-medium flex items-center gap-1">
+                                    <i class="fa-solid fa-circle-info text-[10px]"></i> {{ $message }}
+                                </p>
+                            @enderror
                         </div>
-                        @error('email')
-                            <p class="mt-1 text-red-500 text-[11px] font-medium flex items-center gap-1">
-                                <i class="fa-solid fa-circle-info text-[10px]"></i> {{ $message }}
-                            </p>
-                        @enderror
-                    </div>
 
-                    <div class="sm:col-span-2">
-                        <label for="password" class="block text-xs font-semibold text-slate-600 mb-1">
-                            Password <span class="text-red-500">*</span>
-                        </label>
-                        <div class="relative">
-                            <input type="password" id="password" name="password" placeholder="••••••••" required class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs text-slate-800 focus:outline-none transition {{ $errors->has('password') ? 'border-red-500 bg-red-50/30 focus:ring-2 focus:ring-red-400' : 'border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:bg-white' }}" >
+                        <div>
+                            <label for="password" class="block text-xs font-semibold text-slate-600 mb-1">
+                                Temporary Password <span class="text-red-500">*</span>
+                            </label>
+                            <div class="flex gap-2">
+                                <input type="password" id="password" name="password" x-ref="passwordInput" placeholder="••••••••" required minlength="8" class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs text-slate-800 focus:outline-none transition {{ $errors->has('password') ? 'border-red-500 bg-red-50/30 focus:ring-2 focus:ring-red-400' : 'border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:bg-white' }}" >
+                                <button type="button" @click="generatePassword()" class="shrink-0 px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition">
+                                    Generate
+                                </button>
+                            </div>
+                            <p class="mt-1 text-[10px] text-slate-400">User will be required to change this on first login.</p>
+                            @error('password')
+                                <p class="mt-1 text-red-500 text-[11px] font-medium flex items-center gap-1">
+                                    <i class="fa-solid fa-circle-info text-[10px]"></i> {{ $message }}
+                                </p>
+                            @enderror
                         </div>
-                        @error('password')
-                            <p class="mt-1 text-red-500 text-[11px] font-medium flex items-center gap-1">
-                                <i class="fa-solid fa-circle-info text-[10px]"></i> {{ $message }}
-                            </p>
-                        @enderror
+
+                        <div>
+                            <label for="role" class="block text-xs font-semibold text-slate-600 mb-1">Assigned Role</label>
+                            <select id="role" name="role" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition" required>
+                                <option value="" disabled {{ old('role') ? '' : 'selected' }}>Please select role</option>
+                                <option value="officer" {{ old('role') == 'officer' ? 'selected' : '' }}>Cooperative Officer</option>
+                                <option value="farmer" {{ old('role') == 'farmer' ? 'selected' : '' }}>Member Farmer</option>
+                            </select>
+                        </div>
                     </div>
 
-                    <div class="sm:col-span-2">
-                        <label for="role" class="block text-xs font-semibold text-slate-600 mb-1">Assigned Role</label>
-                        <select id="role" name="role" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition" required>
-                            <option value="" disabled selected>Please select role</option>
-                            <option value="officer" {{ old('role') == 'officer' ? 'selected' : '' }}>Cooperative Officer</option>
-                            <option value="farmer" {{ old('role') == 'farmer' ? 'selected' : '' }}>Member Farmer</option>
-                        </select>
-                    </div>
-
-                    <div class="sm:col-span-2 sm:mt-[21px]">
-                        <button type="submit" class="w-full inline-flex items-center justify-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold text-xs py-2 px-3.5 rounded-xl shadow-sm hover:shadow transition-all duration-150 cursor-pointer" >
+                    <div class="flex justify-end gap-2 mt-5 pt-4 border-t border-slate-100">
+                        <button type="button" @click="open = false" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 transition">
+                            Cancel
+                        </button>
+                        <button type="submit" class="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold text-xs py-2 px-4 rounded-xl shadow-sm transition-all cursor-pointer" >
                             <i class="fa-solid fa-plus text-[11px]"></i> Register User
                         </button>
                     </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
 
-        <x-errors />
-        <x-success />
+        {{-- View / Edit User modal --}}
+        <div x-data="{
+                open: false,
+                urlTemplate: '{{ route('user-management.updateUser', ['id' => '__ID__']) }}',
+                selectedUser: { id: null, name: '', email: '', role: 'farmer', status: 'active', is_self: false, is_admin: false, created_at: '' },
+                get formAction() {
+                    return this.urlTemplate.replace('__ID__', this.selectedUser.id);
+                }
+            }"
+            @open-view-user-modal.window="open = true; selectedUser = $event.detail.user"
+            x-show="open"
+            x-cloak
+            class="fixed inset-0 z-50 overflow-y-auto"
+            aria-modal="true"
+            role="dialog"
+        >
+            <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm" @click="open = false"></div>
+            <div class="relative min-h-screen flex items-center justify-center p-4">
+                <div class="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden" x-show="open" x-transition>
+
+                    {{-- Header --}}
+                    <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <div class="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center"
+                                :class="selectedUser.is_admin ? 'bg-amber-50 text-amber-600' : (selectedUser.role === 'officer' ? 'bg-sky-50 text-sky-600' : 'bg-emerald-50 text-emerald-600')">
+                                <i class="fa-solid" :class="selectedUser.is_admin ? 'fa-shield-halved' : (selectedUser.role === 'officer' ? 'fa-user-tie' : 'fa-seedling')"></i>
+                            </div>
+
+                            <div class="min-w-0">
+                                <h2 class="text-base font-bold text-slate-800 truncate" x-text="selectedUser.name"></h2>
+                                <p class="text-xs text-slate-400 mt-0.5">
+                                    User #<span x-text="selectedUser.id"></span> &middot; Joined <span x-text="selectedUser.created_at"></span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <button type="button" @click="open = false" class="w-8 h-8 shrink-0 flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+
+                    <form :action="formAction" method="POST">
+                        @csrf
+                        @method('PUT')
+
+                        <div class="p-6">
+
+                            {{-- Account Information --}}
+                            <div class="mb-6">
+                                <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
+                                    Account Information
+                                </p>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div class="sm:col-span-2">
+                                        <label class="block text-xs font-semibold text-slate-600 mb-1.5">Full Name</label>
+                                        <input type="text" name="name" x-model="selectedUser.name" required :disabled="selectedUser.is_admin"
+                                            class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition disabled:opacity-60 disabled:cursor-not-allowed">
+                                    </div>
+
+                                    <div class="sm:col-span-2">
+                                        <label class="block text-xs font-semibold text-slate-600 mb-1.5">Email Address</label>
+                                        <input type="email" name="email" x-model="selectedUser.email" required :disabled="selectedUser.is_admin"
+                                            class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition disabled:opacity-60 disabled:cursor-not-allowed">
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Role & Access --}}
+                            <div class="mb-6">
+                                <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
+                                    Role &amp; Access
+                                </p>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-600 mb-1.5">Assigned Role</label>
+                                        <input type="hidden" name="role" :value="selectedUser.role">
+                                        <div class="flex rounded-xl bg-slate-50 border border-slate-200 p-1 gap-1">
+                                            <button type="button" @click="selectedUser.role = 'officer'" :disabled="selectedUser.is_admin"
+                                                :class="selectedUser.role === 'officer' ? 'bg-white text-sky-700 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700'"
+                                                class="flex-1 flex items-center justify-center gap-1.5 rounded-lg py-2 text-xs font-semibold transition disabled:opacity-60 disabled:cursor-not-allowed">
+                                                <i class="fa-solid fa-user-tie text-[10px]"></i> Officer
+                                            </button>
+                                            <button type="button" @click="selectedUser.role = 'farmer'" :disabled="selectedUser.is_admin"
+                                                :class="selectedUser.role === 'farmer' ? 'bg-white text-emerald-700 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700'"
+                                                class="flex-1 flex items-center justify-center gap-1.5 rounded-lg py-2 text-xs font-semibold transition disabled:opacity-60 disabled:cursor-not-allowed">
+                                                <i class="fa-solid fa-seedling text-[10px]"></i> Farmer
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-600 mb-1.5">Account Status</label>
+                                        <input type="hidden" name="status" :value="selectedUser.status">
+                                        <button type="button" @click="selectedUser.status = selectedUser.status === 'active' ? 'inactive' : 'active'"
+                                            :disabled="selectedUser.is_self || selectedUser.is_admin"
+                                            class="w-full flex items-center justify-between rounded-xl border px-4 py-2.5 transition disabled:opacity-60 disabled:cursor-not-allowed"
+                                            :class="selectedUser.status === 'active' ? 'bg-emerald-50 border-emerald-200' : 'bg-red-50 border-red-200'">
+                                            <span class="flex items-center gap-2 text-xs font-semibold" :class="selectedUser.status === 'active' ? 'text-emerald-700' : 'text-red-600'">
+                                                <span class="relative flex h-2 w-2">
+                                                    <span class="absolute inline-flex h-full w-full rounded-full opacity-50" :class="selectedUser.status === 'active' ? 'bg-emerald-400' : 'bg-red-400'"></span>
+                                                    <span class="relative inline-flex h-2 w-2 rounded-full" :class="selectedUser.status === 'active' ? 'bg-emerald-500' : 'bg-red-500'"></span>
+                                                </span>
+                                                <span x-text="selectedUser.status === 'active' ? 'Active' : 'Inactive'"></span>
+                                            </span>
+                                            <span class="relative inline-flex h-5 w-9 items-center rounded-full transition" :class="selectedUser.status === 'active' ? 'bg-emerald-500' : 'bg-slate-300'">
+                                                <span class="inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition" :class="selectedUser.status === 'active' ? 'translate-x-[18px]' : 'translate-x-1'"></span>
+                                            </span>
+                                        </button>
+                                        <p class="mt-1 text-[11px] text-slate-400" x-show="selectedUser.is_self && !selectedUser.is_admin">You can't change your own status here.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <template x-if="selectedUser.is_admin">
+                                <div class="rounded-2xl border border-amber-100 bg-amber-50 p-4 flex items-center gap-3">
+                                    <div class="w-9 h-9 rounded-xl flex items-center justify-center bg-amber-100 text-amber-600 shrink-0">
+                                        <i class="fa-solid fa-shield-halved"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs font-semibold text-amber-700">Protected Account</p>
+                                        <p class="text-[11px] text-amber-600 mt-0.5">Administrator accounts can't be edited from User Management.</p>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+
+                        {{-- Footer --}}
+                        <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+                            <button type="button" @click="open = false" class="px-5 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-600 text-xs font-semibold hover:bg-slate-100 transition">
+                                Close
+                            </button>
+
+                            <button type="submit" x-show="!selectedUser.is_admin" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition">
+                                <i class="fa-regular fa-floppy-disk"></i>
+                                Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
 
         <div class="bg-white rounded-2xl shadow-sm border border-slate-100/80 overflow-hidden">
             <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
 
-                <!-- Tab Switching Buttons -->
                 <div class="flex items-center gap-2">
                     <button id="activeTabBtn" onclick="switchTab('active')" class="px-3 py-1.5 text-xs font-semibold rounded-xl bg-emerald-50 text-emerald-800 transition">
                         Active Users <span class="bg-emerald-500 text-white text-[10px] px-2 py-0.2 rounded-full font-bold"> {{ $activeUsers->count() }}</span>
                     </button>
-                    <button id="pendingTabBtn" onclick="switchTab('pending')" class="px-3 py-1.5 text-xs font-semibold rounded-xl text-slate-500 hover:bg-slate-50 transition flex items-center gap-1.5">
-                        Pending Approvals
-                        {{-- @if($pendingUsers->count() > 0) --}}
-                            <span class="bg-amber-500 text-white text-[10px] px-2 py-0.2 rounded-full font-bold">{{ $pendingUsers->count() }}</span>
-                        {{-- @endif --}}
-                    </button>
                     <button id="inactiveTabBtn" onclick="switchTab('inactive')" class="px-3 py-1.5 text-xs font-semibold rounded-xl text-slate-500 hover:bg-slate-50 transition flex items-center gap-1.5">
-                        Inactive Users
-                        {{-- @if($inactiveUsers->count() > 0) --}}
+                        Deactivated Users
                             <span class="bg-red-500 text-white text-[10px] px-2 py-0.2 rounded-full font-bold">{{ $inactiveUsers->count() }}</span>
-                        {{-- @endif --}}
                     </button>
                 </div>
 
@@ -195,27 +357,49 @@
                                 </td>
 
                                 <td class="py-3.5 px-4 text-center print:hidden">
-                                    @if(auth()->id() !== $user['id'])
-                                        <x-confirm-modal
-                                            title="Deactivate User"
-                                            message="Are you sure you want to deactivate {{ $user['name'] }}? This action will disable their access to the system."
-                                            confirm-text="Deactivate"
-                                            cancel-text="Cancel"
-                                            confirm-class="bg-red-600 hover:bg-red-700"
-                                            :action="route('user-management.deactivateUser', $user['id'])"
-                                            method="POST"
-                                        >
-                                            <button type="button" class="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-white px-3 py-1.5 text-[11px] font-semibold text-red-600 shadow-sm transition-all hover:bg-red-50 hover:border-red-300" >
-                                                <i class="fa-solid fa-user-slash text-[10px]"></i>
-                                                Deactivate
-                                            </button>
-                                        </x-confirm-modal>
-                                    @else
-                                        <span class="inline-flex items-center gap-1.5 text-[11px] italic text-slate-400">
-                                            <i class="fa-solid fa-user-check text-[10px]"></i>
-                                            Current Account
-                                        </span>
-                                    @endif
+                                    <div class="flex items-center justify-center gap-2">
+                                        <button type="button"
+                                            @click="$dispatch('open-view-user-modal', { user: {
+                                                id: {{ $user['id'] }},
+                                                name: @js($user['name']),
+                                                email: @js($user['email']),
+                                                role: @js($user['roles'][0] ?? 'farmer'),
+                                                status: 'active',
+                                                is_self: {{ auth()->id() === $user['id'] ? 'true' : 'false' }},
+                                                is_admin: {{ in_array('admin', $user['roles'], true) ? 'true' : 'false' }},
+                                                created_at: @js(optional($user['created_at'])->format('M d, Y'))
+                                            } })"
+                                            class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-semibold text-slate-600 shadow-sm transition-all hover:bg-slate-50 hover:border-slate-300">
+                                            <i class="fa-solid fa-eye text-[10px]"></i> View
+                                        </button>
+
+                                        @if(in_array('admin', $user['roles'], true))
+                                            <span class="inline-flex items-center gap-1.5 text-[11px] italic text-slate-400">
+                                                <i class="fa-solid fa-lock text-[10px]"></i>
+                                                Protected
+                                            </span>
+                                        @elseif(auth()->id() !== $user['id'])
+                                            <x-confirm-modal
+                                                title="Deactivate User"
+                                                message="Are you sure you want to deactivate {{ $user['name'] }}? This action will disable their access to the system."
+                                                confirm-text="Deactivate"
+                                                cancel-text="Cancel"
+                                                confirm-class="bg-red-600 hover:bg-red-700"
+                                                :action="route('user-management.deactivateUser', $user['id'])"
+                                                method="POST"
+                                            >
+                                                <button type="button" class="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-white px-3 py-1.5 text-[11px] font-semibold text-red-600 shadow-sm transition-all hover:bg-red-50 hover:border-red-300" >
+                                                    <i class="fa-solid fa-user-slash text-[10px]"></i>
+                                                    Deactivate
+                                                </button>
+                                            </x-confirm-modal>
+                                        @else
+                                            <span class="inline-flex items-center gap-1.5 text-[11px] italic text-slate-400">
+                                                <i class="fa-solid fa-user-check text-[10px]"></i>
+                                                Current Account
+                                            </span>
+                                        @endif
+                                    </div>
                                 </td>
                             </tr>
                         @empty
@@ -237,112 +421,6 @@
                                 </td>
                             </tr>
 
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-
-            <div id="pendingSection" class="w-full overflow-x-auto hidden">
-                <table class="w-full text-left border-collapse text-xs">
-                    <thead>
-                        <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[10px] tracking-wider font-semibold">
-                            <th class="py-3 px-4">ID</th>
-                            <th class="py-3 px-4">Name</th>
-                            <th class="py-3 px-4">Email</th>
-                            <th class="py-3 px-4">Requested Role</th>
-                            <th class="py-3 px-4">Registered Date</th>
-                            <th class="py-3 px-4 text-center print:hidden">Actions</th>
-                        </tr>
-                    </thead>
-
-                    <tbody class="divide-y divide-slate-100 text-slate-700">
-                        @forelse($pendingUsers as $user)
-                            <tr class="group hover:bg-amber-50/40 transition-colors duration-150">
-                                <td class="py-3.5 px-4">
-                                    <span class="font-mono text-[11px] text-slate-400">
-                                        #{{ $user['id'] }}
-                                    </span>
-                                </td>
-
-                                <td class="py-3.5 px-4">
-                                    <span class="font-semibold text-slate-800">
-                                        {{ $user['name'] }}
-                                    </span>
-                                </td>
-
-                                <td class="py-3.5 px-4">
-                                    <span class="text-slate-500">
-                                        {{ $user['email'] }}
-                                    </span>
-                                </td>
-
-                                <td class="py-3.5 px-4">
-                                    <span class="inline-flex items-center gap-1.5 rounded-full border border-sky-200 bg-sky-50 px-2.5 py-1 text-[10px] font-semibold text-sky-700">
-                                        <i class="fa-solid fa-seedling text-[9px]"></i>
-                                        {{ ucfirst($user['roles'][0] ?? 'Farmer') }}
-                                    </span>
-                                </td>
-
-                                <td class="py-3.5 px-4">
-                                    <span class="text-slate-500">
-                                        {{ $user['created_at'] ? $user['created_at']->format('M d, Y') : '—' }}
-                                    </span>
-                                </td>
-
-                                <td class="py-3.5 px-4 text-center print:hidden">
-                                    <div class="flex items-center justify-center gap-2">
-
-                                        <x-confirm-modal
-                                            title="Approve User"
-                                            message="Are you sure you want to approve {{ $user['name'] }}? This action will grant them access to the system."
-                                            confirm-text="Approve"
-                                            cancel-text="Cancel"
-                                            confirm-class="bg-emerald-600 hover:bg-emerald-700"
-                                            :action="route('user-management.approveUser', $user['id'])"
-                                            method="POST"
-                                        >
-                                            <button type="button" class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-[11px] font-semibold text-white shadow-sm transition-all hover:bg-emerald-700 hover:shadow-md" >
-                                                <i class="fa-solid fa-check text-[10px]"></i>
-                                                Approve
-                                            </button>
-                                        </x-confirm-modal>
-
-                                        <x-confirm-modal
-                                            title="Reject User"
-                                            message="Are you sure you want to reject {{ $user['name'] }}? This action will deny their registration request."
-                                            confirm-text="Reject"
-                                            cancel-text="Cancel"
-                                            confirm-class="bg-red-600 hover:bg-red-700"
-                                            :action="route('user-management.rejectUser', $user['id'])"
-                                            method="POST"
-                                        >
-                                            <button type="button" class="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-white px-3 py-1.5 text-[11px] font-semibold text-red-600 shadow-sm transition-all hover:bg-red-50 hover:border-red-300">
-                                                <i class="fa-solid fa-xmark text-[10px]"></i>
-                                                Reject
-                                            </button>
-                                        </x-confirm-modal>
-
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="py-10 text-center">
-                                    <div class="flex flex-col items-center justify-center gap-2">
-                                        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-amber-50 text-amber-500">
-                                            <i class="fa-solid fa-user-clock"></i>
-                                        </div>
-
-                                        <p class="text-xs font-semibold text-slate-500">
-                                            No pending registrations
-                                        </p>
-
-                                        <p class="text-[11px] text-slate-400">
-                                            New registration requests will appear here.
-                                        </p>
-                                    </div>
-                                </td>
-                            </tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -397,20 +475,36 @@
                                 </td>
 
                                 <td class="py-3.5 px-4 text-center print:hidden">
-                                    <x-confirm-modal
-                                        title="Reactivate User"
-                                        message="Are you sure you want to reactivate {{ $user['name'] }}? This action will restore their access to the system."
-                                        confirm-text="Reactivate"
-                                        cancel-text="Cancel"
-                                        confirm-class="bg-emerald-600 hover:bg-emerald-700"
-                                        :action="route('user-management.reactivateUser', $user['id'])"
-                                        method="POST"
-                                    >
-                                        <button type="button" class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-1.5 text-[11px] font-semibold text-emerald-700 shadow-sm transition-all hover:bg-emerald-600 hover:text-white hover:border-emerald-600 hover:shadow-md" >
-                                            <i class="fa-solid fa-user-check text-[10px]"></i>
-                                            Reactivate
+                                    <div class="flex items-center justify-center gap-2">
+                                        <button type="button"
+                                            @click="$dispatch('open-view-user-modal', { user: {
+                                                id: {{ $user['id'] }},
+                                                name: @js($user['name']),
+                                                email: @js($user['email']),
+                                                role: @js($user['roles'][0] ?? 'farmer'),
+                                                status: 'inactive',
+                                                is_self: false,
+                                                created_at: @js(optional($user['created_at'])->format('M d, Y'))
+                                            } })"
+                                            class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-semibold text-slate-600 shadow-sm transition-all hover:bg-slate-50 hover:border-slate-300">
+                                            <i class="fa-solid fa-eye text-[10px]"></i> View
                                         </button>
-                                    </x-confirm-modal>
+
+                                        <x-confirm-modal
+                                            title="Reactivate User"
+                                            message="Are you sure you want to reactivate {{ $user['name'] }}? This action will restore their access to the system."
+                                            confirm-text="Reactivate"
+                                            cancel-text="Cancel"
+                                            confirm-class="bg-emerald-600 hover:bg-emerald-700"
+                                            :action="route('user-management.reactivateUser', $user['id'])"
+                                            method="POST"
+                                        >
+                                            <button type="button" class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-1.5 text-[11px] font-semibold text-emerald-700 shadow-sm transition-all hover:bg-emerald-600 hover:text-white hover:border-emerald-600 hover:shadow-md" >
+                                                <i class="fa-solid fa-user-check text-[10px]"></i>
+                                                Reactivate
+                                            </button>
+                                        </x-confirm-modal>
+                                    </div>
                                 </td>
                             </tr>
                         @empty
@@ -444,33 +538,20 @@
     <script>
         function switchTab(tab) {
             const activeSection = document.getElementById('activeSection');
-            const pendingSection = document.getElementById('pendingSection');
             const activeBtn = document.getElementById('activeTabBtn');
-            const pendingBtn = document.getElementById('pendingTabBtn');
             const inactiveSection = document.getElementById('inactiveSection');
             const inactiveBtn = document.getElementById('inactiveTabBtn');
 
             if (tab === 'active') {
                 activeSection.classList.remove('hidden');
-                pendingSection.classList.add('hidden');
                 inactiveSection.classList.add('hidden');
                 activeBtn.className = 'px-3 py-1.5 text-xs font-semibold rounded-xl bg-emerald-50 text-emerald-800 transition';
-                pendingBtn.className = 'px-3 py-1.5 text-xs font-semibold rounded-xl text-slate-500 hover:bg-slate-50 transition flex items-center gap-1.5';
                 inactiveBtn.className = 'px-3 py-1.5 text-xs font-semibold rounded-xl text-slate-500 hover:bg-slate-50 transition flex items-center gap-1.5';
-            } else if (tab === 'inactive') {
+            } else {
                 inactiveSection.classList.remove('hidden');
                 activeSection.classList.add('hidden');
-                pendingSection.classList.add('hidden');
                 inactiveBtn.className = 'px-3 py-1.5 text-xs font-semibold rounded-xl bg-red-50 text-red-800 transition flex items-center gap-1.5';
                 activeBtn.className = 'px-3 py-1.5 text-xs font-semibold rounded-xl text-slate-500 hover:bg-slate-50 transition';
-                pendingBtn.className = 'px-3 py-1.5 text-xs font-semibold rounded-xl text-slate-500 hover:bg-slate-50 transition flex items-center gap-1.5';
-            } else {
-                pendingSection.classList.remove('hidden');
-                activeSection.classList.add('hidden');
-                inactiveSection.classList.add('hidden');
-                pendingBtn.className = 'px-3 py-1.5 text-xs font-semibold rounded-xl bg-amber-50 text-amber-800 transition flex items-center gap-1.5';
-                activeBtn.className = 'px-3 py-1.5 text-xs font-semibold rounded-xl text-slate-500 hover:bg-slate-50 transition';
-                inactiveBtn.className = 'px-3 py-1.5 text-xs font-semibold rounded-xl text-slate-500 hover:bg-slate-50 transition flex items-center gap-1.5';
             }
         }
 

@@ -39,5 +39,11 @@
 
     @stack('scripts')
 
+    @auth
+        @if(auth()->user()->must_change_password)
+            <x-force-password-change-modal />
+        @endif
+    @endauth
+
 </body>
 </html>
