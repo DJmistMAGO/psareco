@@ -45,9 +45,7 @@
                     <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
                         <i class="fa-solid fa-user-plus text-emerald-600"></i> Register New User Account
                     </h3>
-                    <button type="button" @click="open = false" class="text-slate-400 hover:text-slate-600">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
+
                 </div>
 
                 <form action="{{ route('user-management.adduser') }}" method="POST" class="p-5">
@@ -154,10 +152,6 @@
                                 </p>
                             </div>
                         </div>
-
-                        <button type="button" @click="open = false" class="w-8 h-8 shrink-0 flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition">
-                            <i class="fa-solid fa-xmark"></i>
-                        </button>
                     </div>
 
                     <form :action="formAction" method="POST">
