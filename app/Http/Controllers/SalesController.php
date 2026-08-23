@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Inventory;
 use App\Models\Sales;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -12,7 +14,7 @@ use Illuminate\Validation\ValidationException;
 class SalesController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
         $products = Inventory::query()
             ->where('quantity', '>', 0)
@@ -21,7 +23,8 @@ class SalesController extends Controller
 
         return view('admin.sales', [
             'products' => $products,
-            'salesHistory' => $this->groupedHistory(),
+            'salesHistory' => $this->groupedHistory($request->string('search')->trim()->toString()),
+            'search' => $request->string('search')->trim()->toString(),
         ]);
     }
 
@@ -110,9 +113,9 @@ class SalesController extends Controller
     }
 
 
-    private function groupedHistory()
+    private function groupedHistory(string $search = '', int $perPage = 5)
     {
-        return Sales::with('product')
+        $grouped = Sales::with('product')
             ->orderByDesc('sale_date')
             ->get()
             ->groupBy(fn ($sale) => $sale->buyer_name . '|' . $sale->sale_date)
@@ -131,5 +134,33 @@ class SalesController extends Controller
                 ];
             })
             ->values();
+
+        if ($search !== '') {
+            $needle = mb_strtolower($search);
+
+            $grouped = $grouped->filter(function ($sale) use ($needle) {
+                if (str_contains(mb_strtolower($sale['buyer_name']), $needle)) {
+                    return true;
+                }
+
+                return $sale['items']->contains(
+                    fn ($item) => str_contains(mb_strtolower($item['name']), $needle)
+                );
+            })->values();
+        }
+
+        $page = Paginator::resolveCurrentPage('page');
+
+        return new LengthAwarePaginator(
+            $grouped->forPage($page, $perPage)->values(),
+            $grouped->count(),
+            $perPage,
+            $page,
+            [
+                'path'     => Paginator::resolveCurrentPath(),
+                'pageName' => 'page',
+                'query'    => $search !== '' ? ['search' => $search] : [],
+            ]
+        );
     }
 }

@@ -129,9 +129,9 @@
                     <i class="fa-solid fa-clock-rotate-left text-emerald-600"></i> Sales History
                 </h3>
 
-                <div class="relative w-full sm:w-64 print:hidden">
+                <div class="relative w-full sm:w-64 print:hidden" x-data="{ search: '{{ $search }}' }" x-init="$watch('search', () => clearTimeout(window.__salesSearchTimer) || (window.__salesSearchTimer = setTimeout(() => { window.location = '{{ route('sales.index') }}' + (search ? '?search=' + encodeURIComponent(search) : ''); }, 400)))">
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                    <input type="text" id="searchSales" onkeyup="filterSales()" placeholder="Filter sales records..."
+                    <input type="text" x-model="search" placeholder="Filter sales records..."
                         class="w-full pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
                 </div>
             </div>
@@ -192,6 +192,10 @@
                     </tbody>
                 </table>
             </div>
+
+            @if ($salesHistory->hasPages())
+                {{ $salesHistory->onEachSide(1)->links('vendor.pagination.sales') }}
+            @endif
         </div>
 
         {{-- alert modal --}}
