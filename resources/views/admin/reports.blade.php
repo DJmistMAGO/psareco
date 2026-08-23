@@ -5,14 +5,8 @@
 @section('content')
     <main class="w-full min-w-0 p-4 sm:p-6 lg:p-8">
         <x-dashboard-header />
+        <x-page-header eyebrow="PSARECO Enterprise Reports" title="Enterprise Reports" description="Comprehensive financial summaries, equipment utilization, and maintenance logs" icon="fa-solid fa-chart-line" />
 
-        <!-- Hero Header & Page Title -->
-        <section class="bg-gradient-to-r from-[#2c7a56] to-[#40a072] text-white rounded-2xl p-6 mb-6 shadow-sm">
-            <h2 class="text-xl sm:text-2xl font-bold tracking-tight flex items-center gap-2">
-                <i class="fa-solid fa-chart-line"></i> PSARECO Enterprise Reports
-            </h2>
-            <p class="text-emerald-100 text-xs sm:text-sm mt-1">Comprehensive financial summaries, equipment utilization, and maintenance logs</p>
-        </section>
 
         <!-- Main Card Wrapper -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-100/80 overflow-hidden" x-data="{ activeTab: 'financial' }">

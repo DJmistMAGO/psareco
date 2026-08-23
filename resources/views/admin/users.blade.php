@@ -6,20 +6,17 @@
     <main class="w-full min-w-0 p-4 sm:p-6 lg:p-8">
         <x-dashboard-header />
 
-        <section class="bg-gradient-to-r from-[#2c7a56] to-[#40a072] text-white rounded-2xl p-6 mb-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-                <h2 class="text-xl sm:text-2xl font-bold tracking-tight flex items-center gap-2">
-                    <i class="fa-solid fa-users-gear"></i> User Management
-                </h2>
-                <p class="text-emerald-100 text-xs sm:text-sm mt-1">Manage system administrators, cooperative officers, and farmer account approvals</p>
-            </div>
+        <x-page-header eyebrow="PSARECO User Management" title="User Management" description="Manage system administrators, cooperative officers, and farmer account approvals" icon="fa-solid fa-users-gear" >
+            <x-slot:actions>
+                <button type="button" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white text-emerald-700 text-sm font-bold shadow-sm hover:bg-emerald-50 transition" >
+                    <a href="{{-- route('users.export') --}}" >
+                        <i class="fa-solid fa-file-export"></i> Export CSV
+                    </a>
+                </button>
+            </x-slot:actions>
+        </x-page-header>
 
-            <div class="flex items-center gap-2 print:hidden">
-                <a href="{{-- route('users.export') --}}" class="inline-flex items-center gap-2 bg-white text-emerald-950 hover:bg-emerald-50 font-semibold text-xs py-2 px-3.5 rounded-xl shadow-sm transition">
-                    <i class="fa-solid fa-file-export"></i> Export CSV
-                </a>
-            </div>
-        </section>
+
 
         <div class="bg-white rounded-2xl shadow-sm border border-slate-100/80 p-5 mb-6 print:hidden">
             <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">

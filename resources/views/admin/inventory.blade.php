@@ -3,258 +3,1056 @@
 @section('title', 'Inventory - PSARECO')
 
 @section('content')
-    <main class="w-full min-w-0 p-4 sm:p-6 lg:p-8">
-        <x-dashboard-header />
 
-        <section class="bg-gradient-to-r from-[#2c7a56] to-[#40a072] text-white rounded-2xl p-6 mb-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-                <h2 class="text-xl sm:text-2xl font-bold tracking-tight flex items-center gap-2">
-                    <i class="fa-solid fa-boxes-stacked"></i> Inventory Management
-                </h2>
-                <p class="text-emerald-100 text-xs sm:text-sm mt-1">Monitor, adjust, and add farm products and supplies</p>
-            </div>
-            <button onclick="exportInventory()" class="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition backdrop-blur border border-white/20">
-                <i class="fa-solid fa-download"></i> Export Report
+<div
+    x-data="{
+        showView: false,
+        showEdit: false,
+        selected: null,
+        editForm: {},
+        openView(item) {
+            this.selected = item;
+            this.showView = true;
+        },
+        openEdit(item) {
+            this.editForm = {
+                id: item.id,
+                name: item.name,
+                type: item.type,
+                unit: item.unit,
+                quantity: item.quantity,
+                price: item.price,
+                reorder_level: item.reorder_level,
+                expiration_date: item.expiration_date ? item.expiration_date.substring(0, 10) : '',
+            };
+            this.showEdit = true;
+        },
+    }"
+>
+
+<main class="w-full min-w-0 p-4 sm:p-6 lg:p-8">
+
+    <x-dashboard-header />
+
+    <x-page-header eyebrow="PSARECO Inventory" title="Inventory Management" description="Monitor farm supplies, stock levels, pricing, and expiration dates." icon="fa-solid fa-boxes-stacked" >
+        <x-slot:actions>
+            <button type="button" onclick="document.getElementById('addProductModal').classList.remove('hidden')" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white text-emerald-700 text-sm font-bold shadow-sm hover:bg-emerald-50 transition" >
+                <i class="fa-solid fa-plus"></i>
+                Add Product
             </button>
+        </x-slot:actions>
+    </x-page-header>
+
+
+    <section class="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 mb-6">
+        <div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-[11px] font-medium text-slate-400 uppercase tracking-wide">
+                        Total Products
+                    </p>
+                    <p class="mt-1 text-2xl font-bold text-slate-800">
+                        {{ $totalProducts }}
+                    </p>
+                </div>
+                <div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center">
+                    <i class="fa-solid fa-box text-slate-500"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-[11px] font-medium text-slate-400 uppercase tracking-wide">
+                        Fertilizers
+                    </p>
+                    <p class="mt-1 text-2xl font-bold text-emerald-700">
+                        {{ $fertilizerCount }}
+                    </p>
+                </div>
+                <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
+                    <i class="fa-solid fa-leaf text-emerald-600"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-[11px] font-medium text-slate-400 uppercase tracking-wide">
+                        Pesticides
+                    </p>
+                    <p class="mt-1 text-2xl font-bold text-amber-600">
+                        {{ $pesticideCount }}
+                    </p>
+                </div>
+                <div class="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center">
+                    <i class="fa-solid fa-bug text-amber-500"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-[11px] font-medium text-slate-400 uppercase tracking-wide">
+                        Low Stock
+                    </p>
+                    <p class="mt-1 text-2xl font-bold text-red-600">
+                        {{ $lowStockCount }}
+                    </p>
+                </div>
+                <div class="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center">
+                    <i class="fa-solid fa-triangle-exclamation text-red-500"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm col-span-2 lg:col-span-1">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-[11px] font-medium text-slate-400 uppercase tracking-wide">
+                        Expiring Soon
+                    </p>
+                    <p class="mt-1 text-2xl font-bold text-orange-600">
+                        {{ $expiringCount }}
+                    </p>
+                </div>
+                <div class="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center">
+                    <i class="fa-solid fa-calendar-xmark text-orange-500"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-white border border-slate-100 rounded-2xl shadow-sm p-4 mb-6">
+        <form action="{{ route('inventory.index') }}" method="GET" class="flex flex-col lg:flex-row gap-3" >
+
+            <div class="relative flex-1">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400">
+                    <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                </div>
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search products..." class="w-full pl-11 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent" >
+            </div>
+
+            <select name="type" class="lg:w-48 px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500" >
+                <option value="all">All Categories</option>
+                <option value="Fertilizer" @selected(request('type') === 'Fertilizer')>Fertilizers</option>
+                <option value="Pesticide" @selected(request('type') === 'Pesticide')>Pesticides</option>
+            </select>
+
+            <button type="submit" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-sm font-semibold transition" >
+                <i class="fa-solid fa-filter text-xs"></i>
+                Filter
+            </button>
+
+            @if(request()->hasAny(['search', 'type']))
+                <a href="{{ route('inventory.index') }}" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-sm font-semibold transition" >
+                    <i class="fa-solid fa-xmark text-xs"></i>
+                    Clear
+                </a>
+            @endif
+
+        </form>
+    </section>
+
+    <x-success />
+    <x-errors />
+
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+        <div>
+            <h2 class="text-lg font-bold text-slate-800">Products</h2>
+            <p class="text-xs text-slate-400 mt-0.5">
+                {{ $inventories->count() }} {{ Str::plural('product', $inventories->count()) }} displayed
+            </p>
+        </div>
+    </div>
+
+    @if($inventories->count())
+
+        <section class="bg-white border border-slate-100 rounded-2xl shadow-sm overflow-hidden">
+
+            <div class="hidden md:block overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="bg-slate-50 border-b border-slate-100 text-left">
+                            <th class="px-5 py-3 text-[11px] font-bold uppercase tracking-wide text-slate-400">Product</th>
+                            <th class="px-5 py-3 text-[11px] font-bold uppercase tracking-wide text-slate-400">Type</th>
+                            <th class="px-5 py-3 text-[11px] font-bold uppercase tracking-wide text-slate-400 text-right">Stock</th>
+                            <th class="px-5 py-3 text-[11px] font-bold uppercase tracking-wide text-slate-400 text-right">Reorder At</th>
+                            <th class="px-5 py-3 text-[11px] font-bold uppercase tracking-wide text-slate-400 text-right">Unit Price</th>
+                            <th class="px-5 py-3 text-[11px] font-bold uppercase tracking-wide text-slate-400">Expiration</th>
+                            <th class="px-5 py-3 text-[11px] font-bold uppercase tracking-wide text-slate-400">Status</th>
+                            <th class="px-5 py-3 text-[11px] font-bold uppercase tracking-wide text-slate-400 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+
+                        @foreach($inventories as $item)
+
+                            @php
+                                $isLowStock = $item->quantity <= $item->reorder_level;
+
+                                $isExpired = false;
+                                $isExpiring = false;
+                                $daysUntilExpiration = null;
+
+                                if ($item->expiration_date) {
+                                    $today = now()->startOfDay();
+                                    $expirationDate = \Carbon\Carbon::parse($item->expiration_date)->startOfDay();
+                                    $isExpired = $expirationDate->lt($today);
+
+                                    if (!$isExpired) {
+                                        $daysUntilExpiration = $today->diffInDays($expirationDate);
+                                        $isExpiring = $daysUntilExpiration <= 30;
+                                    }
+                                }
+
+                                if ($item->type === 'Fertilizer') {
+                                    $icon = 'fa-leaf';
+                                    $iconBg = 'bg-emerald-100';
+                                    $iconColor = 'text-emerald-600';
+                                } else {
+                                    $icon = 'fa-bug';
+                                    $iconBg = 'bg-amber-100';
+                                    $iconColor = 'text-amber-600';
+                                }
+                            @endphp
+
+                            <tr class="hover:bg-slate-50/70 transition-colors">
+
+                                {{-- Product --}}
+                                <td class="px-5 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-9 h-9 shrink-0 rounded-lg {{ $iconBg }} {{ $iconColor }} flex items-center justify-center">
+                                            <i class="fa-solid {{ $icon }} text-sm"></i>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <p class="font-semibold text-slate-800 truncate">{{ $item->name }}</p>
+                                            <p class="text-[11px] text-slate-400">
+                                                Added {{ $item->created_at?->format('M d, Y') ?? '—' }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                {{-- Type --}}
+                                <td class="px-5 py-4 text-slate-500">
+                                    {{ $item->type }}
+                                </td>
+
+                                {{-- Stock --}}
+                                <td class="px-5 py-4 text-right">
+                                    <span class="font-semibold {{ $isLowStock ? 'text-red-600' : 'text-slate-700' }}">
+                                        {{ rtrim(rtrim(number_format($item->quantity, 2), '0'), '.') }}
+                                    </span>
+                                    <span class="text-xs text-slate-400">{{ $item->unit }}</span>
+                                </td>
+
+                                {{-- Reorder level --}}
+                                <td class="px-5 py-4 text-right text-slate-500">
+                                    {{ rtrim(rtrim(number_format($item->reorder_level, 2), '0'), '.') }} {{ $item->unit }}
+                                </td>
+
+                                {{-- Price --}}
+                                <td class="px-5 py-4 text-right font-semibold text-slate-700">
+                                    ₱{{ number_format($item->price, 2) }}
+                                </td>
+
+                                {{-- Expiration --}}
+                                <td class="px-5 py-4">
+                                    @if($isExpired)
+                                        <span class="text-red-600 font-semibold">Expired</span>
+                                    @elseif($item->expiration_date)
+                                        <span class="{{ $isExpiring ? 'text-amber-600 font-semibold' : 'text-slate-600' }}">
+                                            {{ $item->expiration_date->format('M d, Y') }}
+                                        </span>
+                                        @if($isExpiring)
+                                            <div class="text-[11px] text-amber-500">
+                                                in {{ $daysUntilExpiration }} {{ Str::plural('day', $daysUntilExpiration) }}
+                                            </div>
+                                        @endif
+                                    @else
+                                        <span class="text-slate-400">—</span>
+                                    @endif
+                                </td>
+
+                                {{-- Status --}}
+                                <td class="px-5 py-4">
+                                    <div class="flex flex-col gap-1 items-start">
+                                        @if($isLowStock)
+                                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-red-50 text-red-600 text-[10px] font-bold">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                                                Low Stock
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                                In Stock
+                                            </span>
+                                        @endif
+
+                                        @if($isExpired)
+                                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-red-50 text-red-600 text-[10px] font-bold">
+                                                Expired
+                                            </span>
+                                        @endif
+                                    </div>
+                                </td>
+
+                                {{-- Actions --}}
+                                <td class="px-5 py-4">
+                                    <div class="flex items-center justify-end gap-1">
+
+                                        <button type="button" @click="openView(@js($item))" title="View details" class="w-8 h-8 inline-flex items-center justify-center rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition">
+                                            <i class="fa-regular fa-eye text-xs"></i>
+                                        </button>
+
+                                        {{-- <button type="button" @click="openEdit(@js($item))" title="Edit product" class="w-8 h-8 inline-flex items-center justify-center rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition">
+                                            <i class="fa-regular fa-pen-to-square text-xs"></i>
+                                        </button> --}}
+
+                                        <x-confirm-modal
+                                            title="Delete Product"
+                                            :message="'Delete ' . $item->name . '? This will move it to trash — you can restore it later.'"
+                                            confirmText="Delete"
+                                            confirmClass="bg-red-600 hover:bg-red-700 text-white"
+                                            icon="shield-alert"
+                                            :action="route('inventory.deleteProduct', $item->id)"
+                                            method="DELETE"
+                                        >
+                                            <button type="button" title="Delete product" class="w-8 h-8 inline-flex items-center justify-center rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition">
+                                                <i class="fa-regular fa-trash-can text-xs"></i>
+                                            </button>
+                                        </x-confirm-modal>
+
+                                    </div>
+                                </td>
+
+                            </tr>
+
+                        @endforeach
+
+                    </tbody>
+                </table>
+            </div>
+
+            {{-- Mobile stacked rows --}}
+            <div class="md:hidden divide-y divide-slate-100">
+
+                @foreach($inventories as $item)
+
+                    @php
+                        $isLowStock = $item->quantity <= $item->reorder_level;
+
+                        $isExpired = false;
+                        $isExpiring = false;
+                        $daysUntilExpiration = null;
+
+                        if ($item->expiration_date) {
+                            $today = now()->startOfDay();
+                            $expirationDate = \Carbon\Carbon::parse($item->expiration_date)->startOfDay();
+                            $isExpired = $expirationDate->lt($today);
+
+                            if (!$isExpired) {
+                                $daysUntilExpiration = $today->diffInDays($expirationDate);
+                                $isExpiring = $daysUntilExpiration <= 30;
+                            }
+                        }
+
+                        if ($item->type === 'Fertilizer') {
+                            $icon = 'fa-leaf';
+                            $iconBg = 'bg-emerald-100';
+                            $iconColor = 'text-emerald-600';
+                        } else {
+                            $icon = 'fa-bug';
+                            $iconBg = 'bg-amber-100';
+                            $iconColor = 'text-amber-600';
+                        }
+                    @endphp
+
+                    <div class="p-4">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="w-9 h-9 shrink-0 rounded-lg {{ $iconBg }} {{ $iconColor }} flex items-center justify-center">
+                                    <i class="fa-solid {{ $icon }} text-sm"></i>
+                                </div>
+                                <div class="min-w-0">
+                                    <p class="font-semibold text-slate-800 truncate">{{ $item->name }}</p>
+                                    <p class="text-[11px] text-slate-400">{{ $item->type }}</p>
+                                </div>
+                            </div>
+
+                            @if($isLowStock)
+                                <span class="shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-full bg-red-50 text-red-600 text-[10px] font-bold">
+                                    Low
+                                </span>
+                            @else
+                                <span class="shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold">
+                                    OK
+                                </span>
+                            @endif
+                        </div>
+
+                        <div class="mt-3 grid grid-cols-2 gap-2 text-xs">
+                            <div>
+                                <span class="text-slate-400">Stock: </span>
+                                <span class="font-semibold {{ $isLowStock ? 'text-red-600' : 'text-slate-700' }}">
+                                    {{ rtrim(rtrim(number_format($item->quantity, 2), '0'), '.') }} {{ $item->unit }}
+                                </span>
+                            </div>
+                            <div>
+                                <span class="text-slate-400">Price: </span>
+                                <span class="font-semibold text-slate-700">₱{{ number_format($item->price, 2) }}</span>
+                            </div>
+                            <div class="col-span-2">
+                                <span class="text-slate-400">Expiration: </span>
+                                @if($isExpired)
+                                    <span class="text-red-600 font-semibold">Expired</span>
+                                @elseif($item->expiration_date)
+                                    <span class="{{ $isExpiring ? 'text-amber-600 font-semibold' : 'text-slate-600' }}">
+                                        {{ $item->expiration_date->format('M d, Y') }}
+                                    </span>
+                                @else
+                                    <span class="text-slate-400">—</span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="mt-3 flex items-center justify-end gap-1">
+
+                            <button type="button" @click="openView(@js($item))" title="View details" class="w-8 h-8 inline-flex items-center justify-center rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition">
+                                <i class="fa-regular fa-eye text-xs"></i>
+                            </button>
+
+                            {{-- <button type="button" @click="openEdit(@js($item))" title="Edit product" class="w-8 h-8 inline-flex items-center justify-center rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition">
+                                <i class="fa-regular fa-pen-to-square text-xs"></i>
+                            </button> --}}
+
+                            <x-confirm-modal
+                                title="Delete Product"
+                                :message="'Delete ' . $item->name . '? This will move it to trash — you can restore it later.'"
+                                confirmText="Delete"
+                                confirmClass="bg-red-600 hover:bg-red-700 text-white"
+                                icon="shield-alert"
+                                :action="route('inventory.deleteProduct', $item->id)"
+                                method="DELETE"
+                            >
+                                <button type="button" title="Delete product" class="w-8 h-8 inline-flex items-center justify-center rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition">
+                                    <i class="fa-regular fa-trash-can text-xs"></i>
+                                </button>
+                            </x-confirm-modal>
+
+                        </div>
+                    </div>
+
+                @endforeach
+
+            </div>
+
         </section>
 
-        <!-- Search Bar -->
-        <div class="relative mb-6">
-            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                <i class="fa-solid fa-magnifying-glass text-sm"></i>
-            </div>
-            <input
-                type="text"
-                id="searchInventory"
-                onkeyup="filterInventory()"
-                placeholder="Search products..."
-                class="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-2xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent shadow-sm transition"
-            >
-        </div>
+        @if($inventories->hasPages())
+            <div class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
 
-        <!-- Add New Product Form Card -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-100/80 mb-6 overflow-hidden" id="addProductCard">
-            <div class="px-5 py-4 border-b border-slate-100 flex items-center space-x-2">
-                <i class="fa-solid fa-circle-plus text-emerald-600 text-base"></i>
-                <h3 class="font-bold text-slate-700 text-sm">Add New Product</h3>
+                <p class="text-xs text-slate-400 order-2 sm:order-1">
+                    Showing {{ $inventories->firstItem() }}–{{ $inventories->lastItem() }}
+                    of {{ $inventories->total() }} {{ Str::plural('product', $inventories->total()) }}
+                </p>
+
+                <div class="order-1 sm:order-2">
+                    {{ $inventories->onEachSide(1)->links() }}
+                </div>
+
             </div>
-            <div class="p-5">
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-9 gap-3">
-                    <div class="lg:col-span-1">
-                        <input type="text" id="productName" placeholder="Product Name" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white">
-                    </div>
-                    <div class="lg:col-span-1">
-                        <select id="productType" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white">
-                            <option value="Fertilizer">Fertilizer</option>
-                            <option value="Pesticide">Pesticide</option>
-                        </select>
-                    </div>
-                    <div class="lg:col-span-1">
-                        <input type="number" id="productQty" placeholder="Quantity" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white">
-                    </div>
-                    <div class="lg:col-span-1">
-                        <input type="text" id="productUnit" placeholder="Unit (bags/L)" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white">
-                    </div>
-                    <div class="lg:col-span-1">
-                        <input type="number" id="productPrice" placeholder="Price (₱)" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white">
-                    </div>
-                    <div class="lg:col-span-1">
-                        <input type="number" id="productCost" placeholder="Cost (₱)" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white">
-                    </div>
-                    <div class="lg:col-span-1">
-                        <input type="number" id="productReorderLevel" placeholder="Reorder at" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white">
-                    </div>
-                    <div class="lg:col-span-1">
-                        <input type="date" id="productExpiration" placeholder="Exp Date" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white">
-                    </div>
-                    <div class="lg:col-span-1">
-                        <button onclick="addProduct()" class="w-full h-full min-h-[38px] bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-xl flex items-center justify-center gap-1.5 transition">
-                            <i class="fa-solid fa-plus"></i> Add
+        @endif
+
+    @else
+
+        {{-- EMPTY STATE --}}
+        <section class="bg-white border border-dashed border-slate-200 rounded-3xl p-10 sm:p-14 text-center">
+            <div class="mx-auto w-20 h-20 rounded-3xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                <i class="fa-solid fa-box-open text-3xl"></i>
+            </div>
+            <h3 class="mt-5 text-lg font-bold text-slate-800">No products found</h3>
+            <p class="mt-2 text-sm text-slate-400 max-w-md mx-auto">
+                @if(request()->hasAny(['search', 'type']))
+                    Try adjusting your search or filters.
+                @else
+                    Your inventory is currently empty. Add your first farm product to get started.
+                @endif
+            </p>
+
+            @if(request()->hasAny(['search', 'type']))
+                <a href="{{ route('inventory.index') }}" class="inline-flex items-center gap-2 mt-5 px-4 py-2.5 rounded-xl bg-slate-800 text-white text-xs font-semibold hover:bg-slate-900 transition">
+                    Clear filters
+                </a>
+            @else
+                <button type="button" onclick="document.getElementById('addProductModal').classList.remove('hidden')" class="inline-flex items-center gap-2 mt-5 px-4 py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-semibold hover:bg-emerald-700 transition">
+                    <i class="fa-solid fa-plus"></i>
+                    Add First Product
+                </button>
+            @endif
+        </section>
+
+    @endif
+
+</main>
+
+
+{{-- view modal --}}
+<div
+    x-show="showView"
+    x-cloak
+    class="fixed inset-0 z-50 overflow-y-auto"
+    aria-modal="true"
+    role="dialog"
+>
+    <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm" @click="showView = false"></div>
+
+    <div class="relative min-h-screen flex items-center justify-center p-4">
+        <div class="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden" x-show="showView" x-transition>
+
+            <template x-if="selected">
+                <div>
+
+                    {{-- Header --}}
+                    <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <div
+                                class="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center"
+                                :class="selected.type === 'Fertilizer'
+                                    ? 'bg-emerald-50 text-emerald-600'
+                                    : 'bg-amber-50 text-amber-600'"
+                            >
+                                <i
+                                    class="fa-solid"
+                                    :class="selected.type === 'Fertilizer' ? 'fa-leaf' : 'fa-bug'"
+                                ></i>
+                            </div>
+
+                            <div class="min-w-0">
+                                <h2
+                                    class="text-base font-bold text-slate-800 truncate"
+                                    x-text="selected.name"
+                                ></h2>
+
+                                <p class="text-xs text-slate-400 mt-0.5">
+                                    Product Details
+                                </p>
+                            </div>
+                        </div>
+
+                        <button
+                            type="button"
+                            @click="showView = false"
+                            class="w-9 h-9 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 flex items-center justify-center transition"
+                        >
+                            <i class="fa-solid fa-xmark"></i>
                         </button>
                     </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Fertilizers Table -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-100/80 overflow-hidden flex flex-col mb-6">
-            <div class="px-5 py-4 flex items-center justify-between border-b border-slate-100">
-                <div class="flex items-center space-x-2">
-                    <i class="fa-solid fa-leaf text-emerald-600 text-sm"></i>
-                    <h3 class="font-bold text-slate-700 text-sm">Fertilizers</h3>
-                </div>
-                <span class="bg-emerald-100 text-emerald-800 text-xs font-semibold px-2.5 py-0.5 rounded-full" id="fertilizerCount">0</span>
-            </div>
-            <div class="w-full overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-[#ebf4ef] text-emerald-900 text-[11px] uppercase tracking-wider font-semibold">
-                            <th class="py-2.5 px-4">Product Name</th>
-                            <th class="py-2.5 px-4">Quantity</th>
-                            <th class="py-2.5 px-4">Unit</th>
-                            <th class="py-2.5 px-4">Unit Price</th>
-                            <th class="py-2.5 px-4">Cost Price</th>
-                            <th class="py-2.5 px-4">Reorder Level</th>
-                            <th class="py-2.5 px-4">Expiration Date</th>
-                            <th class="py-2.5 px-4">Date Added</th>
-                            <th class="py-2.5 px-4">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="fertilizersTableBody" class="divide-y divide-slate-100 text-xs text-slate-700">
-                        <tr>
-                            <td colspan="9" class="py-12 text-center text-slate-400">Loading fertilizers...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
 
-        <!-- Pesticides Table -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-100/80 overflow-hidden flex flex-col mb-6">
-            <div class="px-5 py-4 flex items-center justify-between border-b border-slate-100">
-                <div class="flex items-center space-x-2">
-                    <i class="fa-solid fa-bug text-emerald-600 text-sm"></i>
-                    <h3 class="font-bold text-slate-700 text-sm">Pesticides</h3>
-                </div>
-                <span class="bg-emerald-100 text-emerald-800 text-xs font-semibold px-2.5 py-0.5 rounded-full" id="pesticideCount">0</span>
-            </div>
-            <div class="w-full overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-[#ebf4ef] text-emerald-900 text-[11px] uppercase tracking-wider font-semibold">
-                            <th class="py-2.5 px-4">Product Name</th>
-                            <th class="py-2.5 px-4">Quantity</th>
-                            <th class="py-2.5 px-4">Unit</th>
-                            <th class="py-2.5 px-4">Unit Price</th>
-                            <th class="py-2.5 px-4">Cost Price</th>
-                            <th class="py-2.5 px-4">Reorder Level</th>
-                            <th class="py-2.5 px-4">Expiration Date</th>
-                            <th class="py-2.5 px-4">Date Added</th>
-                            <th class="py-2.5 px-4">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="pesticidesTableBody" class="divide-y divide-slate-100 text-xs text-slate-700">
-                        <tr>
-                            <td colspan="9" class="py-12 text-center text-slate-400">Loading pesticides...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+                    {{-- Product Information --}}
+                    <div class="p-6">
 
-    </main>
+                        <div class="mb-6">
+                            <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
+                                Product Information
+                            </p>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                                {{-- Product Name --}}
+                                <div class="sm:col-span-2">
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">
+                                        Product Name
+                                    </label>
+
+                                    <div class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700">
+                                        <span x-text="selected.name"></span>
+                                    </div>
+                                </div>
+
+                                {{-- Product Type --}}
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">
+                                        Product Type
+                                    </label>
+
+                                    <div class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 flex items-center gap-2">
+                                        <i
+                                            class="fa-solid text-xs"
+                                            :class="selected.type === 'Fertilizer'
+                                                ? 'fa-leaf text-emerald-600'
+                                                : 'fa-bug text-amber-600'"
+                                        ></i>
+
+                                        <span x-text="selected.type"></span>
+                                    </div>
+                                </div>
+
+                                {{-- Unit --}}
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">
+                                        Unit
+                                    </label>
+
+                                    <div class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700">
+                                        <span x-text="selected.unit"></span>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+
+                        {{-- Stock & Pricing --}}
+                        <div class="mb-6">
+                            <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
+                                Stock & Pricing
+                            </p>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+                                {{-- Quantity --}}
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">
+                                        Current Quantity
+                                    </label>
+
+                                    <div class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200">
+                                        <div class="flex items-baseline gap-1.5">
+                                            <span
+                                                class="text-sm font-bold"
+                                                :class="Number(selected.quantity) <= Number(selected.reorder_level)
+                                                    ? 'text-red-600'
+                                                    : 'text-slate-700'"
+                                                x-text="selected.quantity"
+                                            ></span>
+
+                                            <span
+                                                class="text-xs font-medium text-slate-400"
+                                                x-text="selected.unit"
+                                            ></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                {{-- Unit Price --}}
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">
+                                        Unit Price
+                                    </label>
+
+                                    <div class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200">
+                                        <div class="flex items-baseline gap-0.5">
+                                            <span class="text-sm font-bold text-slate-700">
+                                                ₱
+                                            </span>
+
+                                            <span
+                                                class="text-sm font-bold text-slate-700"
+                                                x-text="Number(selected.price).toFixed(2)"
+                                            ></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                {{-- Reorder Level --}}
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">
+                                        Reorder Level
+                                    </label>
+
+                                    <div class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200">
+                                        <div class="flex items-baseline gap-1.5">
+                                            <span
+                                                class="text-sm font-bold text-slate-700"
+                                                x-text="selected.reorder_level"
+                                            ></span>
+
+                                            <span
+                                                class="text-xs font-medium text-slate-400"
+                                                x-text="selected.unit"
+                                            ></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+
+                        {{-- Expiration --}}
+                        <div class="mb-6">
+                            <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
+                                Expiration
+                            </p>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1.5">
+                                    Expiration Date
+                                </label>
+
+                                <div class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm">
+                                    <template x-if="selected.expiration_date">
+                                        <div class="flex items-center gap-2">
+                                            <i class="fa-regular fa-calendar text-slate-400"></i>
+
+                                            <span
+                                                class="text-slate-700 font-medium"
+                                                x-text="selected.expiration_date.substring(0, 10)"
+                                            ></span>
+                                        </div>
+                                    </template>
+
+                                    <template x-if="!selected.expiration_date">
+                                        <div class="flex items-center gap-2 text-slate-400">
+                                            <i class="fa-regular fa-calendar-xmark"></i>
+                                            <span>No expiration date</span>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        {{-- Status Summary --}}
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
+                                Inventory Status
+                            </p>
+
+                            <div class="rounded-2xl border border-slate-100 bg-slate-50 p-4">
+
+                                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+
+                                    {{-- Stock Status --}}
+                                    <div class="flex items-center gap-3">
+                                        <div
+                                            class="w-9 h-9 rounded-xl flex items-center justify-center"
+                                            :class="Number(selected.quantity) <= Number(selected.reorder_level)
+                                                ? 'bg-red-50 text-red-600'
+                                                : 'bg-emerald-50 text-emerald-600'"
+                                        >
+                                            <i
+                                                class="fa-solid"
+                                                :class="Number(selected.quantity) <= Number(selected.reorder_level)
+                                                    ? 'fa-triangle-exclamation'
+                                                    : 'fa-circle-check'"
+                                            ></i>
+                                        </div>
+
+                                        <div>
+                                            <p class="text-xs font-semibold text-slate-500">
+                                                Stock Level
+                                            </p>
+
+                                            <p
+                                                class="text-sm font-bold"
+                                                :class="Number(selected.quantity) <= Number(selected.reorder_level)
+                                                    ? 'text-red-600'
+                                                    : 'text-emerald-700'"
+                                                x-text="Number(selected.quantity) <= Number(selected.reorder_level)
+                                                    ? 'Low Stock'
+                                                    : 'In Stock'"
+                                            ></p>
+                                        </div>
+                                    </div>
+
+
+                                    {{-- Expiration Status --}}
+                                    <div class="flex items-center gap-3">
+                                        <div
+                                            class="w-9 h-9 rounded-xl flex items-center justify-center"
+                                            :class="!selected.expiration_date
+                                                ? 'bg-slate-100 text-slate-400'
+                                                : 'bg-emerald-50 text-emerald-600'"
+                                        >
+                                            <i
+                                                class="fa-solid"
+                                                :class="!selected.expiration_date
+                                                    ? 'fa-calendar'
+                                                    : 'fa-calendar-check'"
+                                            ></i>
+                                        </div>
+
+                                        <div>
+                                            <p class="text-xs font-semibold text-slate-500">
+                                                Expiration
+                                            </p>
+
+                                            <p
+                                                class="text-sm font-bold"
+                                                :class="selected.expiration_date
+                                                    ? 'text-emerald-700'
+                                                    : 'text-slate-500'"
+                                                x-text="selected.expiration_date
+                                                    ? 'Expiration date set'
+                                                    : 'No expiration'"
+                                            ></p>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    {{-- Footer --}}
+                    <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+
+                        <button
+                            type="button"
+                            @click="showView = false"
+                            class="px-5 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-600 text-xs font-semibold hover:bg-slate-100 transition"
+                        >
+                            Close
+                        </button>
+
+                        <button
+                            type="button"
+                            @click="showView = false; openEdit(selected)"
+                            class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition"
+                        >
+                            <i class="fa-regular fa-pen-to-square"></i>
+                            Edit Product
+                        </button>
+
+                    </div>
+
+                </div>
+            </template>
+
+        </div>
+    </div>
+</div>
+
+{{-- edit modal --}}
+<div
+    x-show="showEdit"
+    x-cloak
+    class="fixed inset-0 z-50 overflow-y-auto"
+    aria-modal="true"
+    role="dialog"
+>
+    <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm" @click="showEdit = false"></div>
+
+    <div class="relative min-h-screen flex items-center justify-center p-4">
+        <div class="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden" x-show="showEdit" x-transition>
+
+            <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                        <i class="fa-regular fa-pen-to-square"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-base font-bold text-slate-800">Edit Product</h2>
+                        <p class="text-xs text-slate-400 mt-0.5">Update this product's details.</p>
+                    </div>
+                </div>
+                <button type="button" @click="showEdit = false" class="w-9 h-9 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form method="POST" :action="`{{ url('inventory') }}/${editForm.id}`">
+                @csrf
+                @method('PUT')
+
+                <div class="p-6">
+
+                    <div class="mb-6">
+                        <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">Product Information</p>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="sm:col-span-2">
+                                <label class="block text-xs font-semibold text-slate-600 mb-1.5">Product Name</label>
+                                <input type="text" name="name" x-model="editForm.name" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1.5">Product Type</label>
+                                <select name="type" x-model="editForm.type" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+                                    <option value="Fertilizer">Fertilizer</option>
+                                    <option value="Pesticide">Pesticide</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1.5">Unit</label>
+                                <input type="text" name="unit" x-model="editForm.unit" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">Stock & Pricing</p>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1.5">Quantity</label>
+                                <input type="number" name="quantity" x-model="editForm.quantity" min="0" step="0.01" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1.5">Unit Price</label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400 text-sm">₱</span>
+                                    <input type="number" name="price" x-model="editForm.price" min="0" step="0.01" required class="w-full pl-9 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1.5">Reorder Level</label>
+                                <input type="number" name="reorder_level" x-model="editForm.reorder_level" min="0" step="0.01" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">Expiration</p>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1.5">
+                                Expiration Date
+                                <span class="font-normal text-slate-400">(optional)</span>
+                            </label>
+                            <input type="date" name="expiration_date" x-model="editForm.expiration_date" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+                    <button type="button" @click="showEdit = false" class="px-5 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-600 text-xs font-semibold hover:bg-slate-100 transition">
+                        Cancel
+                    </button>
+                    <button type="submit" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition">
+                        <i class="fa-solid fa-check"></i>
+                        Save Changes
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+
+{{-- =============================================================
+    ADD PRODUCT MODAL (unchanged)
+============================================================== --}}
+<div id="addProductModal" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-labelledby="addProductTitle" role="dialog" aria-modal="true">
+
+    <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm" onclick="document.getElementById('addProductModal').classList.add('hidden')"></div>
+
+    <div class="relative min-h-screen flex items-center justify-center p-4">
+        <div class="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden">
+
+            <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                        <i class="fa-solid fa-box-circle-plus"></i>
+                    </div>
+                    <div>
+                        <h2 id="addProductTitle" class="text-base font-bold text-slate-800">Add New Product</h2>
+                        <p class="text-xs text-slate-400 mt-0.5">Add a farm supply to your inventory.</p>
+                    </div>
+                </div>
+                <button type="button" onclick="document.getElementById('addProductModal').classList.add('hidden')" class="w-9 h-9 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form action="{{ route('inventory.addProduct') }}" method="POST">
+                @csrf
+
+                <div class="p-6">
+
+                    <div class="mb-6">
+                        <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">Product Information</p>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="sm:col-span-2">
+                                <label class="block text-xs font-semibold text-slate-600 mb-1.5">Product Name</label>
+                                <input type="text" name="name" value="{{ old('name') }}" placeholder="e.g. Urea 46-0-0" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1.5">Product Type</label>
+                                <select name="type" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+                                    <option value="Fertilizer">Fertilizer</option>
+                                    <option value="Pesticide">Pesticide</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1.5">Unit</label>
+                                <input type="text" name="unit" placeholder="e.g. bags, liters, kg" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">Stock & Pricing</p>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1.5">Initial Quantity</label>
+                                <input type="number" name="quantity" min="0" step="0.01" placeholder="0" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1.5">Unit Price</label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400 text-sm">₱</span>
+                                    <input type="number" name="price" min="0" step="0.01" placeholder="0.00" required class="w-full pl-9 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1.5">Reorder Level</label>
+                                <input type="number" name="reorder_level" min="0" step="0.01" placeholder="10" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">Expiration</p>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1.5">
+                                Expiration Date
+                                <span class="font-normal text-slate-400">(optional)</span>
+                            </label>
+                            <input type="date" name="expiration_date" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+                            <p class="mt-1.5 text-[11px] text-slate-400">Leave blank if the product does not have an expiration date.</p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+                    <button type="button" onclick="document.getElementById('addProductModal').classList.add('hidden')" class="px-5 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-600 text-xs font-semibold hover:bg-slate-100 transition">
+                        Cancel
+                    </button>
+                    <button type="submit" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition">
+                        <i class="fa-solid fa-plus"></i>
+                        Add Product
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+</div>
 
 @endsection
-
-@push('scripts')
-    <script>
-        let currentUser = null;
-        let allFertilizers = [], allPesticides = [];
-
-        function getExpirationStatus(expirationDate) {
-            if (!expirationDate) return { class: '', text: 'Not set', isExpired: false, isExpiring: false };
-            const today = new Date(); today.setHours(0, 0, 0, 0);
-            const expDate = new Date(expirationDate);
-            if (expDate < today) return { class: 'bg-red-100 text-red-700 border-red-200', text: 'EXPIRED', isExpired: true, isExpiring: false };
-            const daysDiff = Math.ceil((expDate - today) / (1000 * 60 * 60 * 24));
-            if (daysDiff <= 30) return { class: 'bg-amber-100 text-amber-700 border-amber-200', text: `Expires in ${daysDiff} days`, isExpired: false, isExpiring: true };
-            return { class: 'bg-emerald-100 text-emerald-700 border-emerald-200', text: `Valid until ${expDate.toLocaleDateString()}`, isExpired: false, isExpiring: false };
-        }
-
-        function escapeHtml(str) {
-            if (!str) return '';
-            return String(str).replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
-        }
-
-        function loadInventoryPage() {
-            if (typeof requireAuth === 'function' && !requireAuth()) return;
-            if (typeof getCurrentUser === 'function') currentUser = getCurrentUser();
-            if (typeof loadSidebar === 'function') loadSidebar();
-
-            if (currentUser && currentUser.role !== 'officer' && currentUser.role !== 'admin') {
-                const addCard = document.getElementById('addProductCard');
-                if (addCard) addCard.style.display = 'none';
-            }
-
-            loadInventory();
-        }
-
-        function loadInventory() {
-            const inventory = typeof getInventory === 'function' ? getInventory() : [];
-            allFertilizers = inventory.filter(item => item.type === 'Fertilizer');
-            allPesticides = inventory.filter(item => item.type === 'Pesticide');
-
-            document.getElementById('fertilizerCount').innerText = allFertilizers.length;
-            document.getElementById('pesticideCount').innerText = allPesticides.length;
-
-            renderFertilizers(allFertilizers);
-            renderPesticides(allPesticides);
-        }
-
-        function filterInventory() {
-            const term = document.getElementById('searchInventory').value.toLowerCase();
-            renderFertilizers(allFertilizers.filter(item => item.name.toLowerCase().includes(term)));
-            renderPesticides(allPesticides.filter(item => item.name.toLowerCase().includes(term)));
-        }
-
-        function renderFertilizers(items) {
-            const tableBody = document.getElementById('fertilizersTableBody');
-            if (items.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="9" class="py-12 text-center text-slate-400">No fertilizers found</td></tr>';
-                return;
-            }
-            tableBody.innerHTML = items.map(item => renderInventoryRow(item)).join('');
-        }
-
-        function renderPesticides(items) {
-            const tableBody = document.getElementById('pesticidesTableBody');
-            if (items.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="9" class="py-12 text-center text-slate-400">No pesticides found</td></tr>';
-                return;
-            }
-            tableBody.innerHTML = items.map(item => renderInventoryRow(item)).join('');
-        }
-
-        function renderInventoryRow(item) {
-            const isLowStock = item.qty <= item.reorderLevel;
-            const expStatus = getExpirationStatus(item.expirationDate);
-            const statusBadges = [];
-
-            if (isLowStock) {
-                statusBadges.push('<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-red-100 text-red-700 border border-red-200">Low Stock</span>');
-            }
-
-            if (expStatus.isExpired) {
-                statusBadges.push('<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-red-100 text-red-700 border border-red-200">Expired</span>');
-            } else if (expStatus.isExpiring) {
-                statusBadges.push(`<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-100 text-amber-700 border border-amber-200">${expStatus.text}</span>`);
-            }
-
-            if (statusBadges.length === 0) {
-                statusBadges.push('<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-100 text-emerald-700 border border-emerald-200">In Stock</span>');
-            }
-
-            const createdAtDisplay = item.createdAt ? new Date(item.createdAt).toLocaleDateString() : '—';
-
-            return `
-                <tr class="hover:bg-slate-50/80 transition-colors">
-                    <td class="py-3 px-4 font-semibold text-slate-800">${escapeHtml(item.name)}</td>
-                    <td class="py-3 px-4 font-bold text-slate-800">${item.qty}</td>
-                    <td class="py-3 px-4 text-slate-500">${item.unit || '—'}</td>
-                    <td class="py-3 px-4 font-medium text-slate-700">₱${Number(item.price || 0).toLocaleString()}</td>
-                    <td class="py-3 px-4 text-slate-500">₱${Number(item.costPrice || 0).toLocaleString()}</td>
-                    <td class="py-3 px-4 text-slate-500">${item.reorderLevel || 0}</td>
-                    <td class="py-3 px-4 text-slate-500">${item.expirationDate ? new Date(item.expirationDate).toLocaleDateString() : '—'}</td>
-                    <td class="py-3 px-4 text-slate-400">${createdAtDisplay}</td>
-                    <td class="py-3 px-4">
-                        <div class="flex flex-wrap gap-1">
-                            ${statusBadges.join('')}
-                        </div>
-                    </td>
-                </tr>
-            `;
-        }
-
-        document.addEventListener('DOMContentLoaded', loadInventoryPage);
-    </script>
-@endpush

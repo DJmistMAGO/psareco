@@ -6,30 +6,20 @@
     <main class="w-full min-w-0 p-4 sm:p-6 lg:p-8">
         <x-dashboard-header />
 
-
-        <!-- Hero Header & Actions -->
-        <section class="bg-gradient-to-r from-[#2c7a56] to-[#40a072] text-white rounded-2xl p-6 mb-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-                <h2 class="text-xl sm:text-2xl font-bold tracking-tight flex items-center gap-2">
-                    <i class="fa-solid fa-cart-shopping"></i> Sales Transactions
-                </h2>
-                <p class="text-emerald-100 text-xs sm:text-sm mt-1">Manage product orders, process point-of-sale checkouts, and review sales history</p>
-            </div>
-
-            <div class="flex items-center gap-2 print:hidden">
-                <button onclick="exportSalesXLSX()" class="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white font-medium text-xs py-2 px-3.5 rounded-xl backdrop-blur border border-white/20 transition">
-                    <i class="fa-solid fa-file-excel"></i> Export Excel
+        <x-page-header eyebrow="PSARECO Sales" title="Sales Transactions" description="Manage product orders, process point-of-sale checkouts, and review sales history" icon="fa-solid fa-cart-shopping" >
+            <x-slot:actions>
+                <button onclick="exportSalesXLSX()" class="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white font-medium text-xs py-2 px-3.5 rounded-xl backdrop-blur border border-white/20 transition" >
+                    <i class="fa-solid fa-file-excel"></i>
+                    Export Excel
                 </button>
-                <button onclick="window.print()" class="inline-flex items-center gap-2 bg-white text-emerald-950 hover:bg-emerald-50 font-semibold text-xs py-2 px-3.5 rounded-xl shadow-sm transition">
-                    <i class="fa-solid fa-print"></i> Print Sales
+                <button onclick="window.print()" class="inline-flex items-center gap-2 bg-white text-emerald-950 hover:bg-emerald-50 font-semibold text-xs py-2 px-3.5 rounded-xl shadow-sm transition" >
+                    <i class="fa-solid fa-print"></i>
+                    Print Sales
                 </button>
-            </div>
-        </section>
+            </x-slot:actions>
+        </x-page-header>
 
-        <!-- Main POS Grid: Product Picker (Left/Top) + Cart (Right/Bottom) -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6 print:hidden">
-
-            <!-- Step 1: Select Product & Quantity -->
             <div class="lg:col-span-7 bg-white rounded-2xl shadow-sm border border-slate-100/80 p-5 flex flex-col justify-between" id="recordSaleCard">
                 <div>
                     <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">

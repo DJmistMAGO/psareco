@@ -15,9 +15,7 @@
 <body class="bg-[#f8faf6] text-slate-800 antialiased selection:bg-emerald-600 selection:text-white font-sans">
 
 <div class="relative min-h-screen bg-gradient-to-b from-emerald-50/50 via-[#f8faf6] to-slate-100/60 flex items-center justify-center px-4 py-12">
-
     <div class="relative max-w-2xl w-full text-center">
-
         <div class="inline-flex px-3.5 py-1.5 rounded-full bg-red-100 border border-red-200 text-red-800 text-xs font-semibold uppercase tracking-wider mb-3">
             PSARECO • System Status
         </div>
@@ -46,7 +44,6 @@
         </div>
 
         <div class="flex flex-col sm:flex-row gap-3 justify-center">
-
             <a href="{{ route('dashboard') }}"
                 class="px-7 py-3.5 bg-emerald-700 hover:bg-emerald-800 text-white font-medium rounded-xl">
                 Return to Dashboard
@@ -56,7 +53,6 @@
                 class="px-7 py-3.5 bg-white hover:bg-slate-50 text-slate-700 font-medium rounded-xl border border-slate-200">
                 Try Again
             </a>
-
         </div>
 
         <div class="mt-10 text-slate-400 text-xs font-medium">

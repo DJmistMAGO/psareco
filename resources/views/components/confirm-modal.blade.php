@@ -48,11 +48,11 @@
                                 </div>
                             </div>
 
-                            <button type="button" @click="open = false" class="rounded-lg p-1.5 text-slate-400 hover:bg-emerald-100/60 hover:text-slate-600 transition-colors" >
+                            {{-- <button type="button" @click="open = false" class="rounded-lg p-1.5 text-slate-400 hover:bg-emerald-100/60 hover:text-slate-600 transition-colors" >
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                                 </svg>
-                            </button>
+                            </button> --}}
                         </div>
 
                         <div class="px-6 py-6 text-md leading-relaxed text-slate-600">
