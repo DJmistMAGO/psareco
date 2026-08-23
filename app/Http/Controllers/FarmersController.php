@@ -183,7 +183,7 @@ class FarmersController extends Controller
         });
     }
 
-    public function deleteBooking(Booking $booking) 
+    public function deleteBooking(Booking $booking)
     {
         $booking->delete();
 

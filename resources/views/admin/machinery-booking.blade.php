@@ -391,7 +391,7 @@
                                             {{ $booking->status }}
 
                                         </span>
-                                    @elseif ($booking->status === 'Cancelled')
+                                    @elseif ($booking->status === 'Declined')
                                         <span
                                             class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-100 text-red-800 border border-red-200 text-[10px] font-bold">
 
@@ -446,23 +446,16 @@
                                             </x-confirm-modal>
 
 
-                                            {{-- Reject --}}
-                                            @if (Route::has('officer.reject-booking'))
-                                                <form action="{{ route('officer.reject-booking', $booking->id) }}"
-                                                    method="POST">
-
-                                                    @csrf
-
-                                                    @method('PUT')
-
-                                                    <button type="submit"
-                                                        class="inline-flex items-center justify-center h-9 w-9 bg-white hover:bg-rose-50 text-red-600 hover:text-rose-700 rounded-lg border border-slate-200 hover:border-rose-200 shadow-sm transition-all duration-150"
-                                                        title="Reject Booking">
-                                                        <i class="fa-solid fa-trash-can text-sm"></i>
-                                                    </button>
-
-                                                </form>
-                                            @endif
+                                            <x-confirm-modal title="Decline Booking" :message="'Are you sure you want to decline this booking?'"
+                                                confirmText="Decline"
+                                                confirmClass="bg-red-600 hover:bg-red-700 text-white"
+                                                icon="shield-alert" :action="route('officer.decline-booking', $booking->id)" method="PUT" :data='"<input type=\"hidden\" name=\"status\" value=\"Decline\">
+                                                "'>
+                                                <button type="button" title="Complete Booking"
+                                                    class="inline-flex items-center gap-2 bg-red-600 text-white hover:bg-red-700 font-semibold text-xs py-2 px-3.5 rounded-xl shadow-sm transition ">
+                                                    Decline
+                                                </button>
+                                            </x-confirm-modal>
 
                                         </div>
                                     @else

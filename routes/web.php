@@ -47,6 +47,7 @@ Route::middleware('auth')->group(function () {
         ->group(function () {
             Route::get('/booking/index', 'indexBooking')->name('officer.index-booking');
             Route::put('/booking/approve/{id}', 'approveBooking')->name('officer.approve-booking');
+            Route::put('/booking/decline/{id}', 'declineBooking')->name('officer.decline-booking');
             Route::get('/booking/calendar', 'bookingCalendar')->name('officer.booking-calendar');
 
         });

@@ -154,7 +154,8 @@
         </div>
 
 
-
+        <x-success />
+        <x-errors />
         <!-- Machinery Fleet List & Search -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-100/80 p-5">
             <div

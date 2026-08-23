@@ -33,5 +33,15 @@ class OfficerController extends Controller
         return redirect()->back()->with('success', 'Booking approved successfully.');
     }
 
+    public function declineBooking($id)
+    {
+        $booking = Booking::findOrFail($id);
+
+        $booking->status = 'Declined';
+        $booking->save();
+
+        return redirect()->back()->with('success', 'Booking approved successfully.');
+    }
+
 
 }

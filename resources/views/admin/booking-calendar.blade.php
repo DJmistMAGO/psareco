@@ -62,6 +62,7 @@
         const calendar = new window.Calendar(calendarDiv, {
             plugins: [window.dayGridPlugin, window.timeGridPlugin, window.interactionPlugin],
             initialView: 'dayGridMonth',
+            height: '500px',
             events: [],
             selectable: true,
             editable: true,
