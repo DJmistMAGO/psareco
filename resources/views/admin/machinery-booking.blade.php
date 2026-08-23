@@ -50,6 +50,7 @@
 
                 <div class="flex items-center gap-1.5 mt-5 overflow-x-auto pb-1">
 
+                    {{-- Pending --}}
                     <a href="{{ url()->current() }}?status=pending{{ request('search') ? '&search=' . urlencode(request('search')) : '' }}"
                         class="
                             inline-flex
@@ -73,7 +74,7 @@
                         Pending
 
                         <span class="px-1.5 py-0.5 rounded-full bg-amber-100 text-[10px] font-bold">
-                            {{ $statusCounts['Pending'] ?? 0 }}
+                            {{ $statusCounts['pending'] ?? ($statusCounts['Pending'] ?? 0) }}
                         </span>
 
                     </a>
@@ -103,7 +104,7 @@
                         Approved
 
                         <span class="px-1.5 py-0.5 rounded-full bg-emerald-100 text-slate-500 text-[10px] font-bold">
-                            {{ $statusCounts['Approved'] ?? 0 }}
+                            {{ $statusCounts['approved'] ?? ($statusCounts['Approved'] ?? 0) }}
                         </span>
 
                     </a>
@@ -133,7 +134,7 @@
                         Completed
 
                         <span class="px-1.5 py-0.5 rounded-full bg-emerald-400 text-white text-[10px] font-bold">
-                            {{ $statusCounts['Completed'] ?? 0 }}
+                            {{ $statusCounts['completed'] ?? ($statusCounts['Completed'] ?? 0) }}
                         </span>
 
                     </a>
@@ -163,7 +164,7 @@
                         Cancelled
 
                         <span class="px-1.5 py-0.5 rounded-full bg-red-100 text-slate-500 text-[10px] font-bold">
-                            {{ $statusCounts['Cancelled'] ?? 0 }}
+                            {{ $statusCounts['cancelled'] ?? ($statusCounts['Cancelled'] ?? 0) }}
                         </span>
 
                     </a>
@@ -171,12 +172,6 @@
                 </div>
 
             </div>
-
-
-            {{-- =====================================================
-                BOOKING TABLE
-            ====================================================== --}}
-
 
             <div class="overflow-x-auto">
 
@@ -219,23 +214,10 @@
 
                     </thead>
 
-
                     {{-- Table Body --}}
                     <tbody class="divide-y divide-slate-100">
-
-
-                        {{-- =================================================
-                            BOOKINGS
-                        ================================================== --}}
-
                         @forelse ($bookings as $booking)
                             <tr class="hover:bg-slate-50/60 transition">
-
-
-                                {{-- =================================================
-                                    FARMER
-                                ================================================== --}}
-
                                 <td class="px-5 py-4">
 
                                     <div class="flex items-center gap-3">
@@ -261,11 +243,6 @@
 
                                 </td>
 
-
-                                {{-- =================================================
-                                    MACHINERY
-                                ================================================== --}}
-
                                 <td class="px-5 py-4">
 
                                     <div class="flex items-center gap-2.5">
@@ -290,11 +267,6 @@
                                     </div>
 
                                 </td>
-
-
-                                {{-- =================================================
-                                    RENTAL PERIOD
-                                ================================================== --}}
 
                                 <td class="px-5 py-4">
 
@@ -330,11 +302,6 @@
 
                                 </td>
 
-
-                                {{-- =================================================
-                                    DAYS
-                                ================================================== --}}
-
                                 <td class="px-5 py-4">
 
                                     <span class="text-xs font-bold text-slate-700">
@@ -343,11 +310,6 @@
 
                                 </td>
 
-
-                                {{-- =================================================
-                                    TOTAL COST
-                                ================================================== --}}
-
                                 <td class="px-5 py-4">
 
                                     <span class="text-sm font-extrabold text-emerald-700">
@@ -355,11 +317,6 @@
                                     </span>
 
                                 </td>
-
-
-                                {{-- =================================================
-                                    STATUS
-                                ================================================== --}}
 
                                 <td class="px-5 py-4">
 
@@ -403,11 +360,6 @@
 
                                 </td>
 
-
-                                {{-- =================================================
-                                    ACTIONS
-                                ================================================== --}}
-
                                 <td class="px-5 py-4 text-center">
 
                                     @if ($booking->status === 'Pending')
@@ -415,7 +367,7 @@
                                             <x-confirm-modal title="Approve Booking" :message="'Are you sure you want to approve this booking?'" confirmText="Approve"
                                                 confirmClass="bg-green-600 hover:bg-green-700 text-white"
                                                 icon="shield-alert" :action="route('officer.approve-booking', $booking->id)" method="PUT" :data='"<input type=\"hidden\" name=\"status\" value=\"Approved\">
-                                                                                                "'>
+                                                                                                                                                                                                                                "'>
                                                 <button type="button" title="Complete Booking"
                                                     class="inline-flex items-center gap-2 bg-emerald-600 text-white hover:bg-emerald-700 font-semibold text-xs py-2 px-3.5 rounded-xl shadow-sm transition ">
                                                     Approve
@@ -426,7 +378,7 @@
                                             <x-confirm-modal title="Decline Booking" :message="'Are you sure you want to decline this booking?'" confirmText="Decline"
                                                 confirmClass="bg-red-600 hover:bg-red-700 text-white" icon="shield-alert"
                                                 :action="route('officer.decline-booking', $booking->id)" method="PUT" :data='"<input type=\"hidden\" name=\"status\" value=\"Decline\">
-                                                                                                "'>
+                                                                                                                                                                                                                                "'>
                                                 <button type="button" title="Complete Booking"
                                                     class="inline-flex items-center gap-2 bg-red-600 text-white hover:bg-red-700 font-semibold text-xs py-2 px-3.5 rounded-xl shadow-sm transition ">
                                                     Decline
@@ -448,11 +400,6 @@
                             </tr>
 
                         @empty
-
-
-                            {{-- =================================================
-                                EMPTY STATE
-                            ================================================== --}}
 
                             <tr>
 
@@ -494,11 +441,6 @@
                 </table>
 
             </div>
-
-
-            {{-- =====================================================
-                PAGINATION
-            ====================================================== --}}
 
             @if (method_exists($bookings, 'links'))
                 <div class="px-5 py-3 border-t border-slate-100">
