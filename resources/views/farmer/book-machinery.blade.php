@@ -208,10 +208,20 @@
                                 </td>
                                 <td class="py-3 px-4 text-center">
                                     @if ($booking->status === 'Pending')
-                                        <a href=""
-                                            class="inline-flex items-center gap-1 bg-white hover:bg-rose-50 text-red-600 hover:text-rose-700 font-medium text-base py-1.5 px-3 rounded-lg border border-slate-200 hover:border-rose-200 shadow-sm transition-all duration-150">
-                                            <i class="fa-solid fa-trash-can"></i>
-                                        </a>
+                                        <x-confirm-modal
+                                            title="Delete Booking"
+                                            :message="'Are you sure you want to delete this booking?'"
+                                            confirmText="Delete"
+                                            confirmClass="bg-red-600 hover:bg-red-700 text-white"
+                                            icon="shield-alert"
+                                            :action="route('farmers.deleteBooking', $booking->id)"
+                                            method="DELETE"
+                                        >
+                                            <button type="button" title="Delete product" class="inline-flex items-center gap-1 bg-white hover:bg-rose-50 text-red-600 hover:text-rose-700 font-medium text-base py-1.5 px-3 rounded-lg border border-slate-200 hover:border-rose-200 shadow-sm transition-all duration-150">
+                                                <i class="fa-solid fa-trash-can"></i>
+                                            </button>
+                                        </x-confirm-modal>
+
                                     @else
                                         <a href="{{ route('farmers.bookingDetails', $booking->id) }}"
                                             class="inline-flex items-center gap-1 bg-white hover:bg-emerald-50 text-slate-600 hover:text-emerald-700 font-medium text-base py-1.5 px-3 rounded-lg border border-slate-200 hover:border-emerald-200 shadow-sm transition-all duration-150">

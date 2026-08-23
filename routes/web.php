@@ -38,6 +38,8 @@ Route::middleware('auth')->group(function () {
             Route::get('/booking-details/{id}', 'bookingDetails')->name('farmers.bookingDetails');
             Route::put('/update-bookingSlot/{id}', 'updateBookingSlot')->name('farmers.updateBookingSlot');
             Route::put('/complete-booking/{id}', 'completeBooking')->name('farmers.completeBooking');
+            Route::delete('/delete/{booking}', 'deleteBooking')->name('farmers.deleteBooking');
+
         });
 
     Route::controller(OfficerController::class)

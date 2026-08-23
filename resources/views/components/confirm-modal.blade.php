@@ -28,8 +28,9 @@
                             @method($method)
                         @endif
 
-                        {{-- {{ $data }} --}}
+                        @if(strtoupper($method) === 'POST')
                         {!! $data !!}
+                        @endif
 
                         <div class="bg-gradient-to-r from-emerald-50 via-green-50/40 to-white px-6 py-4 border-b border-emerald-100 flex items-center justify-between">
                             <div class="flex items-center gap-3">

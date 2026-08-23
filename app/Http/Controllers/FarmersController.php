@@ -35,7 +35,6 @@ class FarmersController extends Controller
 
         // dd($disabledDatesByMachine);
 
-        //get all bookings for the authenticated user for pending and approved bookings
         $userBookings = Booking::where('user_id', Auth::id())->whereIn('status', ['Pending', 'Approved'])->get();
 
         return view('farmer.book-machinery', compact(
@@ -49,12 +48,10 @@ class FarmersController extends Controller
     {
         $booking = Booking::with('slots', 'machine')->findOrFail($id);
 
-        // Ensure the authenticated user is the owner of the booking
         if ($booking->user_id !== Auth::id()) {
             abort(403, 'Unauthorized action.');
         }
 
-        //get the booking slots for the booking
         $bookingSlots = BookingSlot::where('booking_id', $id)->get();
 
         return view('farmer.booking-deatils', compact('booking', 'bookingSlots'));
@@ -116,7 +113,7 @@ class FarmersController extends Controller
     public function completeBooking(Request $request, $bookingId)
     {
 
-    // dd($request);   
+        // dd($request);
 
         $booking = Booking::findOrFail($bookingId);
 
@@ -132,12 +129,10 @@ class FarmersController extends Controller
         ]);
 
         return redirect()->route('farmers.myBookings')->with('success', 'Booking completed successfully.');
-
     }
 
     public function myBookings()
     {
-        // get user bookings completed and cancelled
         $bookings = Booking::where('user_id', Auth::id())->whereIn('status', ['Completed', 'Cancelled'])->get();
 
 
@@ -186,5 +181,12 @@ class FarmersController extends Controller
 
             return redirect()->route('farmers.index')->with('success', 'Machinery added successfully.');
         });
+    }
+
+    public function deleteBooking(Booking $booking) 
+    {
+        $booking->delete();
+
+        return redirect()->route('farmers.index')->with('success', 'Booking deleted successfully.');
     }
 }
