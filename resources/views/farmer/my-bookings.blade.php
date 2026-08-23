@@ -6,7 +6,8 @@
     <main class="w-full min-w-0 p-4 sm:p-6 lg:p-8">
         <x-dashboard-header />
 
-        <x-page-header eyebrow="PSARECO Booking History" title="Machinery Booking History" description="View your past machinery bookings and rental history" icon="fa-solid fa-calendar-alt" />
+        <x-page-header eyebrow="PSARECO Booking History" title="Machinery Booking History"
+            description="View your past machinery bookings and rental history" icon="fa-solid fa-calendar-alt" />
 
         <!-- Overdue Equipment Alert Card (Hidden by default) -->
         <div id="overdueSection"
@@ -34,7 +35,7 @@
         </div>
 
         <x-success />
-    <x-errors />
+        <x-errors />
 
         <!-- Machine Booking Card -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-100/80 overflow-hidden flex flex-col mb-6">
@@ -106,14 +107,10 @@
                                     </span>
                                 </td>
                                 <td>
-                                    {{-- <button type="button"
+                                    <a href="{{ route('farmers.bookingDetails', $booking->id) }}"
                                         class="inline-flex items-center gap-2 bg-emerald-600 text-white hover:bg-emerald-700 font-semibold text-xs py-2 px-3.5 rounded-xl shadow-sm transition ">
                                         View Details
-                                    </button> --}}
-                                    <a href="{{ route('farmers.bookingDetails', $booking->id) }}"
-                                            class="inline-flex items-center gap-2 bg-emerald-600 text-white hover:bg-emerald-700 font-semibold text-xs py-2 px-3.5 rounded-xl shadow-sm transition ">
-                                            View Details
-                                        </a>
+                                    </a>
                                 </td>
                             </tr>
                         @endforeach
@@ -191,5 +188,4 @@
             document.getElementById('fertilizerCount').innerText = visibleCount;
         }
     </script>
-
 @endpush

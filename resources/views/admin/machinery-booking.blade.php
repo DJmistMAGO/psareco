@@ -229,7 +229,6 @@
                         ================================================== --}}
 
                         @forelse ($bookings as $booking)
-
                             <tr class="hover:bg-slate-50/60 transition">
 
 
@@ -413,32 +412,10 @@
 
                                     @if ($booking->status === 'Pending')
                                         <div class="inline-flex items-center gap-1.5">
-
-                                            {{-- Approve --}}
-                                            {{-- <form
-                                                action="{{ route('officer.approve-booking', $booking->id) }}"
-                                                method="POST"
-                                            >
-
-                                                @csrf
-
-                                                @method('PUT')
-
-                                                <button
-                                                    type="submit"
-                                                    class="inline-flex items-center justify-center h-9 w-9 bg-white hover:bg-emerald-50 text-slate-600 hover:text-emerald-700 rounded-lg border border-slate-200 hover:border-emerald-200 shadow-sm transition-all duration-150"
-                                                    title="Approve Booking"
-                                                >
-                                                    <i class="fa-solid fa-check text-sm"></i>
-                                                </button>
-
-                                            </form> --}}
-
-                                            <x-confirm-modal title="Approve Booking" :message="'Are you sure you want to approve this booking?'"
-                                                confirmText="Approve"
+                                            <x-confirm-modal title="Approve Booking" :message="'Are you sure you want to approve this booking?'" confirmText="Approve"
                                                 confirmClass="bg-green-600 hover:bg-green-700 text-white"
                                                 icon="shield-alert" :action="route('officer.approve-booking', $booking->id)" method="PUT" :data='"<input type=\"hidden\" name=\"status\" value=\"Approved\">
-                                                "'>
+                                                                                                "'>
                                                 <button type="button" title="Complete Booking"
                                                     class="inline-flex items-center gap-2 bg-emerald-600 text-white hover:bg-emerald-700 font-semibold text-xs py-2 px-3.5 rounded-xl shadow-sm transition ">
                                                     Approve
@@ -446,23 +423,25 @@
                                             </x-confirm-modal>
 
 
-                                            <x-confirm-modal title="Decline Booking" :message="'Are you sure you want to decline this booking?'"
-                                                confirmText="Decline"
-                                                confirmClass="bg-red-600 hover:bg-red-700 text-white"
-                                                icon="shield-alert" :action="route('officer.decline-booking', $booking->id)" method="PUT" :data='"<input type=\"hidden\" name=\"status\" value=\"Decline\">
-                                                "'>
+                                            <x-confirm-modal title="Decline Booking" :message="'Are you sure you want to decline this booking?'" confirmText="Decline"
+                                                confirmClass="bg-red-600 hover:bg-red-700 text-white" icon="shield-alert"
+                                                :action="route('officer.decline-booking', $booking->id)" method="PUT" :data='"<input type=\"hidden\" name=\"status\" value=\"Decline\">
+                                                                                                "'>
                                                 <button type="button" title="Complete Booking"
                                                     class="inline-flex items-center gap-2 bg-red-600 text-white hover:bg-red-700 font-semibold text-xs py-2 px-3.5 rounded-xl shadow-sm transition ">
                                                     Decline
                                                 </button>
                                             </x-confirm-modal>
+                                            @endif
+
+                                            @if ($booking->status === 'Completed')
+                                            <a href="{{ route('farmers.bookingDetails', $booking->id) }}"
+                                                class="inline-flex items-center gap-2 bg-emerald-600 text-white hover:bg-emerald-700 font-semibold text-xs py-2 px-3.5 rounded-xl shadow-sm transition ">
+                                                View Details
+                                            </a>
+                                            @endif
 
                                         </div>
-                                    @else
-                                        <span class="text-[10px] text-slate-300">
-                                            No action
-                                        </span>
-                                    @endif
 
                                 </td>
 
@@ -508,7 +487,6 @@
                                 </td>
 
                             </tr>
-
                         @endforelse
 
                     </tbody>

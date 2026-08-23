@@ -45,17 +45,19 @@ class FarmersController extends Controller
     }
 
     public function bookingDetails($id)
-    {
-        $booking = Booking::with('slots', 'machine')->findOrFail($id);
+{
+    $booking = Booking::with('slots', 'machine')->findOrFail($id);
+    $user = auth()->user();
 
-        if ($booking->user_id !== Auth::id()) {
-            abort(403, 'Unauthorized action.');
-        }
-
-        $bookingSlots = BookingSlot::where('booking_id', $id)->get();
-
-        return view('farmer.booking-deatils', compact('booking', 'bookingSlots'));
+    if ($user->hasRole('farmer') && $booking->user_id !== $user->id) {
+        abort(403, 'Unauthorized action.');
     }
+
+    $bookingSlots = BookingSlot::where('booking_id', $id)->get();
+
+    return view('farmer.booking-deatils', compact('booking', 'bookingSlots'));
+}
+
 
     public function updateBookingSlot(Request $request, $slotId)
     {

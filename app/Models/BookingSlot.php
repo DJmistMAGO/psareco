@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Machinery;
+use App\Models\User;
 
 class BookingSlot extends Model
 {
@@ -66,4 +67,9 @@ class BookingSlot extends Model
     {
         return $this->belongsTo(Booking::class);
     }
+
+    public function user(): BelongsTo
+{
+    return $this->belongsTo(User::class, 'user_id');
+}
 }
