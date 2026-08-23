@@ -19,15 +19,12 @@ Route::get('/', function () {
 // Guest routes dito
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
-// Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-// Route::post('/register', [AuthController::class, 'register']);
+
 
 // Protected routes or accessible lang pag nakalogin :)
 Route::middleware('auth')->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::view('/dashboard', 'admin.dashboard')->name('dashboard');
     Route::view('/sales', 'admin.sales')->name('sales');
-    Route::view('/reports', 'admin.reports')->name('reports');
     Route::view('/machinery-bookings', 'admin.machinery-booking')->name('machinery-booking');
 
 
@@ -46,7 +43,7 @@ Route::middleware('auth')->group(function () {
 
         });
 
-    Route::controller(OfficerController::class)
+    Route::middleware('role:officer')->controller(OfficerController::class)
         ->prefix('officer')
         ->group(function () {
             Route::get('/booking/index', 'indexBooking')->name('officer.index-booking');
@@ -56,16 +53,11 @@ Route::middleware('auth')->group(function () {
         });
 
     Route::controller(CalendarController::class)
-    ->prefix('calendar')
-    ->group(function () {
-
-        Route::get('/', 'index')
-            ->name('booking.calendar');
-
-        Route::get('/schedule', 'calendarSchedule')
-            ->name('schedule.booking-calendar');
-
-    });
+        ->prefix('calendar')
+        ->group(function () {
+            Route::get('/', 'index')->name('booking.calendar');
+            Route::get('/schedule', 'calendarSchedule')->name('schedule.booking-calendar');
+        });
 
 
     Route::controller(MachineryController::class)
@@ -75,7 +67,7 @@ Route::middleware('auth')->group(function () {
             Route::post('/store', 'store')->name('machinery.store');
         });
 
-        Route::controller(InventoryController::class)
+    Route::controller(InventoryController::class)
         ->prefix('inventory')
         ->group(function () {
             Route::get('/', 'index')->name('inventory.index');
@@ -100,6 +92,13 @@ Route::middleware('auth')->group(function () {
             Route::post('/export', 'export')->name('sales.export');
         });
 
+    Route::controller(ReportController::class)->prefix('reports')
+        ->group(function () {
+            Route::get('/', 'index')->name('reports.index');
+            Route::get('/generate', 'generate')->name('reports.generate');
+            Route::get('/preview', 'preview')->name('reports.preview');
+
+        });
 
     Route::middleware('role:admin')->controller(UserManagementController::class)
         ->prefix('user-management')
@@ -112,4 +111,7 @@ Route::middleware('auth')->group(function () {
             Route::post('/{id}/approve', 'approveUser')->name('user-management.approveUser');
             Route::post('/{id}/reject', 'rejectUser')->name('user-management.rejectUser');
         });
+
+
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
