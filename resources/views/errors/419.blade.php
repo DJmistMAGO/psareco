@@ -54,7 +54,7 @@
 
             <div class="flex flex-col sm:flex-row gap-3 justify-center items-center">
 
-                <a href="{{ route('dashboard') }}"
+                <a href="{{ route('dashboard.index') }}"
                     class="w-full sm:w-auto px-7 py-3.5 bg-emerald-700 hover:bg-emerald-800 text-white font-medium rounded-xl transition-all duration-200 shadow-sm shadow-emerald-700/20 flex items-center justify-center gap-2">
 
                     <svg class="w-5 h-5 text-emerald-100" fill="none" stroke="currentColor"

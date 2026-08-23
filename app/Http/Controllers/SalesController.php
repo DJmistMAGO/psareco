@@ -10,6 +10,7 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use PhpOffice\PhpWord\TemplateProcessor;
 
 class SalesController extends Controller
 {
@@ -45,7 +46,6 @@ class SalesController extends Controller
                 $grandTotal = 0;
 
                 foreach ($validated['items'] as $item) {
-                    // Lock the row so two simultaneous checkouts can't oversell the same stock.
                     $product = Inventory::where('id', $item['product_id'])->lockForUpdate()->firstOrFail();
 
                     if ($product->quantity < $item['quantity']) {
@@ -89,27 +89,43 @@ class SalesController extends Controller
 
     public function export()
     {
-        $filename = 'sales-history-' . now()->format('Y-m-d-His') . '.csv';
+        $templatePath = storage_path('app/template/psareco-sales-template.docx');
 
-        return response()->streamDownload(function () {
-            $handle = fopen('php://output', 'w');
-            fputcsv($handle, ['Date', 'Product', 'Quantity', 'Unit Price', 'Total', 'Buyer']);
+        $templateProcessor = new TemplateProcessor($templatePath);
 
-            Sales::with('product')->orderByDesc('sale_date')->chunk(200, function ($chunk) use ($handle) {
-                foreach ($chunk as $sale) {
-                    fputcsv($handle, [
-                        optional($sale->sale_date)->format('Y-m-d H:i'),
-                        $sale->product->name ?? '—',
-                        $sale->quantity,
-                        $sale->price,
-                        $sale->total,
-                        $sale->buyer_name,
-                    ]);
-                }
-            });
+        $sales = Sales::with('product')->orderByDesc('sale_date')->get();
 
-            fclose($handle);
-        }, $filename, ['Content-Type' => 'text/csv']);
+        $templateProcessor->setValue('generated_at', now()->format('M d, Y g:ia'));
+        $templateProcessor->setValue('total_records', $sales->count());
+        $templateProcessor->setValue('grand_total', '₱' . number_format($sales->sum('total'), 2));
+
+        if ($sales->isEmpty()) {
+            $templateProcessor->setValue('date#1', 'No sales recorded');
+            foreach (['product', 'quantity', 'unit_price', 'total', 'buyer'] as $field) {
+                $templateProcessor->setValue("{$field}#1", '—');
+            }
+        } else {
+            $templateProcessor->cloneRow('date', $sales->count());
+
+            foreach ($sales as $index => $sale) {
+                $row = $index + 1;
+
+                $templateProcessor->setValue("date#{$row}", optional($sale->sale_date)->format('M. d, Y g:ia'));
+                $templateProcessor->setValue("product#{$row}", $sale->product->name ?? '—');
+                $templateProcessor->setValue("qty#{$row}", $sale->quantity);
+                $templateProcessor->setValue("unit_price#{$row}", '₱' . number_format($sale->price, 2));
+                $templateProcessor->setValue("total#{$row}", '₱' . number_format($sale->total, 2));
+                $templateProcessor->setValue("buyer#{$row}", $sale->buyer_name);
+            }
+        }
+
+        $filename = 'sales-history-' . now()->format('Y-m-d-His') . '.docx';
+        $tempPath = tempnam(sys_get_temp_dir(), 'sales_export') . '.docx';
+        $templateProcessor->saveAs($tempPath);
+
+        return response()->download($tempPath, $filename, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        ])->deleteFileAfterSend(true);
     }
 
 

@@ -48,7 +48,7 @@
 
             <div class="flex flex-col sm:flex-row gap-3 justify-center items-center">
                 <!-- Return to Dashboard -->
-                <a href="{{ route('dashboard') }}"
+                <a href="{{ route('dashboard.index') }}"
                 class="w-full sm:w-auto px-7 py-3.5 bg-emerald-700 hover:bg-emerald-800 text-white font-medium rounded-xl transition-all duration-200 shadow-sm shadow-emerald-700/20 flex items-center justify-center gap-2">
                     <svg class="w-5 h-5 text-emerald-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-3m0 0l7-4 7 4M5 7v10a1 1 0 001 1h12a1 1 0 001-1V7m-7 4v6m0 0l-4-2m4 2l4-2"></path>

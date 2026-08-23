@@ -10,15 +10,11 @@
             <x-slot:actions>
                 <form action="{{ route('sales.export') }}" method="POST" class="inline">
                     @csrf
-                    <button type="submit" class="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white font-medium text-xs py-2 px-3.5 rounded-xl backdrop-blur border border-white/20 transition" >
-                        <i class="fa-solid fa-file-excel"></i>
-                        Export CSV
+                    <button type="submit" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white text-emerald-700 text-sm font-bold shadow-sm hover:bg-emerald-50 transition" >
+                        <i class="fa-solid fa-print"></i>
+                        Export Sales
                     </button>
                 </form>
-                <button onclick="window.print()" class="inline-flex items-center gap-2 bg-white text-emerald-950 hover:bg-emerald-50 font-semibold text-xs py-2 px-3.5 rounded-xl shadow-sm transition" >
-                    <i class="fa-solid fa-print"></i>
-                    Print Sales
-                </button>
             </x-slot:actions>
         </x-page-header>
 

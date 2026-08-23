@@ -44,7 +44,7 @@
         </div>
 
         <div class="flex flex-col sm:flex-row gap-3 justify-center">
-            <a href="{{ route('dashboard') }}"
+            <a href="{{ route('dashboard.index') }}"
                 class="px-7 py-3.5 bg-emerald-700 hover:bg-emerald-800 text-white font-medium rounded-xl">
                 Return to Dashboard
             </a>
