@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SalesController;
@@ -23,11 +24,13 @@ Route::post('/login', [AuthController::class, 'login']);
 
 // Protected routes or accessible lang pag nakalogin :)
 Route::middleware('auth')->group(function () {
-    Route::view('/dashboard', 'admin.dashboard')->name('dashboard');
     Route::view('/sales', 'admin.sales')->name('sales');
     Route::view('/machinery-bookings', 'admin.machinery-booking')->name('machinery-booking');
 
-
+    Route::controller(DashboardController::class)->prefix('dashboard')
+        ->group(function () {
+            Route::get('/', 'index')->name('dashboard.index');
+        });
 
     Route::controller(FarmersController::class)
         ->prefix('farmers')

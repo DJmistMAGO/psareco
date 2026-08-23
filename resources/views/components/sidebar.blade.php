@@ -41,43 +41,53 @@
                 $menu = [];
 
                 if (auth()->user()->hasRole('admin')) {
+
                     $menu = [
-                        ['route' => 'dashboard', 'icon' => 'fa-chart-line', 'title' => 'Dashboard'],
-                        ['route' => 'reports.index', 'icon' => 'fa-file-alt', 'title' => 'Reports'],
-                        ['route' => 'user-management.index', 'icon' => 'fa-users-cog', 'title' => 'Users'],
+                        [ 'route' => 'dashboard.index', 'active' => 'dashboard.*', 'icon' => 'fa-chart-line', 'title' => 'Dashboard', ],
+                        [ 'route' => 'reports.index', 'active' => 'reports.*', 'icon' => 'fa-file-alt', 'title' => 'Reports', ],
+                        [ 'route' => 'user-management.index', 'active' => 'user-management.*', 'icon' => 'fa-users-cog', 'title' => 'Users', ],
                     ];
+
                 } elseif (auth()->user()->hasRole('officer')) {
+
                     $menu = [
-                        ['route' => 'dashboard', 'icon' => 'fa-chart-line', 'title' => 'Dashboard'],
-                        ['route' => 'machinery.index', 'icon' => 'fa-tractor', 'title' => 'Machinery Management'],
-                        ['route' => 'booking.calendar', 'icon' => 'fa-calendar-alt', 'title' => 'Calendar Schedule'],
-                        ['route' => 'officer.index-booking', 'icon' => 'fa-calendar-plus', 'title' => 'Machinery Bookings'],
-                        ['route' => 'inventory.index', 'icon' => 'fa-boxes-stacked', 'title' => 'Inventory'],
-                        ['route' => 'sales.index', 'icon' => 'fa-shopping-cart', 'title' => 'Sales'],
-                        ['route' => 'reports.index', 'icon' => 'fa-file-alt', 'title' => 'Reports'],
+                        [ 'route' => 'dashboard.index', 'active' => 'dashboard.*', 'icon' => 'fa-chart-line', 'title' => 'Dashboard', ],
+                        [ 'route' => 'machinery.index', 'active' => 'machinery.*', 'icon' => 'fa-tractor', 'title' => 'Machinery Management', ],
+                        [ 'route' => 'booking.calendar', 'active' => 'booking.*', 'icon' => 'fa-calendar-alt', 'title' => 'Calendar Schedule', ],
+                        [ 'route' => 'officer.index-booking', 'active' => 'officer.*', 'icon' => 'fa-calendar-plus', 'title' => 'Machinery Bookings', ],
+                        [ 'route' => 'inventory.index', 'active' => 'inventory.*', 'icon' => 'fa-boxes-stacked', 'title' => 'Inventory', ],
+                        [ 'route' => 'sales.index', 'active' => 'sales.*', 'icon' => 'fa-shopping-cart', 'title' => 'Sales', ],
+                        [ 'route' => 'reports.index', 'active' => 'reports.*', 'icon' => 'fa-file-alt', 'title' => 'Reports', ],
                     ];
+
                 } elseif (auth()->user()->hasRole('farmer')) {
+
                     $menu = [
-                        ['route' => 'dashboard', 'icon' => 'fa-chart-line', 'title' => 'Dashboard'],
-                        ['route' => 'booking.calendar', 'icon' => 'fa-calendar-alt', 'title' => 'Calendar Schedule'],
-                        ['route' => 'farmers.index', 'icon' => 'fa-tractor', 'title' => 'Book Machinery'],
-                        ['route' => 'farmers.myBookings', 'icon' => 'fa-calendar-check', 'title' => 'Booking History'],
-                        ['route' => 'farmers.products', 'icon' => 'fa-box', 'title' => 'Products'],
+                        [ 'route' => 'dashboard.index', 'active' => 'dashboard.*', 'icon' => 'fa-chart-line', 'title' => 'Dashboard', ],
+                        [ 'route' => 'booking.calendar', 'active' => 'booking.*', 'icon' => 'fa-calendar-alt', 'title' => 'Calendar Schedule', ],
+                        [ 'route' => 'farmers.index', 'active' => 'farmers.*', 'icon' => 'fa-tractor', 'title' => 'Book Machinery', ],
+                        [ 'route' => 'farmers.myBookings', 'active' => 'farmers.myBookings', 'icon' => 'fa-calendar-check', 'title' => 'Booking History', ],
+                        [ 'route' => 'farmers.products', 'active' => 'farmers.products', 'icon' => 'fa-box', 'title' => 'Products', ],
                     ];
                 }
             @endphp
 
+
             @foreach ($menu as $item)
-                @php $active = request()->routeIs($item['route']); @endphp
-                <a href="{{ route($item['route']) }}"
-                title="{{ $item['title'] }}"
-                class="flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all duration-200 text-sm font-medium group {{ $active ? 'bg-[#3d8b68] text-white shadow-md' : 'text-slate-600 hover:bg-emerald-100/60 hover:text-emerald-900' }}">
+
+                @php
+                    $active = request()->routeIs($item['active'] ?? $item['route']);
+                @endphp
+
+                <a href="{{ route($item['route']) }}" title="{{ $item['title'] }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl
+                    transition-all duration-200 text-sm font-medium group {{ $active ? 'bg-[#3d8b68] text-white shadow-md' : 'text-slate-600 hover:bg-emerald-100/60 hover:text-emerald-900' }}" >
                     <i class="fa-solid {{ $item['icon'] }} w-5 text-center shrink-0 {{ $active ? 'text-white' : 'text-emerald-600 group-hover:text-emerald-700' }}"></i>
-                    <span x-show="sidebarOpen" x-transition class="truncate">{{ $item['title'] }}</span>
+                    <span x-show="sidebarOpen" x-transition class="truncate" >
+                        {{ $item['title'] }}
+                    </span>
                 </a>
             @endforeach
         </nav>
-
     </div>
 
 
