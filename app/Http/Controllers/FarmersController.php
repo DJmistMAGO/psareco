@@ -135,7 +135,7 @@ class FarmersController extends Controller
 
     public function myBookings()
     {
-        $bookings = Booking::where('user_id', Auth::id())->whereIn('status', ['Completed', 'Cancelled'])->get();
+        $bookings = Booking::where('user_id', Auth::id())->whereIn('status', ['Completed', 'Declined'])->get();
 
 
         return view('farmer.my-bookings', compact('bookings'));

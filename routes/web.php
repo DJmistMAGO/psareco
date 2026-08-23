@@ -8,7 +8,9 @@ use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\FarmersController;
 use App\Http\Controllers\MachineryController;
 use App\Http\Controllers\OfficerController;
+use App\Http\Controllers\CalendarController;
 use Illuminate\Support\Facades\Route;
+
 
 Route::get('/', function () {
     return view('landing.index');
@@ -27,6 +29,8 @@ Route::middleware('auth')->group(function () {
     Route::view('/sales', 'admin.sales')->name('sales');
     Route::view('/reports', 'admin.reports')->name('reports');
     Route::view('/machinery-bookings', 'admin.machinery-booking')->name('machinery-booking');
+
+
 
     Route::controller(FarmersController::class)
         ->prefix('farmers')
@@ -48,9 +52,21 @@ Route::middleware('auth')->group(function () {
             Route::get('/booking/index', 'indexBooking')->name('officer.index-booking');
             Route::put('/booking/approve/{id}', 'approveBooking')->name('officer.approve-booking');
             Route::put('/booking/decline/{id}', 'declineBooking')->name('officer.decline-booking');
-            Route::get('/booking/calendar', 'bookingCalendar')->name('officer.booking-calendar');
 
         });
+
+    Route::controller(CalendarController::class)
+    ->prefix('calendar')
+    ->group(function () {
+
+        Route::get('/', 'index')
+            ->name('booking.calendar');
+
+        Route::get('/schedule', 'calendarSchedule')
+            ->name('schedule.booking-calendar');
+
+    });
+
 
     Route::controller(MachineryController::class)
         ->prefix('machinery')

@@ -18,11 +18,6 @@ class OfficerController extends Controller
 
     }
 
-    public function bookingCalendar(){
-
-    return view('admin.booking-calendar');
-    }
-
     public function approveBooking($id)
     {
         $booking = Booking::findOrFail($id);

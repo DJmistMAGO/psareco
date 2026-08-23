@@ -66,10 +66,10 @@
                         <i class="fa-solid fa-circle-check text-[#2c7a56]"></i>
                         Completed
                     </button>
-                    <button id="tab-cancelled" onclick="switchTab('cancelled')"
+                    <button id="tab-declined" onclick="switchTab('declined')"
                         class="tab-btn flex items-center gap-2 py-2.5 px-4 text-xs font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-700 transition-colors">
                         <i class="fa-solid fa-circle-xmark text-slate-400"></i>
-                        Cancelled
+                        Declined
                     </button>
                 </nav>
             </div>
@@ -91,24 +91,51 @@
                     </thead>
                     <tbody id="fertilizersTableBody" class="divide-y divide-slate-100 text-xs text-slate-700">
                         @foreach ($bookings as $booking)
-                            <tr class="booking-row hover:bg-slate-50/80 transition-colors" data-status="completed">
-                                <td class="py-3 px-4 font-semibold text-slate-800">{{ $booking->machine->machinery_name }} -
-                                    {{ $booking->machine->model }}</td>
-                                <td class="py-3 px-4">{{ $booking->start_date->format('F j, Y') }}</td>
-                                <td class="py-3 px-4">{{ $booking->end_date->format('F j, Y') }}</td>
-                                <td class="py-3 px-4">{{ $booking->days }}</td>
-                                <td class="py-3 px-4 font-medium text-slate-900">{{ $booking->total_hours }}</td>
-                                <td class="py-3 px-4 font-medium text-slate-900"> ₱
-                                    {{ number_format($booking->total_amount, 2) }}</td>
-                                <td class="py-3 px-4">
-                                    <span
-                                        class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
-                                        Completed
-                                    </span>
+                            <tr class="booking-row hover:bg-slate-50/80 transition-colors"
+                                data-status="{{ strtolower($booking->status) }}">
+
+                                <td class="py-3 px-4 font-semibold text-slate-800">
+                                    {{ $booking->machine->machinery_name }} -
+                                    {{ $booking->machine->model }}
                                 </td>
+
+                                <td class="py-3 px-4">
+                                    {{ $booking->start_date->format('F j, Y') }}
+                                </td>
+
+                                <td class="py-3 px-4">
+                                    {{ $booking->end_date->format('F j, Y') }}
+                                </td>
+
+                                <td class="py-3 px-4">
+                                    {{ $booking->days }}
+                                </td>
+
+                                <td class="py-3 px-4 font-medium text-slate-900">
+                                    {{ $booking->total_hours }}
+                                </td>
+
+                                <td class="py-3 px-4 font-medium text-slate-900">
+                                    ₱ {{ number_format($booking->total_amount, 2) }}
+                                </td>
+
+                                <td class="py-3 px-4">
+                                    @if ($booking->status === 'Completed')
+                                        <span
+                                            class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
+                                            {{ $booking->status }}
+                                        </span>
+                                    @else
+                                        <span
+                                            class="bg-red-100 text-red-800 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
+                                            {{ $booking->status }}
+                                        </span>
+                                    @endif
+                                </td>
+
                                 <td>
                                     <a href="{{ route('farmers.bookingDetails', $booking->id) }}"
-                                        class="inline-flex items-center gap-2 bg-emerald-600 text-white hover:bg-emerald-700 font-semibold text-xs py-2 px-3.5 rounded-xl shadow-sm transition ">
+                                        class="inline-flex items-center gap-2 bg-emerald-600 text-white hover:bg-emerald-700 font-semibold text-xs py-2 px-3.5 rounded-xl shadow-sm transition">
                                         View Details
                                     </a>
                                 </td>
@@ -126,17 +153,6 @@
             </div>
         </div>
     </main>
-
-    @if (session('success'))
-        <script>
-            Swal.fire({
-                title: 'Success!',
-                text: "{{ session('success') }}",
-                icon: 'success',
-                confirmButtonText: 'OK'
-            });
-        </script>
-    @endif
 @endsection
 
 @push('scripts')
@@ -146,9 +162,8 @@
         function switchTab(status) {
             activeTab = status;
 
-            // Tab styling toggles
             const completedBtn = document.getElementById('tab-completed');
-            const cancelledBtn = document.getElementById('tab-cancelled');
+            const cancelledBtn = document.getElementById('tab-declined');
 
             if (status === 'completed') {
                 completedBtn.className =
