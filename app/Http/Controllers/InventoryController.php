@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Inventory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class InventoryController extends Controller
 {
@@ -65,7 +67,26 @@ class InventoryController extends Controller
             'price' => ['required', 'numeric', 'min:0'],
             'reorder_level' => ['required', 'numeric', 'min:0'],
             'expiration_date' => ['nullable', 'date'],
+            'image_path'     => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);
+
+        if ($request->hasFile('image_path')) {
+            $productName = $request->input('name');
+            $safeName = Str::slug($productName);
+            $uniqueNumber = time() . '-' . rand(1000, 9999);
+
+            $extension = $request->file('image_path')->getClientOriginalExtension();
+            $fileName = $safeName . '_' . $uniqueNumber . '.' . $extension;
+
+            // Ensure the products folder exists in storage/app/public
+            if (!Storage::disk('public')->exists('products')) {
+                Storage::disk('public')->makeDirectory('products');
+            }
+
+            $path = $request->file('image_path')->storeAs('products', $fileName, 'public');
+
+            $validated['image_path'] = $path;
+        }
 
         Inventory::create($validated);
 
@@ -83,7 +104,31 @@ class InventoryController extends Controller
             'price' => ['required', 'numeric', 'min:0'],
             'reorder_level' => ['required', 'numeric', 'min:0'],
             'expiration_date' => ['nullable', 'date'],
+            'image_path' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
         ]);
+
+        if ($request->hasFile('image_path')) {
+            $productName = $request->input('name');
+            $safeName = Str::slug($productName);
+            $uniqueNumber = time() . '-' . rand(1000, 9999);
+
+            $extension = $request->file('image_path')->getClientOriginalExtension();
+            $fileName = $safeName . '_' . $uniqueNumber . '.' . $extension;
+
+            // Ensure the products folder exists in storage/app/public
+            if (!Storage::disk('public')->exists('products')) {
+                Storage::disk('public')->makeDirectory('products');
+            }
+
+            // Delete the old image if it exists, before saving the new one
+            if ($inventory->image_path && Storage::disk('public')->exists($inventory->image_path)) {
+                Storage::disk('public')->delete($inventory->image_path);
+            }
+
+            $path = $request->file('image_path')->storeAs('products', $fileName, 'public');
+
+            $validated['image_path'] = $path;
+        }
 
         $inventory->update($validated);
 

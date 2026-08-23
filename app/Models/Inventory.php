@@ -16,6 +16,7 @@ class Inventory extends Model
         'price',
         'reorder_level',
         'expiration_date',
+        'image_path',
     ];
 
     protected $casts = [
