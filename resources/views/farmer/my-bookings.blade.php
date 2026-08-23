@@ -6,20 +6,7 @@
     <main class="w-full min-w-0 p-4 sm:p-6 lg:p-8">
         <x-dashboard-header />
 
-<<<<<<< HEAD
-        <!-- Hero Header & Actions -->
-        <section
-            class="bg-gradient-to-r from-[#2c7a56] to-[#40a072] text-white rounded-2xl p-6 mb-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-                <h2 class="text-xl sm:text-2xl font-bold tracking-tight flex items-center gap-2">
-                    <i class="fa-solid fa-calendar-alt"></i> Machinery Booking History
-                </h2>
-                <p class="text-emerald-100 text-xs sm:text-sm mt-1">View your past machinery bookings and rental history</p>
-            </div>
-        </section>
-=======
         <x-page-header eyebrow="PSARECO Booking History" title="Machinery Booking History" description="View your past machinery bookings and rental history" icon="fa-solid fa-calendar-alt" />
->>>>>>> main
 
         <!-- Overdue Equipment Alert Card (Hidden by default) -->
         <div id="overdueSection"
@@ -45,6 +32,9 @@
                 </table>
             </div>
         </div>
+
+        <x-success />
+    <x-errors />
 
         <!-- Machine Booking Card -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-100/80 overflow-hidden flex flex-col mb-6">
@@ -116,10 +106,14 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <button type="button"
+                                    {{-- <button type="button"
                                         class="inline-flex items-center gap-2 bg-emerald-600 text-white hover:bg-emerald-700 font-semibold text-xs py-2 px-3.5 rounded-xl shadow-sm transition ">
                                         View Details
-                                    </button>
+                                    </button> --}}
+                                    <a href="{{ route('farmers.bookingDetails', $booking->id) }}"
+                                            class="inline-flex items-center gap-2 bg-emerald-600 text-white hover:bg-emerald-700 font-semibold text-xs py-2 px-3.5 rounded-xl shadow-sm transition ">
+                                            View Details
+                                        </a>
                                 </td>
                             </tr>
                         @endforeach

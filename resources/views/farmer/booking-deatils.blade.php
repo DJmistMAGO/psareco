@@ -6,7 +6,8 @@
     <main class="w-full min-w-0 p-4 sm:p-6 lg:p-8">
         <x-dashboard-header />
 
-        <x-page-header eyebrow="PSARECO Booking Details" title="Booking Details" description="Look for Booking Details here" icon="fa-solid fa-calendar-alt" />
+        <x-page-header eyebrow="PSARECO Booking Details" title="Booking Details" description="Look for Booking Details here"
+            icon="fa-solid fa-calendar-alt" />
 
         <!-- Overdue Equipment Alert Card (Hidden by default) -->
         <div id="overdueSection"
@@ -43,7 +44,7 @@
                 </div>
                 <span
                     class="text-xs bg-emerald-500/20 text-emerald-300 font-semibold px-2.5 py-1 rounded-full border border-emerald-500/30">
-                    <i class="fa-solid fa-[#000] fa-circle-check mr-1"></i> Verified
+                    <i class="fa-solid fa-[#000] fa-circle-check mr-1"></i> {{ $booking->status }}
                 </span>
             </div>
 
@@ -115,7 +116,8 @@
             </div>
         </div>
 
-
+        <x-success />
+        <x-errors />
 
         <div x-data="{ tab: 'pending' }"
             class="bg-white rounded-2xl shadow-sm border border-slate-100/80 overflow-hidden flex flex-col mb-6">
@@ -132,18 +134,17 @@
                         </div>
                     </div>
                     <div>
-                        <form id="complete-booking-{{ $booking->id }}" action="{{ route('farmers.completeBooking', $booking->id) }}" method="POST">
-                            @csrf
-                            @method('PUT')
-
-                            <input type="hidden" name="total_hours" id="total_hours" value="">
-                            <input type="hidden" name="total_cost" id="total_cost" value="">
-
-                            <button type="button" onclick="completeBooking('complete-booking-{{ $booking->id }}')"
-                                class="inline-flex items-center gap-2 bg-emerald-600 text-white hover:bg-emerald-700 font-semibold text-xs py-2 px-3.5 rounded-xl shadow-sm transition">
-                                COMPLETE BOOKING <i class="fa-solid fa-tractor"></i>
+                        @if($booking->status === 'Approved')
+                        <x-confirm-modal title="Complete Booking" :message="'Are you sure to complete your Booking?'" confirmText="Complete"
+                            confirmClass="bg-green-600 hover:bg-green-700 text-white" icon="shield-alert" :action="route('farmers.completeBooking', $booking->id)"
+                            method="PUT" :data='"<input type=\"hidden\" name=\"total_hours\" id=\"total_hours\"> <input type=\"hidden\" name=\"total_cost\" id=\"total_cost\">"'>
+                            <button type="button" title="Complete Booking"
+                                class="inline-flex items-center gap-2 bg-emerald-600 text-white hover:bg-emerald-700 font-semibold text-sm py-2 px-3.5 rounded-xl shadow-sm transition ">
+                                Complete Booking
                             </button>
-                        </form>
+                        </x-confirm-modal>
+                        @endif
+
                     </div>
                 </div>
             </div>
@@ -161,7 +162,9 @@
                                 <th class="py-3 px-4">Start Time</th>
                                 <th class="py-3 px-4">End Time</th>
                                 <th class="py-3 px-4">Total Hours</th>
+                                @if($booking->status === 'Approved')
                                 <th class="py-3 px-4 text-center">Submit Hours</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody id="fertilizersTableBody" class="divide-y divide-slate-100 text-xs text-slate-700">
@@ -192,12 +195,14 @@
                                             class="hours px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition"
                                             step="0.01" readonly>
                                     </td>
+                                    @if($booking->status === 'Approved')
                                     <td class="py-3 px-4 text-center">
                                         <button type="submit"
                                             class="inline-flex items-center gap-2 bg-emerald-600 text-white hover:bg-emerald-700 font-semibold text-xs py-2 px-3.5 rounded-xl shadow-sm transition">
-                                            <i class="fa-solid fa-check"></i> Submit
+                                            UPDATE
                                         </button>
                                     </td>
+                                    @endif
                                 </tr>
                             @empty
                                 <tr>
@@ -217,99 +222,69 @@
 
 @push('scripts')
     <script>
-    // 1. Move this function OUTSIDE the loop so it only runs correctly once
-    const machinePrice = {{ $booking->machine->price ?? 0 }};
+        const machinePrice = {{ $booking->machine->price ?? 0 }};
 
-    function calculateTotalHours() {
-        let totalHours = 0;
+        function calculateTotalHours() {
+            let totalHours = 0;
 
-        // Sum up all hours columns across all rows
-        document.querySelectorAll('.hours').forEach(input => {
-            totalHours += parseFloat(input.value) || 0;
-        });
+            document.querySelectorAll('.hours').forEach(input => {
+                totalHours += parseFloat(input.value) || 0;
+            });
 
-        // Update the visual text on the page
-        const totalHoursEl = document.getElementById('totalHours');
-        const totalCostEl = document.getElementById('totalCost');
+            const totalHoursEl = document.getElementById('totalHours');
+            const totalCostEl = document.getElementById('totalCost');
 
-        if (totalHoursEl) totalHoursEl.textContent = totalHours.toFixed(2);
+            if (totalHoursEl) totalHoursEl.textContent = totalHours.toFixed(2);
 
-        // Calculate total cost
-        const totalCost = totalHours * machinePrice;
-        if (totalCostEl) totalCostEl.textContent = totalCost.toFixed(2);
+            const totalCost = totalHours * machinePrice;
+            if (totalCostEl) totalCostEl.textContent = totalCost.toFixed(2);
 
-        // Target hidden inputs safely using their 'name' attributes instead of IDs.
-        // This prevents bugs if you have multiple forms on the same page.
-        document.querySelectorAll('input[name="total_hours"]').forEach(input => {
-            input.value = totalHours.toFixed(2);
-        });
-        document.querySelectorAll('input[name="total_cost"]').forEach(input => {
-            input.value = totalCost.toFixed(2);
-        });
-    }
-
-    // 2. Row-by-row time calculations
-    document.querySelectorAll('tr').forEach(row => {
-        const startTime = row.querySelector('.start-time');
-        const endTime = row.querySelector('.end-time');
-        const totalHours = row.querySelector('.hours');
-
-        if (!startTime || !endTime || !totalHours) return;
-
-        function calculateHours() {
-            if (!startTime.value || !endTime.value) {
-                totalHours.value = '';
-                calculateTotalHours(); // Recalculate totals if cleared
-                return;
-            }
-
-            const start = new Date(`1970-01-01T${startTime.value}`);
-            const end = new Date(`1970-01-01T${endTime.value}`);
-
-            let difference = (end - start) / (1000 * 60 * 60);
-
-            // Handle overnight times past midnight
-            if (difference < 0) {
-                difference += 24;
-            }
-
-            totalHours.value = difference.toFixed(2);
-
-            // 🔥 CRITICAL FIX: Manually trigger the total calculation
-            // because changing .value with JS doesn't fire events!
-            calculateTotalHours();
+            document.querySelectorAll('input[name="total_hours"]').forEach(input => {
+                input.value = totalHours.toFixed(2);
+            });
+            document.querySelectorAll('input[name="total_cost"]').forEach(input => {
+                input.value = totalCost.toFixed(2);
+            });
         }
 
-        startTime.addEventListener('change', calculateHours);
-        endTime.addEventListener('change', calculateHours);
-    });
+        document.querySelectorAll('tr').forEach(row => {
+            const startTime = row.querySelector('.start-time');
+            const endTime = row.querySelector('.end-time');
+            const totalHours = row.querySelector('.hours');
 
-    // 3. Run once on page load to catch any pre-filled data
-    document.addEventListener('DOMContentLoaded', () => {
-        calculateTotalHours();
+            if (!startTime || !endTime || !totalHours) return;
 
-        // Also listen if a user types hours directly
-        document.querySelectorAll('.hours').forEach(input => {
-            input.addEventListener('input', calculateTotalHours);
-        });
-    });
+            function calculateHours() {
+                if (!startTime.value || !endTime.value) {
+                    totalHours.value = '';
+                    calculateTotalHours();
+                    return;
+                }
 
-    // 4. SweetAlert Form Submission
-    function completeBooking(formId) {
-        Swal.fire({
-            title: 'Are you sure you want to complete this booking?',
-            text: "You won't be able to undo this action!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#059669',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Yes, complete it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                document.getElementById(formId).submit();
+                const start = new Date(`1970-01-01T${startTime.value}`);
+                const end = new Date(`1970-01-01T${endTime.value}`);
+
+                let difference = (end - start) / (1000 * 60 * 60);
+
+                if (difference < 0) {
+                    difference += 24;
+                }
+
+                totalHours.value = difference.toFixed(2);
+
+                calculateTotalHours();
             }
-        });
-    }
-</script>
 
+            startTime.addEventListener('change', calculateHours);
+            endTime.addEventListener('change', calculateHours);
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            calculateTotalHours();
+
+            document.querySelectorAll('.hours').forEach(input => {
+                input.addEventListener('input', calculateTotalHours);
+            });
+        });
+    </script>
 @endpush

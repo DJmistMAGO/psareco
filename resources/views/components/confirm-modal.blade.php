@@ -6,7 +6,8 @@
     'confirmClass' => 'bg-emerald-700 hover:bg-emerald-800 text-white',
     'icon' => 'sprout',
     'action' => '#',
-    'method' => 'POST'
+    'method' => 'POST',
+    'data' => ''
 ])
 
 <div x-data="{ open: false, submitting: false }" class="inline-block">
@@ -26,6 +27,9 @@
                         @if(strtoupper($method) !== 'POST')
                             @method($method)
                         @endif
+
+                        {{-- {{ $data }} --}}
+                        {!! $data !!}
 
                         <div class="bg-gradient-to-r from-emerald-50 via-green-50/40 to-white px-6 py-4 border-b border-emerald-100 flex items-center justify-between">
                             <div class="flex items-center gap-3">
