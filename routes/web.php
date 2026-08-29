@@ -66,11 +66,13 @@ Route::middleware('auth')->group(function () {
 
 
     Route::controller(MachineryController::class)
-        ->prefix('machinery')
-        ->group(function () {
-            Route::get('/index', 'index')->name('machinery.index');
-            Route::post('/store', 'store')->name('machinery.store');
-        });
+    ->prefix('machinery')
+    ->group(function () {
+        Route::get('/index', 'index')->name('machinery.index');
+        Route::post('/store', 'store')->name('machinery.store');
+        Route::put('/{id}', 'update')->name('machinery.update');
+        Route::delete('/{id}', 'destroy')->name('machinery.destroy');
+    });
 
     Route::controller(InventoryController::class)
         ->prefix('inventory')
