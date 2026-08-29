@@ -2,7 +2,7 @@
 @section('title', 'Machinery Booking - PSARECO')
 @section('content')
 
-    <main class="w-full min-w-0 p-4 sm:p-6 lg:p-8">
+    <main class="w-full min-w-0 p-4 sm:p-6 lg:p-8" x-data="{ currentStatus: '{{ strtolower(request('status', 'pending')) }}' }">
         <x-dashboard-header />
 
         <x-page-header eyebrow="PSARECO Machinery" title="Machinery Booking"
@@ -28,7 +28,7 @@
                     </div>
 
                     <form action="{{ url()->current() }}" method="GET" class="relative w-full sm:w-64">
-                        <input type="hidden" name="status" value="{{ request('status', 'pending') }}">
+                        <input type="hidden" name="status" :value="currentStatus">
                         <i
                             class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                         <input type="text" name="search" value="{{ request('search') }}"
@@ -52,6 +52,7 @@
 
                     {{-- Pending --}}
                     <a href="{{ url()->current() }}?status=pending{{ request('search') ? '&search=' . urlencode(request('search')) : '' }}"
+                        @click="currentStatus = 'pending'"
                         class="
                             inline-flex
                             shrink-0
@@ -82,6 +83,7 @@
 
                     {{-- Approved --}}
                     <a href="{{ url()->current() }}?status=approved{{ request('search') ? '&search=' . urlencode(request('search')) : '' }}"
+                        @click="currentStatus = 'approved'"
                         class="
                             inline-flex
                             shrink-0
@@ -112,6 +114,7 @@
 
                     {{-- Completed --}}
                     <a href="{{ url()->current() }}?status=completed{{ request('search') ? '&search=' . urlencode(request('search')) : '' }}"
+                        @click="currentStatus = 'completed'"
                         class="
                             inline-flex
                             shrink-0
@@ -140,8 +143,9 @@
                     </a>
 
 
-                    {{-- Cancelled --}}
-                    <a href="{{ url()->current() }}?status=cancelled{{ request('search') ? '&search=' . urlencode(request('search')) : '' }}"
+                    {{-- Declined / Cancelled --}}
+                    <a href="{{ url()->current() }}?status=declined{{ request('search') ? '&search=' . urlencode(request('search')) : '' }}"
+                        @click="currentStatus = 'declined'"
                         class="
                             inline-flex
                             shrink-0
@@ -154,7 +158,7 @@
                             font-semibold
                             transition
 
-                            {{ $activeStatus === 'declined'
+                            {{ in_array($activeStatus, ['declined', 'cancelled'])
                                 ? 'bg-red-50 text-red-700 border border-red-200'
                                 : 'text-slate-500 border border-transparent hover:bg-red-50 hover:text-red-700' }}
                         ">
@@ -164,7 +168,7 @@
                         Declined
 
                         <span class="px-1.5 py-0.5 rounded-full bg-red-100 text-slate-500 text-[10px] font-bold">
-                            {{ $statusCounts['cancelled'] ?? ($statusCounts['Cancelled'] ?? 0) }}
+                            {{ $statusCounts['declined'] ?? ($statusCounts['Declined'] ?? ($statusCounts['cancelled'] ?? ($statusCounts['Cancelled'] ?? 0))) }}
                         </span>
 
                     </a>
@@ -325,7 +329,7 @@
                                             {{ $booking->status }}
 
                                         </span>
-                                    @elseif ($booking->status === 'Declined')
+                                    @elseif (in_array($booking->status, ['Declined', 'Cancelled']))
                                         <span
                                             class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-100 text-red-800 border border-red-200 text-[10px] font-bold">
 
@@ -344,8 +348,7 @@
                                         <div class="inline-flex items-center gap-1.5">
                                             <x-confirm-modal title="Approve Booking" :message="'Are you sure you want to approve this booking?'" confirmText="Approve"
                                                 confirmClass="bg-green-600 hover:bg-green-700 text-white"
-                                                icon="shield-alert" :action="route('officer.approve-booking', $booking->id)" method="PUT" :data='"<input type=\"hidden\" name=\"status\" value=\"Approved\">
-                                                                                                                                                                                                                                "'>
+                                                icon="shield-alert" :action="route('officer.approve-booking', $booking->id)" method="PUT" :data='"<input type=\"hidden\" name=\"status\" value=\"Approved\">"'>
                                                 <button type="button" title="Complete Booking"
                                                     class="inline-flex items-center gap-2 bg-emerald-600 text-white hover:bg-emerald-700 font-semibold text-xs py-2 px-3.5 rounded-xl shadow-sm transition ">
                                                     Approve
@@ -355,8 +358,7 @@
 
                                             <x-confirm-modal title="Decline Booking" :message="'Are you sure you want to decline this booking?'" confirmText="Decline"
                                                 confirmClass="bg-red-600 hover:bg-red-700 text-white" icon="shield-alert"
-                                                :action="route('officer.decline-booking', $booking->id)" method="PUT" :data='"<input type=\"hidden\" name=\"status\" value=\"Decline\">
-                                                                                                                                                                                                                                "'>
+                                                :action="route('officer.decline-booking', $booking->id)" method="PUT" :data='"<input type=\"hidden\" name=\"status\" value=\"Decline\">"'>
                                                 <button type="button" title="Complete Booking"
                                                     class="inline-flex items-center gap-2 bg-red-600 text-white hover:bg-red-700 font-semibold text-xs py-2 px-3.5 rounded-xl shadow-sm transition ">
                                                     Decline
