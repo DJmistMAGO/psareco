@@ -146,20 +146,15 @@ class FarmersController extends Controller
     {
         $query = Inventory::query();
 
-        // 1. Search by Product Name
         if ($request->filled('search')) {
             $searchTerm = $request->input('search');
             $query->where('name', 'like', "%{$searchTerm}%");
         }
 
-        // 2. Filter by Product Type (Fertilizer / Pesticide)
         if ($request->filled('type') && $request->type !== 'all') {
             $query->where('type', $request->type);
         }
 
-
-
-        // 3. Filter by Availability
         if ($request->filled('availability') && $request->availability !== 'all') {
             if ($request->availability === 'in_stock') {
                 $query->where('quantity', '>', 0);
@@ -168,7 +163,6 @@ class FarmersController extends Controller
             }
         }
 
-        // Fetch products and transform data attributes for cards
         $products = $query->latest()->get()->map(function ($item) {
             return [
                 'id'              => $item->id,
