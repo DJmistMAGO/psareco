@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Booking;
 use App\Models\Machinery;
 use App\Models\BookingSlot;
+use App\Models\Inventory;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
@@ -141,9 +142,49 @@ class FarmersController extends Controller
         return view('farmer.my-bookings', compact('bookings'));
     }
 
-    public function products()
+    public function products(Request $request)
     {
-        return view('farmer.products');
+        $query = Inventory::query();
+
+        // 1. Search by Product Name
+        if ($request->filled('search')) {
+            $searchTerm = $request->input('search');
+            $query->where('name', 'like', "%{$searchTerm}%");
+        }
+
+        // 2. Filter by Product Type (Fertilizer / Pesticide)
+        if ($request->filled('type') && $request->type !== 'all') {
+            $query->where('type', $request->type);
+        }
+
+
+
+        // 3. Filter by Availability
+        if ($request->filled('availability') && $request->availability !== 'all') {
+            if ($request->availability === 'in_stock') {
+                $query->where('quantity', '>', 0);
+            } elseif ($request->availability === 'out_of_stock') {
+                $query->where('quantity', '<=', 0);
+            }
+        }
+
+        // Fetch products and transform data attributes for cards
+        $products = $query->latest()->get()->map(function ($item) {
+            return [
+                'id'              => $item->id,
+                'name'            => $item->name,
+                'type'            => $item->type,
+                'price'           => $item->price,
+                'unit'            => $item->unit,
+                'totalUnits'      => $item->quantity,
+                'reorder_level'   => $item->reorder_level,
+                'expiration_date' => $item->expiration_date,
+                'image'           => $item->image_path ? asset('storage/' . $item->image_path) : null,
+            ];
+        });
+
+
+        return view('farmer.products', compact('products'));
     }
 
     public function store(Request $request)
