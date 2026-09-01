@@ -70,8 +70,8 @@
                 <div
                     class="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col justify-between">
                     <div>
-                        <div class="h-36 w-full bg-slate-100 relative overflow-hidden">
-                            <img src="{{ $image }}" alt="{{ $name }}" class="w-full h-full object-cover">
+                        <div class="h-48 w-full bg-slate-100 relative overflow-hidden flex items-center justify-center">
+                            <img src="{{ $image }}" alt="{{ $name }}" class="w-full h-full object-contain p-2">
                         </div>
                         <div class="p-4">
                             <h4 class="font-bold text-slate-800 text-xs line-clamp-1">{{ $name }}</h4>

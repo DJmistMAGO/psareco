@@ -87,11 +87,6 @@ Route::middleware('auth')->group(function () {
 
         });
 
-    Route::middleware(['role:admin|officer'])->controller(ReportController::class)->prefix('reports')
-        ->group(function () {
-            Route::get('/', 'index')->name('reports.index');
-        });
-
     Route::middleware('role:officer')->controller(SalesController::class)->prefix('sales')
         ->group(function () {
             Route::get('/', 'index')->name('sales.index');
@@ -99,7 +94,7 @@ Route::middleware('auth')->group(function () {
             Route::post('/export', 'export')->name('sales.export');
         });
 
-    Route::controller(ReportController::class)->prefix('reports')
+    Route::middleware('role:admin|officer')->controller(ReportController::class)->prefix('reports')
         ->group(function () {
             Route::get('/', 'index')->name('reports.index');
             Route::get('/generate', 'generate')->name('reports.generate');
@@ -111,10 +106,12 @@ Route::middleware('auth')->group(function () {
         ->prefix('user-management')
         ->group(function () {
             Route::get('/', 'index')->name('user-management.index');
+            Route::get('/export', 'exportCsv')->name('user-management.export');
             Route::post('/addUser', 'addUser')->name('user-management.adduser');
-            Route::post('/{id}', 'updateUser')->name('user-management.updateUser');
+            Route::put('/{id}', 'updateUser')->name('user-management.updateUser');
             Route::post('/{id}/deactivate', 'deactivateUser')->name('user-management.deactivateUser');
             Route::post('/{id}/reactivate', 'reactivateUser')->name('user-management.reactivateUser');
+            Route::post('/{id}/delete', 'deleteUser')->name('user-management.deleteUser');
             // Route::post('/{id}/approve', 'approveUser')->name('user-management.approveUser');
             // Route::post('/{id}/reject', 'rejectUser')->name('user-management.rejectUser');
         });

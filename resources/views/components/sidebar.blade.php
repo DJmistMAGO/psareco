@@ -1,7 +1,7 @@
 <div x-show="mobileOpen" x-cloak x-transition:enter="transition-opacity ease-linear duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition-opacity ease-linear duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" @click="mobileOpen = false" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 lg:hidden" ></div>
 
 
-<aside :class="{ 'w-64': sidebarOpen, 'w-20': !sidebarOpen, '-translate-x-full lg:translate-x-0': !mobileOpen, 'translate-x-0': mobileOpen}"
+<aside @click.stop :class="{ 'w-64': sidebarOpen, 'w-20': !sidebarOpen, '-translate-x-full lg:translate-x-0': !mobileOpen, 'translate-x-0': mobileOpen}"
     class="fixed lg:sticky inset-y-0 lg:top-0 left-0 z-50 bg-[#f2f8f4] flex flex-col justify-between border-r border-emerald-100/80 p-4 shrink-0 h-screen transition-all duration-300 ease-in-out">
 
     <div>
@@ -43,29 +43,30 @@
                 if (auth()->user()->hasRole('admin')) {
 
                     $menu = [
-                        [ 'route' => 'dashboard.index', 'active' => 'dashboard.*', 'icon' => 'fa-chart-line', 'title' => 'Dashboard', ],
-                        [ 'route' => 'reports.index', 'active' => 'reports.*', 'icon' => 'fa-file-alt', 'title' => 'Reports', ],
-                        [ 'route' => 'user-management.index', 'active' => 'user-management.*', 'icon' => 'fa-users-cog', 'title' => 'Users', ],
+                        [ 'route' => 'dashboard.index', 'icon' => 'fa-chart-line', 'title' => 'Dashboard', ],
+                        [ 'route' => 'reports.index', 'icon' => 'fa-file-alt', 'title' => 'Reports', ],
+                        [ 'route' => 'user-management.index', 'icon' => 'fa-users-cog', 'title' => 'Users', ],
                     ];
 
                 } elseif (auth()->user()->hasRole('officer')) {
 
                     $menu = [
-                        [ 'route' => 'dashboard.index', 'active' => 'dashboard.*', 'icon' => 'fa-chart-line', 'title' => 'Dashboard', ],
-                        [ 'route' => 'machinery.index', 'active' => 'machinery.*', 'icon' => 'fa-tractor', 'title' => 'Machinery Management', ],
-                        [ 'route' => 'booking.calendar', 'active' => 'booking.*', 'icon' => 'fa-calendar-alt', 'title' => 'Calendar Schedule', ],
-                        [ 'route' => 'officer.index-booking', 'active' => 'officer.*', 'icon' => 'fa-calendar-plus', 'title' => 'Machinery Bookings', ],
-                        [ 'route' => 'inventory.index', 'active' => 'inventory.*', 'icon' => 'fa-boxes-stacked', 'title' => 'Inventory', ],
-                        [ 'route' => 'sales.index', 'active' => 'sales.*', 'icon' => 'fa-shopping-cart', 'title' => 'Sales', ],
-                        [ 'route' => 'reports.index', 'active' => 'reports.*', 'icon' => 'fa-file-alt', 'title' => 'Reports', ],
+                        [ 'route' => 'dashboard.index', 'icon' => 'fa-chart-line', 'title' => 'Dashboard', ],
+                        [ 'route' => 'machinery.index', 'icon' => 'fa-tractor', 'title' => 'Machinery Management', ],
+                        [ 'route' => 'booking.calendar', 'icon' => 'fa-calendar-alt', 'title' => 'Calendar Schedule', ],
+                        [ 'route' => 'officer.index-booking', 'icon' => 'fa-calendar-plus', 'title' => 'Machinery Bookings', ],
+                        [ 'route' => 'inventory.index', 'icon' => 'fa-boxes-stacked', 'title' => 'Inventory', ],
+                        [ 'route' => 'inventory.trash', 'icon' => 'fa-trash-can', 'title' => 'Trashbin', ],
+                        [ 'route' => 'sales.index', 'icon' => 'fa-shopping-cart', 'title' => 'Sales', ],
+                        [ 'route' => 'reports.index', 'icon' => 'fa-file-alt', 'title' => 'Reports', ],
                     ];
 
                 } elseif (auth()->user()->hasRole('farmer')) {
 
                     $menu = [
-                        [ 'route' => 'dashboard.index', 'active' => 'dashboard.*', 'icon' => 'fa-chart-line', 'title' => 'Dashboard', ],
-                        [ 'route' => 'booking.calendar', 'active' => 'booking.*', 'icon' => 'fa-calendar-alt', 'title' => 'Calendar Schedule', ],
-                        [ 'route' => 'farmers.index', 'active' => 'farmers.*', 'icon' => 'fa-tractor', 'title' => 'Book Machinery', ],
+                        [ 'route' => 'dashboard.index', 'icon' => 'fa-chart-line', 'title' => 'Dashboard', ],
+                        [ 'route' => 'booking.calendar', 'icon' => 'fa-calendar-alt', 'title' => 'Calendar Schedule', ],
+                        [ 'route' => 'farmers.index', 'icon' => 'fa-tractor', 'title' => 'Book Machinery', ],
                         [ 'route' => 'farmers.myBookings', 'active' => 'farmers.myBookings', 'icon' => 'fa-calendar-check', 'title' => 'Booking History', ],
                         [ 'route' => 'farmers.products', 'active' => 'farmers.products', 'icon' => 'fa-box', 'title' => 'Products', ],
                     ];
@@ -76,10 +77,10 @@
             @foreach ($menu as $item)
 
                 @php
-                    $active = request()->routeIs($item['active'] ?? $item['route']);
+                    $active = request()->routeIs($item['route']);
                 @endphp
 
-                <a href="{{ route($item['route']) }}" title="{{ $item['title'] }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl
+                <a href="{{ route($item['route']) }}" title="{{ $item['title'] }}" @click="mobileOpen = false" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl
                     transition-all duration-200 text-sm font-medium group {{ $active ? 'bg-[#3d8b68] text-white shadow-md' : 'text-slate-600 hover:bg-emerald-100/60 hover:text-emerald-900' }}" >
                     <i class="fa-solid {{ $item['icon'] }} w-5 text-center shrink-0 {{ $active ? 'text-white' : 'text-emerald-600 group-hover:text-emerald-700' }}"></i>
                     <span x-show="sidebarOpen" x-transition class="truncate" >
@@ -107,7 +108,7 @@
             </div>
         </div>
 
-        <form method="POST" action="{{ route('logout') }}" >
+        <form method="POST" action="{{ route('logout') }}" @submit="mobileOpen = false">
             @csrf
             <button type="submit" class="w-full bg-[#fce8e6] hover:bg-[#f8d0cb] text-[#d9381e] font-medium py-2 px-3 rounded-xl flex items-center justify-center space-x-2 text-xs transition-all duration-200 active:scale-[0.98]" title="Logout"  >
                 <i class="fa-solid fa-right-from-bracket rotate-180 shrink-0" ></i>

@@ -11,11 +11,9 @@
                 <button type="button" @click="$dispatch('open-add-user-modal')" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-600 text-white text-sm font-bold shadow-sm hover:bg-emerald-700 transition">
                     <i class="fa-solid fa-user-plus"></i> Add User
                 </button>
-                <button type="button" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white text-emerald-700 text-sm font-bold shadow-sm hover:bg-emerald-50 transition" >
-                    <a href="{{-- route('users.export') --}}" >
-                        <i class="fa-solid fa-file-export"></i> Export CSV
-                    </a>
-                </button>
+                <a href="{{ route('user-management.export') }}" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white text-emerald-700 text-sm font-bold shadow-sm hover:bg-emerald-50 transition">
+                    <i class="fa-solid fa-file-export"></i> Export CSV
+                </a>
             </x-slot:actions>
         </x-page-header>
 
@@ -25,6 +23,7 @@
         {{-- Add User modal --}}
         <div x-data="{
                 open: {{ $errors->any() && old('_form') === 'add_user' ? 'true' : 'false' }},
+                selectedRole: '{{ old('role', 'officer') }}',
                 generatePassword() {
                     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%';
                     let pw = '';
@@ -40,7 +39,7 @@
             x-cloak
             class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4"
         >
-            <div @click.outside="open = false" class="w-full max-w-2xl bg-white rounded-2xl shadow-xl">
+            <div @click.outside="open = false" class="w-full max-w-5xl max-h-[90vh] overflow-y-auto bg-white rounded-2xl shadow-xl">
                 <div class="flex items-center justify-between p-5 border-b border-slate-100">
                     <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
                         <i class="fa-solid fa-user-plus text-emerald-600"></i> Register New User Account
@@ -52,8 +51,21 @@
                     @csrf
                     <input type="hidden" name="_form" value="add_user">
 
+                    <div class="mb-5">
+                        <label class="block text-xs font-semibold text-slate-600 mb-2">Assigned Role <span class="text-red-500">*</span></label>
+                        <input type="hidden" name="role" x-model="selectedRole">
+                        <div class="grid grid-cols-2 gap-2 rounded-xl bg-slate-50 border border-slate-200 p-1">
+                            <button type="button" @click="selectedRole = 'officer'" :class="selectedRole === 'officer' ? 'bg-white text-sky-700 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700'" class="flex items-center justify-center gap-2 rounded-lg py-2.5 text-xs font-semibold transition">
+                                <i class="fa-solid fa-user-tie text-[10px]"></i> Officer
+                            </button>
+                            <button type="button" @click="selectedRole = 'farmer'" :class="selectedRole === 'farmer' ? 'bg-white text-emerald-700 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700'" class="flex items-center justify-center gap-2 rounded-lg py-2.5 text-xs font-semibold transition">
+                                <i class="fa-solid fa-seedling text-[10px]"></i> Farmer
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-4">
-                        <div>
+                        <div class="sm:col-span-2">
                             <label for="name" class="block text-xs font-semibold text-slate-600 mb-1">
                                 Full Name <span class="text-red-500">*</span>
                             </label>
@@ -65,7 +77,7 @@
                             @enderror
                         </div>
 
-                        <div>
+                        <div class="sm:col-span-2">
                             <label for="email" class="block text-xs font-semibold text-slate-600 mb-1">
                                 Email Address <span class="text-red-500">*</span>
                             </label>
@@ -74,6 +86,14 @@
                                 <p class="mt-1 text-red-500 text-[11px] font-medium flex items-center gap-1">
                                     <i class="fa-solid fa-circle-info text-[10px]"></i> {{ $message }}
                                 </p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="contact_number" class="block text-xs font-semibold text-slate-600 mb-1">Contact Number</label>
+                            <input type="text" id="contact_number" name="contact_number" value="{{ old('contact_number') }}" placeholder="09xx-xxx-xxxx" class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs text-slate-800 focus:outline-none transition {{ $errors->has('contact_number') ? 'border-red-500 bg-red-50/30 focus:ring-2 focus:ring-red-400' : 'border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:bg-white' }}">
+                            @error('contact_number')
+                                <p class="mt-1 text-red-500 text-[11px] font-medium flex items-center gap-1"><i class="fa-solid fa-circle-info text-[10px]"></i> {{ $message }}</p>
                             @enderror
                         </div>
 
@@ -95,13 +115,64 @@
                             @enderror
                         </div>
 
-                        <div>
-                            <label for="role" class="block text-xs font-semibold text-slate-600 mb-1">Assigned Role</label>
-                            <select id="role" name="role" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition" required>
-                                <option value="" disabled {{ old('role') ? '' : 'selected' }}>Please select role</option>
-                                <option value="officer" {{ old('role') == 'officer' ? 'selected' : '' }}>Cooperative Officer</option>
-                                <option value="farmer" {{ old('role') == 'farmer' ? 'selected' : '' }}>Member Farmer</option>
-                            </select>
+                        <div class="sm:col-span-2">
+                            <label for="address" class="block text-xs font-semibold text-slate-600 mb-1">Address</label>
+                            <textarea id="address" name="address" rows="2" placeholder="House no./Street / Barangay / Municipality" class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs text-slate-800 focus:outline-none transition {{ $errors->has('address') ? 'border-red-500 bg-red-50/30 focus:ring-2 focus:ring-red-400' : 'border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:bg-white' }}">{{ old('address') }}</textarea>
+                            @error('address')
+                                <p class="mt-1 text-red-500 text-[11px] font-medium flex items-center gap-1"><i class="fa-solid fa-circle-info text-[10px]"></i> {{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div x-show="selectedRole === 'farmer'" class="sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-4">
+                            <div>
+                                <label for="rsbsa_number" class="block text-xs font-semibold text-slate-600 mb-1">RSBSA Number</label>
+                                <input type="text" id="rsbsa_number" name="rsbsa_number" value="{{ old('rsbsa_number') }}" placeholder="e.g. 123456789" class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs text-slate-800 focus:outline-none transition {{ $errors->has('rsbsa_number') ? 'border-red-500 bg-red-50/30 focus:ring-2 focus:ring-red-400' : 'border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:bg-white' }}">
+                                @error('rsbsa_number')
+                                    <p class="mt-1 text-red-500 text-[11px] font-medium flex items-center gap-1"><i class="fa-solid fa-circle-info text-[10px]"></i> {{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label for="farm_size_hectares" class="block text-xs font-semibold text-slate-600 mb-1">Farm Size (Hectares)</label>
+                                <input type="number" id="farm_size_hectares" name="farm_size_hectares" value="{{ old('farm_size_hectares') }}" step="0.01" min="0" placeholder="0.00" class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs text-slate-800 focus:outline-none transition {{ $errors->has('farm_size_hectares') ? 'border-red-500 bg-red-50/30 focus:ring-2 focus:ring-red-400' : 'border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:bg-white' }}">
+                                @error('farm_size_hectares')
+                                    <p class="mt-1 text-red-500 text-[11px] font-medium flex items-center gap-1"><i class="fa-solid fa-circle-info text-[10px]"></i> {{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div class="sm:col-span-2">
+                                <label for="primary_crop" class="block text-xs font-semibold text-slate-600 mb-1">Primary Crop</label>
+                                <input type="text" id="primary_crop" name="primary_crop" value="{{ old('primary_crop') }}" placeholder="Rice, Corn, Coconut" class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs text-slate-800 focus:outline-none transition {{ $errors->has('primary_crop') ? 'border-red-500 bg-red-50/30 focus:ring-2 focus:ring-red-400' : 'border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:bg-white' }}">
+                                @error('primary_crop')
+                                    <p class="mt-1 text-red-500 text-[11px] font-medium flex items-center gap-1"><i class="fa-solid fa-circle-info text-[10px]"></i> {{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div x-show="selectedRole === 'officer'" class="sm:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-x-3 gap-y-4">
+                            <div>
+                                <label for="employee_id" class="block text-xs font-semibold text-slate-600 mb-1">Employee ID</label>
+                                <input type="text" id="employee_id" name="employee_id" value="{{ old('employee_id') }}" placeholder="Optional" class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs text-slate-800 focus:outline-none transition {{ $errors->has('employee_id') ? 'border-red-500 bg-red-50/30 focus:ring-2 focus:ring-red-400' : 'border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:bg-white' }}">
+                                @error('employee_id')
+                                    <p class="mt-1 text-red-500 text-[11px] font-medium flex items-center gap-1"><i class="fa-solid fa-circle-info text-[10px]"></i> {{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label for="position" class="block text-xs font-semibold text-slate-600 mb-1">Position</label>
+                                <input type="text" id="position" name="position" value="{{ old('position') }}" placeholder="Officer / Staff" class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs text-slate-800 focus:outline-none transition {{ $errors->has('position') ? 'border-red-500 bg-red-50/30 focus:ring-2 focus:ring-red-400' : 'border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:bg-white' }}">
+                                @error('position')
+                                    <p class="mt-1 text-red-500 text-[11px] font-medium flex items-center gap-1"><i class="fa-solid fa-circle-info text-[10px]"></i> {{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label for="department" class="block text-xs font-semibold text-slate-600 mb-1">Department</label>
+                                <input type="text" id="department" name="department" value="{{ old('department') }}" placeholder="Operations / Finance" class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs text-slate-800 focus:outline-none transition {{ $errors->has('department') ? 'border-red-500 bg-red-50/30 focus:ring-2 focus:ring-red-400' : 'border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:bg-white' }}">
+                                @error('department')
+                                    <p class="mt-1 text-red-500 text-[11px] font-medium flex items-center gap-1"><i class="fa-solid fa-circle-info text-[10px]"></i> {{ $message }}</p>
+                                @enderror
+                            </div>
                         </div>
                     </div>
 
@@ -121,7 +192,7 @@
         <div x-data="{
                 open: false,
                 urlTemplate: '{{ route('user-management.updateUser', ['id' => '__ID__']) }}',
-                selectedUser: { id: null, name: '', email: '', role: 'farmer', status: 'active', is_self: false, is_admin: false, created_at: '' },
+                selectedUser: { id: null, name: '', email: '', contact_number: '', address: '', rsbsa_number: '', farm_size_hectares: '', primary_crop: '', employee_id: '', position: '', department: '', role: 'farmer', status: 'active', is_self: false, is_admin: false, created_at: '' },
                 get formAction() {
                     return this.urlTemplate.replace('__ID__', this.selectedUser.id);
                 }
@@ -129,131 +200,154 @@
             @open-view-user-modal.window="open = true; selectedUser = $event.detail.user"
             x-show="open"
             x-cloak
-            class="fixed inset-0 z-50 overflow-y-auto"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4"
             aria-modal="true"
             role="dialog"
         >
-            <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm" @click="open = false"></div>
-            <div class="relative min-h-screen flex items-center justify-center p-4">
-                <div class="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden" x-show="open" x-transition>
+            <div @click.outside="open = false" class="w-full max-w-5xl max-h-[90vh] overflow-y-auto bg-white rounded-2xl shadow-xl">
+                <div class="flex items-center justify-between p-5 border-b border-slate-100">
+                    <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                        <i class="fa-solid" :class="selectedUser.is_admin ? 'fa-shield-halved text-amber-600' : (selectedUser.role === 'officer' ? 'fa-user-tie text-sky-600' : 'fa-seedling text-emerald-600')"></i>
+                        <span x-text="selectedUser.is_admin ? 'Administrator Account' : 'Update User Account'"></span>
+                    </h3>
+                    <button type="button" @click="open = false" class="text-slate-400 hover:text-slate-600 transition">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
 
-                    {{-- Header --}}
-                    <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
-                        <div class="flex items-center gap-3 min-w-0">
-                            <div class="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center"
-                                :class="selectedUser.is_admin ? 'bg-amber-50 text-amber-600' : (selectedUser.role === 'officer' ? 'bg-sky-50 text-sky-600' : 'bg-emerald-50 text-emerald-600')">
-                                <i class="fa-solid" :class="selectedUser.is_admin ? 'fa-shield-halved' : (selectedUser.role === 'officer' ? 'fa-user-tie' : 'fa-seedling')"></i>
+                <form :action="formAction" method="POST" class="p-5">
+                    @csrf
+                    @method('PUT')
+
+                    <div class="mb-5">
+                        <label class="block text-xs font-semibold text-slate-600 mb-2">Assigned Role</label>
+                        <input type="hidden" name="role" x-model="selectedUser.role">
+                        <div class="grid grid-cols-2 gap-2 rounded-xl bg-slate-50 border border-slate-200 p-1">
+                            <button type="button" @click="selectedUser.role = 'officer'" :disabled="selectedUser.is_admin"
+                                :class="selectedUser.role === 'officer' ? 'bg-white text-sky-700 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700'"
+                                class="flex items-center justify-center gap-2 rounded-lg py-2.5 text-xs font-semibold transition disabled:opacity-60 disabled:cursor-not-allowed">
+                                <i class="fa-solid fa-user-tie text-[10px]"></i> Officer
+                            </button>
+                            <button type="button" @click="selectedUser.role = 'farmer'" :disabled="selectedUser.is_admin"
+                                :class="selectedUser.role === 'farmer' ? 'bg-white text-emerald-700 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700'"
+                                class="flex items-center justify-center gap-2 rounded-lg py-2.5 text-xs font-semibold transition disabled:opacity-60 disabled:cursor-not-allowed">
+                                <i class="fa-solid fa-seedling text-[10px]"></i> Farmer
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-4">
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">
+                                Full Name <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" name="name" x-model="selectedUser.name" required :disabled="selectedUser.is_admin"
+                                class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs text-slate-800 focus:outline-none transition {{ $errors->has('name') ? 'border-red-500 bg-red-50/30 focus:ring-2 focus:ring-red-400' : 'border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:bg-white' }} disabled:opacity-60 disabled:cursor-not-allowed">
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">
+                                Email Address <span class="text-red-500">*</span>
+                            </label>
+                            <input type="email" name="email" x-model="selectedUser.email" required :disabled="selectedUser.is_admin"
+                                class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs text-slate-800 focus:outline-none transition {{ $errors->has('email') ? 'border-red-500 bg-red-50/30 focus:ring-2 focus:ring-red-400' : 'border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:bg-white' }} disabled:opacity-60 disabled:cursor-not-allowed">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Contact Number</label>
+                            <input type="text" name="contact_number" x-model="selectedUser.contact_number" :disabled="selectedUser.is_admin"
+                                class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs text-slate-800 focus:outline-none transition border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:bg-white disabled:opacity-60 disabled:cursor-not-allowed">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Account Status</label>
+                            <input type="hidden" name="status" :value="selectedUser.status">
+                            <button type="button" @click="selectedUser.status = selectedUser.status === 'active' ? 'inactive' : 'active'"
+                                :disabled="selectedUser.is_self || selectedUser.is_admin"
+                                class="w-full flex items-center justify-between rounded-xl border px-4 py-2.5 transition disabled:opacity-60 disabled:cursor-not-allowed"
+                                :class="selectedUser.status === 'active' ? 'bg-emerald-50 border-emerald-200' : 'bg-red-50 border-red-200'">
+                                <span class="flex items-center gap-2 text-xs font-semibold" :class="selectedUser.status === 'active' ? 'text-emerald-700' : 'text-red-600'">
+                                    <span class="relative flex h-2 w-2">
+                                        <span class="absolute inline-flex h-full w-full rounded-full opacity-50" :class="selectedUser.status === 'active' ? 'bg-emerald-400' : 'bg-red-400'"></span>
+                                        <span class="relative inline-flex h-2 w-2 rounded-full" :class="selectedUser.status === 'active' ? 'bg-emerald-500' : 'bg-red-500'"></span>
+                                    </span>
+                                    <span x-text="selectedUser.status === 'active' ? 'Active' : 'Inactive'"></span>
+                                </span>
+                                <span class="relative inline-flex h-5 w-9 items-center rounded-full transition" :class="selectedUser.status === 'active' ? 'bg-emerald-500' : 'bg-slate-300'">
+                                    <span class="inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition" :class="selectedUser.status === 'active' ? 'translate-x-[18px]' : 'translate-x-1'"></span>
+                                </span>
+                            </button>
+                            <p class="mt-1 text-[11px] text-slate-400" x-show="selectedUser.is_self && !selectedUser.is_admin">You can't change your own status here.</p>
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Address</label>
+                            <textarea name="address" x-model="selectedUser.address" rows="2" :disabled="selectedUser.is_admin"
+                                class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs text-slate-800 focus:outline-none transition border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:bg-white disabled:opacity-60 disabled:cursor-not-allowed"></textarea>
+                        </div>
+
+                        <div x-show="selectedUser.role === 'farmer'" class="sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">RSBSA Number</label>
+                                <input type="text" name="rsbsa_number" x-model="selectedUser.rsbsa_number" :disabled="selectedUser.is_admin"
+                                    class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs text-slate-800 focus:outline-none transition border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:bg-white disabled:opacity-60 disabled:cursor-not-allowed">
                             </div>
 
-                            <div class="min-w-0">
-                                <h2 class="text-base font-bold text-slate-800 truncate" x-text="selectedUser.name"></h2>
-                                <p class="text-xs text-slate-400 mt-0.5">
-                                    User #<span x-text="selectedUser.id"></span> &middot; Joined <span x-text="selectedUser.created_at"></span>
-                                </p>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Farm Size (Hectares)</label>
+                                <input type="number" name="farm_size_hectares" x-model="selectedUser.farm_size_hectares" step="0.01" min="0" :disabled="selectedUser.is_admin"
+                                    class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs text-slate-800 focus:outline-none transition border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:bg-white disabled:opacity-60 disabled:cursor-not-allowed">
+                            </div>
+
+                            <div class="sm:col-span-2">
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Primary Crop</label>
+                                <input type="text" name="primary_crop" x-model="selectedUser.primary_crop" :disabled="selectedUser.is_admin"
+                                    class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs text-slate-800 focus:outline-none transition border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:bg-white disabled:opacity-60 disabled:cursor-not-allowed">
+                            </div>
+                        </div>
+
+                        <div x-show="selectedUser.role === 'officer'" class="sm:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-x-3 gap-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Employee ID</label>
+                                <input type="text" name="employee_id" x-model="selectedUser.employee_id" :disabled="selectedUser.is_admin"
+                                    class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs text-slate-800 focus:outline-none transition border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:bg-white disabled:opacity-60 disabled:cursor-not-allowed">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Position</label>
+                                <input type="text" name="position" x-model="selectedUser.position" :disabled="selectedUser.is_admin"
+                                    class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs text-slate-800 focus:outline-none transition border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:bg-white disabled:opacity-60 disabled:cursor-not-allowed">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Department</label>
+                                <input type="text" name="department" x-model="selectedUser.department" :disabled="selectedUser.is_admin"
+                                    class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs text-slate-800 focus:outline-none transition border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:bg-white disabled:opacity-60 disabled:cursor-not-allowed">
                             </div>
                         </div>
                     </div>
 
-                    <form :action="formAction" method="POST">
-                        @csrf
-                        @method('PUT')
-
-                        <div class="p-6">
-
-                            {{-- Account Information --}}
-                            <div class="mb-6">
-                                <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
-                                    Account Information
-                                </p>
-
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <div class="sm:col-span-2">
-                                        <label class="block text-xs font-semibold text-slate-600 mb-1.5">Full Name</label>
-                                        <input type="text" name="name" x-model="selectedUser.name" required :disabled="selectedUser.is_admin"
-                                            class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition disabled:opacity-60 disabled:cursor-not-allowed">
-                                    </div>
-
-                                    <div class="sm:col-span-2">
-                                        <label class="block text-xs font-semibold text-slate-600 mb-1.5">Email Address</label>
-                                        <input type="email" name="email" x-model="selectedUser.email" required :disabled="selectedUser.is_admin"
-                                            class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition disabled:opacity-60 disabled:cursor-not-allowed">
-                                    </div>
-                                </div>
+                    <template x-if="selectedUser.is_admin">
+                        <div class="mt-5 rounded-2xl border border-amber-100 bg-amber-50 p-4 flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-xl flex items-center justify-center bg-amber-100 text-amber-600 shrink-0">
+                                <i class="fa-solid fa-shield-halved"></i>
                             </div>
-
-                            {{-- Role & Access --}}
-                            <div class="mb-6">
-                                <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
-                                    Role &amp; Access
-                                </p>
-
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <div>
-                                        <label class="block text-xs font-semibold text-slate-600 mb-1.5">Assigned Role</label>
-                                        <input type="hidden" name="role" :value="selectedUser.role">
-                                        <div class="flex rounded-xl bg-slate-50 border border-slate-200 p-1 gap-1">
-                                            <button type="button" @click="selectedUser.role = 'officer'" :disabled="selectedUser.is_admin"
-                                                :class="selectedUser.role === 'officer' ? 'bg-white text-sky-700 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700'"
-                                                class="flex-1 flex items-center justify-center gap-1.5 rounded-lg py-2 text-xs font-semibold transition disabled:opacity-60 disabled:cursor-not-allowed">
-                                                <i class="fa-solid fa-user-tie text-[10px]"></i> Officer
-                                            </button>
-                                            <button type="button" @click="selectedUser.role = 'farmer'" :disabled="selectedUser.is_admin"
-                                                :class="selectedUser.role === 'farmer' ? 'bg-white text-emerald-700 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700'"
-                                                class="flex-1 flex items-center justify-center gap-1.5 rounded-lg py-2 text-xs font-semibold transition disabled:opacity-60 disabled:cursor-not-allowed">
-                                                <i class="fa-solid fa-seedling text-[10px]"></i> Farmer
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-xs font-semibold text-slate-600 mb-1.5">Account Status</label>
-                                        <input type="hidden" name="status" :value="selectedUser.status">
-                                        <button type="button" @click="selectedUser.status = selectedUser.status === 'active' ? 'inactive' : 'active'"
-                                            :disabled="selectedUser.is_self || selectedUser.is_admin"
-                                            class="w-full flex items-center justify-between rounded-xl border px-4 py-2.5 transition disabled:opacity-60 disabled:cursor-not-allowed"
-                                            :class="selectedUser.status === 'active' ? 'bg-emerald-50 border-emerald-200' : 'bg-red-50 border-red-200'">
-                                            <span class="flex items-center gap-2 text-xs font-semibold" :class="selectedUser.status === 'active' ? 'text-emerald-700' : 'text-red-600'">
-                                                <span class="relative flex h-2 w-2">
-                                                    <span class="absolute inline-flex h-full w-full rounded-full opacity-50" :class="selectedUser.status === 'active' ? 'bg-emerald-400' : 'bg-red-400'"></span>
-                                                    <span class="relative inline-flex h-2 w-2 rounded-full" :class="selectedUser.status === 'active' ? 'bg-emerald-500' : 'bg-red-500'"></span>
-                                                </span>
-                                                <span x-text="selectedUser.status === 'active' ? 'Active' : 'Inactive'"></span>
-                                            </span>
-                                            <span class="relative inline-flex h-5 w-9 items-center rounded-full transition" :class="selectedUser.status === 'active' ? 'bg-emerald-500' : 'bg-slate-300'">
-                                                <span class="inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition" :class="selectedUser.status === 'active' ? 'translate-x-[18px]' : 'translate-x-1'"></span>
-                                            </span>
-                                        </button>
-                                        <p class="mt-1 text-[11px] text-slate-400" x-show="selectedUser.is_self && !selectedUser.is_admin">You can't change your own status here.</p>
-                                    </div>
-                                </div>
+                            <div>
+                                <p class="text-xs font-semibold text-amber-700">Protected Account</p>
+                                <p class="text-[11px] text-amber-600 mt-0.5">Administrator accounts can't be edited from User Management.</p>
                             </div>
-
-                            <template x-if="selectedUser.is_admin">
-                                <div class="rounded-2xl border border-amber-100 bg-amber-50 p-4 flex items-center gap-3">
-                                    <div class="w-9 h-9 rounded-xl flex items-center justify-center bg-amber-100 text-amber-600 shrink-0">
-                                        <i class="fa-solid fa-shield-halved"></i>
-                                    </div>
-                                    <div>
-                                        <p class="text-xs font-semibold text-amber-700">Protected Account</p>
-                                        <p class="text-[11px] text-amber-600 mt-0.5">Administrator accounts can't be edited from User Management.</p>
-                                    </div>
-                                </div>
-                            </template>
                         </div>
+                    </template>
 
-                        {{-- Footer --}}
-                        <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
-                            <button type="button" @click="open = false" class="px-5 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-600 text-xs font-semibold hover:bg-slate-100 transition">
-                                Close
-                            </button>
-
-                            <button type="submit" x-show="!selectedUser.is_admin" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition">
-                                <i class="fa-regular fa-floppy-disk"></i>
-                                Save Changes
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                    <div class="flex justify-end gap-2 mt-5 pt-4 border-t border-slate-100">
+                        <button type="button" @click="open = false" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 transition">
+                            Close
+                        </button>
+                        <button type="submit" x-show="!selectedUser.is_admin" class="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold text-xs py-2 px-4 rounded-xl shadow-sm transition-all cursor-pointer">
+                            <i class="fa-regular fa-floppy-disk text-[11px]"></i> Save Changes
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
 
@@ -357,6 +451,14 @@
                                                 id: {{ $user['id'] }},
                                                 name: @js($user['name']),
                                                 email: @js($user['email']),
+                                                contact_number: @js($user['contact_number'] ?? ''),
+                                                address: @js($user['address'] ?? ''),
+                                                rsbsa_number: @js($user['rsbsa_number'] ?? ''),
+                                                farm_size_hectares: @js($user['farm_size_hectares'] ?? ''),
+                                                primary_crop: @js($user['primary_crop'] ?? ''),
+                                                employee_id: @js($user['employee_id'] ?? ''),
+                                                position: @js($user['position'] ?? ''),
+                                                department: @js($user['department'] ?? ''),
                                                 role: @js($user['roles'][0] ?? 'farmer'),
                                                 status: 'active',
                                                 is_self: {{ auth()->id() === $user['id'] ? 'true' : 'false' }},
@@ -475,9 +577,18 @@
                                                 id: {{ $user['id'] }},
                                                 name: @js($user['name']),
                                                 email: @js($user['email']),
+                                                contact_number: @js($user['contact_number'] ?? ''),
+                                                address: @js($user['address'] ?? ''),
+                                                rsbsa_number: @js($user['rsbsa_number'] ?? ''),
+                                                farm_size_hectares: @js($user['farm_size_hectares'] ?? ''),
+                                                primary_crop: @js($user['primary_crop'] ?? ''),
+                                                employee_id: @js($user['employee_id'] ?? ''),
+                                                position: @js($user['position'] ?? ''),
+                                                department: @js($user['department'] ?? ''),
                                                 role: @js($user['roles'][0] ?? 'farmer'),
                                                 status: 'inactive',
                                                 is_self: false,
+                                                is_admin: false,
                                                 created_at: @js(optional($user['created_at'])->format('M d, Y'))
                                             } })"
                                             class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-semibold text-slate-600 shadow-sm transition-all hover:bg-slate-50 hover:border-slate-300">
@@ -496,6 +607,21 @@
                                             <button type="button" class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-1.5 text-[11px] font-semibold text-emerald-700 shadow-sm transition-all hover:bg-emerald-600 hover:text-white hover:border-emerald-600 hover:shadow-md" >
                                                 <i class="fa-solid fa-user-check text-[10px]"></i>
                                                 Reactivate
+                                            </button>
+                                        </x-confirm-modal>
+
+                                        <x-confirm-modal
+                                            title="Delete User Permanently"
+                                            message="This will permanently remove {{ $user['name'] }} from the system. This action cannot be undone and the account data will be deleted."
+                                            confirm-text="Delete Permanently"
+                                            cancel-text="Cancel"
+                                            confirm-class="bg-red-600 hover:bg-red-700"
+                                            :action="route('user-management.deleteUser', $user['id'])"
+                                            method="POST"
+                                        >
+                                            <button type="button" class="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-white px-3 py-1.5 text-[11px] font-semibold text-red-600 shadow-sm transition-all hover:bg-red-50 hover:border-red-300" >
+                                                <i class="fa-solid fa-trash text-[10px]"></i>
+                                                Delete
                                             </button>
                                         </x-confirm-modal>
                                     </div>

@@ -26,7 +26,7 @@ class ReportController extends Controller
 
     private function logoPath(): ?string
     {
-        $original = storage_path('app/public/PSARECO_logo.png');
+        $original = public_path('assets/images/PSARECO_logo.png');
 
         if (!file_exists($original)) {
             return null;

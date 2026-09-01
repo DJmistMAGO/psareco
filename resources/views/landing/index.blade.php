@@ -68,7 +68,7 @@
 
     <div x-show="open" x-cloak x-transition @click.outside="open = false" class="mx-3 rounded-2xl border border-gray-100 bg-white p-4 shadow-2xl sm:mx-6 lg:hidden" >
         <div class="flex flex-col">
-            <a @click="open = false href="#home class="rounded-xl px-4 py-3 font-semibold text-farm-900 hover:bg-farm-50 >
+            <a @click="open = false" href="#home" class="rounded-xl px-4 py-3 font-semibold text-farm-900 hover:bg-farm-50">
                 Home
             </a>
 
