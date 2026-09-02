@@ -545,26 +545,27 @@
                 </button>
             </div>
 
-            <form action="{{ $storeRoute }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ $storeRoute }}" method="POST" enctype="multipart/form-data" id="addMachineryForm">
                 @csrf
-                <div class="p-6 grid grid-cols-1 sm:grid-cols-[200px_1fr] gap-6">
+                <div class="p-6 grid grid-cols-1 sm:grid-cols-[220px_1fr] gap-6">
                     <div>
-                        <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">Upload Photo</p>
+                        <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">Machinery Image</p>
                         <label for="image_path" class="cursor-pointer group block">
-                            <div class="w-full aspect-square rounded-2xl bg-slate-50 border-2 border-dashed border-slate-200 group-hover:border-emerald-400 flex flex-col items-center justify-center overflow-hidden relative">
-                                <img id="addPreview" src="#" class="hidden w-full h-full object-cover absolute inset-0">
-                                <i id="addIcon" class="fa-solid fa-image text-slate-300 text-3xl mb-2"></i>
-                                <span id="addLabel" class="text-[11px] font-semibold text-slate-400 px-4 text-center">Click to upload</span>
+                            <div id="imagePreviewWrapper" class="w-full aspect-square rounded-2xl bg-slate-50 border-2 border-dashed border-slate-200 group-hover:border-emerald-400 flex flex-col items-center justify-center overflow-hidden transition relative">
+                                <img id="imagePreview" src="" alt="Machinery preview" class="hidden w-full h-full object-cover absolute inset-0">
+                                <i id="imagePreviewIcon" class="fa-solid fa-image text-slate-300 text-3xl mb-2"></i>
+                                <span id="imagePreviewLabel" class="text-[11px] font-semibold text-slate-400 group-hover:text-emerald-500 px-4 text-center">
+                                    Click to upload image
+                                </span>
+                                <div id="imagePreviewOverlay" class="hidden absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/40 items-center justify-center transition">
+                                    <span class="opacity-0 group-hover:opacity-100 text-white text-xs font-semibold transition">
+                                        <i class="fa-solid fa-pen"></i> Change
+                                    </span>
+                                </div>
                             </div>
                         </label>
-                        <input type="file" id="image_path" name="image_path" accept="image/*" class="hidden" onchange="
-                            if (this.files && this.files[0]) {
-                                document.getElementById('addPreview').src = URL.createObjectURL(this.files[0]);
-                                document.getElementById('addPreview').classList.remove('hidden');
-                                document.getElementById('addIcon').classList.add('hidden');
-                                document.getElementById('addLabel').classList.add('hidden');
-                            }
-                        ">
+                        <input type="file" id="image_path" name="image_path" accept="image/*" required class="hidden" onchange="previewProductImage(this)">
+                        <p id="imageFileName" class="mt-2 text-[11px] text-slate-400 text-center truncate">PNG, JPG up to 2MB. Required.</p>
                     </div>
 
                     <div>
@@ -611,3 +612,40 @@
 </div>
 
 @endsection
+
+@push('scripts')
+<script>
+    function previewProductImage(input) {
+        const preview = document.getElementById('imagePreview');
+        const icon = document.getElementById('imagePreviewIcon');
+        const label = document.getElementById('imagePreviewLabel');
+        const overlay = document.getElementById('imagePreviewOverlay');
+        const fileName = document.getElementById('imageFileName');
+
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+                preview.classList.remove('hidden');
+                icon.classList.add('hidden');
+                label.classList.add('hidden');
+                overlay.classList.remove('hidden');
+                overlay.classList.add('flex');
+            };
+            reader.readAsDataURL(file);
+
+            fileName.textContent = file.name;
+        } else {
+            preview.src = '';
+            preview.classList.add('hidden');
+            icon.classList.remove('hidden');
+            label.classList.remove('hidden');
+            overlay.classList.add('hidden');
+            overlay.classList.remove('flex');
+            fileName.textContent = 'PNG, JPG up to 2MB. Required.';
+        }
+    }
+</script>
+@endpush

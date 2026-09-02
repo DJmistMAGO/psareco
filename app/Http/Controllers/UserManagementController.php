@@ -11,21 +11,16 @@ class UserManagementController extends Controller
     private function userSummary(User $user): array
     {
         return [
-            'id'                 => $user->id,
-            'name'               => $user->name,
-            'email'              => $user->email,
-            'contact_number'     => $user->contact_number,
-            'address'            => $user->address,
-            'rsbsa_number'       => $user->rsbsa_number,
-            'farm_size_hectares' => $user->farm_size_hectares,
-            'primary_crop'       => $user->primary_crop,
-            'employee_id'        => $user->employee_id,
-            'position'           => $user->position,
-            'department'         => $user->department,
-            'status'             => $user->status,
+            'id'                   => $user->id,
+            'name'                 => $user->name,
+            'email'                => $user->email,
+            'contact_number'       => $user->contact_number,
+            'address'              => $user->address,
+            'position'             => $user->position,
+            'status'               => $user->status,
             'must_change_password' => $user->must_change_password,
-            'roles'              => $user->getRoleNames()->toArray(),
-            'created_at'         => $user->created_at,
+            'roles'                => $user->getRoleNames()->toArray(),
+            'created_at'           => $user->created_at,
         ];
     }
 
@@ -47,18 +42,13 @@ class UserManagementController extends Controller
     private function userValidationRules(?User $user = null): array
     {
         return [
-            'name'               => ['required', 'string', 'max:255'],
-            'email'              => ['required', 'email', 'max:255', 'unique:users,email,' . ($user?->id ?? 'NULL')],
-            'contact_number'     => ['nullable', 'string', 'max:20'],
-            'address'            => ['nullable', 'string', 'max:255'],
-            'rsbsa_number'       => ['nullable', 'string', 'max:50'],
-            'farm_size_hectares' => ['nullable', 'numeric', 'min:0'],
-            'primary_crop'       => ['nullable', 'string', 'max:100'],
-            'employee_id'        => ['nullable', 'string', 'max:50'],
-            'position'           => ['nullable', 'string', 'max:100'],
-            'department'         => ['nullable', 'string', 'max:100'],
-            'role'               => ['required', 'in:officer,farmer'],
-            'status'             => ['sometimes', 'required', 'in:active,inactive'],
+            'name'           => ['required', 'string', 'max:255'],
+            'email'          => ['required', 'email', 'max:255', 'unique:users,email,' . ($user?->id ?? 'NULL')],
+            'contact_number' => ['nullable', 'string', 'max:20'],
+            'address'        => ['nullable', 'string', 'max:255'],
+            'position'       => ['nullable', 'string', 'max:100'],
+            'role'           => ['required', 'in:officer,farmer'],
+            'status'         => ['sometimes', 'required', 'in:active,inactive'],
         ];
     }
 
@@ -74,12 +64,7 @@ class UserManagementController extends Controller
             'password'             => $validated['password'],
             'contact_number'       => $validated['contact_number'] ?? null,
             'address'              => $validated['address'] ?? null,
-            'rsbsa_number'         => $validated['rsbsa_number'] ?? null,
-            'farm_size_hectares'   => $validated['farm_size_hectares'] ?? null,
-            'primary_crop'         => $validated['primary_crop'] ?? null,
-            'employee_id'          => $validated['employee_id'] ?? null,
             'position'             => $validated['position'] ?? null,
-            'department'           => $validated['department'] ?? null,
             'status'               => 'active',
             'must_change_password' => true,
         ]);
@@ -103,17 +88,12 @@ class UserManagementController extends Controller
         $validated = $request->validate($this->userValidationRules($user));
 
         $user->update([
-            'name'               => $validated['name'],
-            'email'              => $validated['email'],
-            'contact_number'     => $validated['contact_number'] ?? null,
-            'address'            => $validated['address'] ?? null,
-            'rsbsa_number'       => $validated['rsbsa_number'] ?? null,
-            'farm_size_hectares' => $validated['farm_size_hectares'] ?? null,
-            'primary_crop'       => $validated['primary_crop'] ?? null,
-            'employee_id'        => $validated['employee_id'] ?? null,
-            'position'           => $validated['position'] ?? null,
-            'department'         => $validated['department'] ?? null,
-            'status'             => $validated['status'] ?? $user->status,
+            'name'           => $validated['name'],
+            'email'          => $validated['email'],
+            'contact_number' => $validated['contact_number'] ?? null,
+            'address'        => $validated['address'] ?? null,
+            'position'       => $validated['position'] ?? null,
+            'status'         => $validated['status'] ?? $user->status,
         ]);
 
         if (! $user->hasRole($validated['role'])) {
@@ -183,12 +163,7 @@ class UserManagementController extends Controller
             'Status',
             'Contact Number',
             'Address',
-            'RSBSA Number',
-            'Farm Size (Ha)',
-            'Primary Crop',
-            'Employee ID',
             'Position',
-            'Department',
             'Created At',
             'Must Change Password',
         ];
@@ -204,12 +179,7 @@ class UserManagementController extends Controller
                 ucfirst($user->status),
                 $user->contact_number ?? '',
                 $user->address ?? '',
-                $user->rsbsa_number ?? '',
-                $user->farm_size_hectares !== null ? number_format((float) $user->farm_size_hectares, 2) : '',
-                $user->primary_crop ?? '',
-                $user->employee_id ?? '',
                 $user->position ?? '',
-                $user->department ?? '',
                 $user->created_at?->format('Y-m-d H:i:s') ?? '',
                 $user->must_change_password ? 'Yes' : 'No',
             ]);

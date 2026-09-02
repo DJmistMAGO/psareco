@@ -17,16 +17,11 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('contact_number')->nullable();
             $table->text('address')->nullable();
-            $table->string('rsbsa_number')->nullable();
+            $table->string('position')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->boolean('must_change_password')->default(true);
             $table->enum('status', ['active', 'inactive']);
-            $table->decimal('farm_size_hectares', 8, 2)->nullable();
-            $table->string('primary_crop')->nullable();
-            $table->string('employee_id')->nullable();
-            $table->string('position')->nullable();
-            $table->string('department')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
