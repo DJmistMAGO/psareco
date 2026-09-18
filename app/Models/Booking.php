@@ -20,6 +20,7 @@ class Booking extends Model
         'total_hours',
         'total_amount',
         'status',
+        'remarks'
     ];
 
     protected $casts = [

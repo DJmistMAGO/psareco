@@ -20,7 +20,8 @@ return new class extends Migration
             $table->unsignedInteger('days')->default(1);
             $table->decimal('total_hours', 8, 2)->default(0);
             $table->decimal('total_amount', 10, 2)->nullable();
-            $table->enum('status', ['Pending', 'Approved', 'Declined', 'Completed'])->default('Pending');
+            $table->enum('status', ['Pending', 'Approved', 'Declined', 'Completed', 'Submitted'])->default('Pending');
+            $table->text('remarks')->nullable();
             $table->timestamps();
         });
     }
