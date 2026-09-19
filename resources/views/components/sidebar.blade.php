@@ -65,6 +65,7 @@
 
                     $menu = [
                         [ 'route' => 'dashboard.index', 'icon' => 'fa-chart-line', 'title' => 'Dashboard', ],
+                        [ 'route' => 'machinery.index', 'icon' => 'fa-tractor', 'title' => 'Machinery', ],
                         [ 'route' => 'booking.calendar', 'icon' => 'fa-calendar-alt', 'title' => 'Calendar Schedule', ],
                         [ 'route' => 'farmers.index', 'icon' => 'fa-tractor', 'title' => 'Book Machinery', ],
                         [ 'route' => 'farmers.myBookings', 'active' => 'farmers.myBookings', 'icon' => 'fa-calendar-check', 'title' => 'Booking History', ],

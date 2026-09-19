@@ -131,6 +131,10 @@ class FarmersController extends Controller
             'status' => 'Completed',
         ]);
 
+        $machinery = Machinery::findOrFail($booking->machine_id);
+        $machinery->status = 'Available';
+        $machinery->save();
+
         return redirect()->route('farmers.myBookings')->with('success', 'Booking completed successfully.');
     }
 

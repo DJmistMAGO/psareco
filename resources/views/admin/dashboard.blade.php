@@ -342,7 +342,7 @@
                                         <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center shrink-0 text-xs">
                                             <i class="fa-solid fa-tractor"></i>
                                         </div>
-                                        <span>{{ $booking->machine?->name ?? 'Unknown Machine' }}</span>
+                                        <span>{{ $booking->machine->machinery_name }}</span>
                                     </div>
                                 </td>
                                 <td class="py-3.5 px-4 whitespace-nowrap">

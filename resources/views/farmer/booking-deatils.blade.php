@@ -63,7 +63,6 @@
         </div>
 
         @php
-
             $statusConfig = match ($booking->status) {
                 'Completed' => [
                     'header' => 'bg-emerald-800',
@@ -135,6 +134,24 @@
                     'summaryIconText' => 'text-red-400',
 
                     'amountBg' => 'bg-emerald-600',
+                ],
+
+                'Declined' => [
+                    'header' => 'bg-red-900',
+                    'icon' => 'fa-circle-xmark',
+                    'iconColor' => 'text-red-300',
+
+                    'badgeBg' => 'bg-white/15',
+                    'badgeText' => 'text-white',
+                    'badgeBorder' => 'border-white/20',
+
+                    'summaryBg' => 'bg-red-50',
+                    'summaryBorder' => 'border-red-100',
+
+                    'summaryIconBg' => 'bg-red-100',
+                    'summaryIconText' => 'text-red-600',
+
+                    'amountBg' => 'bg-red-700',
                 ],
 
                 default => [
@@ -268,7 +285,7 @@
                                 </p>
 
                                 <p class="text-xs font-bold text-slate-800 truncate">
-                                     {{ $booking->user->name }}
+                                    {{ $booking->user->name }}
                                 </p>
                             </div>
 
@@ -416,37 +433,42 @@
                 items-center justify-between
                 gap-4">
 
-                <!-- Summary Message -->
-                <div class="flex items-center gap-3">
+                <!-- Summary Message / Remarks -->
+                <div class="flex items-center gap-3 w-full">
 
                     <div
                         class="w-9 h-9 rounded-xl
                         {{ $statusConfig['summaryIconBg'] }}
                         {{ $statusConfig['summaryIconText'] }}
-                        flex items-center justify-center">
+                        flex items-center justify-center shrink-0">
 
                         <i
                             class="fa-solid
-                            {{ $booking->status === 'Completed' ? 'fa-circle-check' : 'fa-receipt' }}"></i>
+                            {{ $booking->status === 'Completed' ? 'fa-circle-check' : ($booking->status === 'Declined' ? 'fa-triangle-exclamation' : 'fa-receipt') }}"></i>
 
                     </div>
 
 
-                    <div>
+                    <div class="w-full">
 
                         @if ($booking->status === 'Completed')
                             <p class="text-xs font-bold text-emerald-700">
                                 Booking Completed
                             </p>
-
                             <p class="text-[10px] text-emerald-600 mt-0.5">
                                 All operating hours have been recorded.
+                            </p>
+                        @elseif ($booking->status === 'Declined')
+                            <p class="text-xs font-bold text-red-700">
+                                Booking Declined
+                            </p>
+                            <p class="text-[11px] text-red-600 mt-0.5">
+                                <span class="font-semibold">Remarks:</span> {{ $booking->remarks ?? 'No remarks provided.' }}
                             </p>
                         @else
                             <p class="text-xs font-semibold text-slate-500">
                                 Booking Summary
                             </p>
-
                             <p class="text-[10px] text-slate-400 mt-0.5">
                                 Summary computed based on selected operating hours.
                             </p>
@@ -457,44 +479,46 @@
                 </div>
 
 
-                <!-- Total Amount -->
-                <div class="flex items-center gap-3
-                    w-full sm:w-auto
-                    justify-end">
-
-                    <span
-                        class="text-xs
-                        font-bold
-                        text-slate-500
-                        uppercase
-                        tracking-wider">
-                        Total Amount:
-                    </span>
-
-
-                    <div
-                        class="{{ $statusConfig['amountBg'] }}
-                        text-white
-                        px-4 py-2
-                        rounded-xl
-                        flex items-center gap-1
-                        shadow-sm">
-
-                        <span class="text-sm font-semibold">
-                            ₱
-                        </span>
+                <!-- Total Amount (Hidden or adjusted for Declined) -->
+                @if ($booking->status !== 'Declined')
+                    <div class="flex items-center gap-3
+                        w-full sm:w-auto
+                        justify-end shrink-0">
 
                         <span
-                            class="text-lg
-                            font-extrabold
-                            tracking-tight"
-                            id="totalCost">
-                            0.00
+                            class="text-xs
+                            font-bold
+                            text-slate-500
+                            uppercase
+                            tracking-wider">
+                            Total Amount:
                         </span>
 
-                    </div>
 
-                </div>
+                        <div
+                            class="{{ $statusConfig['amountBg'] }}
+                            text-white
+                            px-4 py-2
+                            rounded-xl
+                            flex items-center gap-1
+                            shadow-sm">
+
+                            <span class="text-sm font-semibold">
+                                ₱
+                            </span>
+
+                            <span
+                                class="text-lg
+                                font-extrabold
+                                tracking-tight"
+                                id="totalCost">
+                                0.00
+                            </span>
+
+                        </div>
+
+                    </div>
+                @endif
 
             </div>
 
@@ -505,8 +529,9 @@
         <x-success />
         <x-errors />
 
-        <div x-data="{ tab: 'pending' }"
-            class="bg-white
+        @if ($booking->status === 'Approved' || $booking->status === 'Completed' || $booking->status === 'Pending')
+            <div x-data="{ tab: 'pending' }"
+                class="bg-white
                 rounded-2xl
                 shadow-sm
                 border border-slate-100/80
@@ -514,56 +539,58 @@
                 flex flex-col
                 mb-6">
 
-            <div class="px-5 pt-4
+                <div class="px-5 pt-4
                 border-b border-slate-100
                 bg-white">
 
-                <div class="flex items-center
+                    <div class="flex items-center
                     justify-between
                     pb-3">
 
-                    <!-- Header -->
-                    <div class="flex items-center space-x-2">
+                        <!-- Header -->
+                        <div class="flex items-center space-x-2">
 
-                        <div class="p-1.5
+                            <div
+                                class="p-1.5
                             bg-emerald-50
                             rounded-lg">
 
-                            <i
-                                class="fa-solid fa-leaf
+                                <i
+                                    class="fa-solid fa-leaf
                                 text-emerald-600
                                 text-sm"></i>
+
+                            </div>
+
+
+                            <div>
+
+                                <h3
+                                    class="font-bold
+                                text-slate-800
+                                text-sm
+                                leading-none">
+                                    Booking Status
+                                </h3>
+
+                                <p
+                                    class="text-[11px]
+                                text-slate-400
+                                mt-0.5">
+                                    Manage and track your time rentals
+                                </p>
+
+                            </div>
 
                         </div>
 
 
                         <div>
 
-                            <h3
-                                class="font-bold
-                                text-slate-800
-                                text-sm
-                                leading-none">
-                                Booking Status
-                            </h3>
-
-                            <p
-                                class="text-[11px]
-                                text-slate-400
-                                mt-0.5">
-                                Manage and track your time rentals
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                    <div>
-
-                        @if ($booking->status === 'Completed')
-                            <div
-                                class="inline-flex
+                            @role('officer')
+                            @if ($booking->status === 'Completed')
+                                <div
+                                    class="inline-flex
                                 items-center
                                 gap-2
                                 bg-emerald-50
@@ -573,19 +600,17 @@
                                 text-xs
                                 py-2 px-3.5
                                 rounded-xl">
+                                    <i class="fa-solid fa-circle-check"></i>
+                                    Booking Completed
+                                </div>
 
-                                <i class="fa-solid fa-circle-check"></i>
+                            @elseif($booking->status === 'Approved')
+                                <x-confirm-modal title="Complete Booking" :message="'Are you sure to complete this Booking?'" confirmText="Complete"
+                                    confirmClass="bg-green-600 hover:bg-green-700 text-white" icon="shield-alert"
+                                    :action="route('farmers.completeBooking', $booking->id)" method="PUT" :data='"<input type=\"hidden\" name=\"total_hours\" id=\"total_hours\"> <input type=\"hidden\" name=\"total_cost\" id=\"total_cost\">"'>
 
-                                Booking Completed
-
-                            </div>
-                        @elseif($booking->status === 'Approved')
-                            <x-confirm-modal title="Complete Booking" :message="'Are you sure to complete your Booking?'" confirmText="Complete"
-                                confirmClass="bg-green-600 hover:bg-green-700 text-white" icon="shield-alert"
-                                :action="route('farmers.completeBooking', $booking->id)" method="PUT" :data='"<input type=\"hidden\" name=\"total_hours\" id=\"total_hours\"> <input type=\"hidden\" name=\"total_cost\" id=\"total_cost\">"'>
-
-                                <button type="button" title="Complete Booking"
-                                    class="inline-flex
+                                    <button type="button" title="Complete Booking"
+                                        class="inline-flex
                                     items-center
                                     gap-2
                                     bg-emerald-600
@@ -598,115 +623,100 @@
                                     shadow-sm
                                     transition">
 
-                                    <i class="fa-solid fa-circle-check"></i>
+                                        <i class="fa-solid fa-circle-check"></i>
 
-                                    Complete Booking
+                                        Complete Booking
 
-                                </button>
+                                    </button>
 
-                            </x-confirm-modal>
-                        @endif
+                                </x-confirm-modal>
+                            @endif
+                            @endrole
+
+                        </div>
 
                     </div>
 
                 </div>
 
-            </div>
+                <div class="w-full overflow-x-auto">
 
-            <div class="w-full overflow-x-auto">
+                    <form action="{{ route('farmers.updateBookingSlot', $booking->id) }}" method="POST">
 
-                <form action="{{ route('farmers.updateBookingSlot', $booking->id) }}" method="POST">
+                        @csrf
 
-                    @csrf
-
-                    @method('PUT')
+                        @method('PUT')
 
 
-                    <table class="w-full text-left border-collapse">
+                        <table class="w-full text-left border-collapse">
 
-                        <!-- Table Header -->
-                        <thead>
+                            <!-- Table Header -->
+                            <thead>
 
-                            <tr
-                                class="bg-[#ebf4ef]
+                                <tr
+                                    class="bg-[#ebf4ef]
                                 text-emerald-900
                                 text-[11px]
                                 uppercase
                                 tracking-wider
                                 font-semibold">
 
-                                <th class="py-3 px-4">
-                                    Day
-                                </th>
-
-                                <th class="py-3 px-4">
-                                    Date
-                                </th>
-
-                                <th class="py-3 px-4">
-                                    Start Time
-                                </th>
-
-                                <th class="py-3 px-4">
-                                    End Time
-                                </th>
-
-                                <th class="py-3 px-4">
-                                    Total Hours
-                                </th>
-
-                                @if ($booking->status === 'Approved')
-                                    <th class="py-3 px-4 text-center">
-                                        Submit Hours
+                                    <th class="py-3 px-4">
+                                        Day
                                     </th>
-                                @endif
+                                    <th class="py-3 px-4">
+                                        Date
+                                    </th>
+                                    <th class="py-3 px-4">
+                                        Start Time
+                                    </th>
+                                    <th class="py-3 px-4">
+                                        End Time
+                                    </th>
+                                    <th class="py-3 px-4">
+                                        Total Hours
+                                    </th>
+                                    @if ($booking->status === 'Approved')
+                                        <th class="py-3 px-4 text-center">
+                                            Submit Hours
+                                        </th>
+                                    @endif
 
-                            </tr>
+                                </tr>
 
-                        </thead>
+                            </thead>
 
 
-                        <!-- Table Body -->
-                        <tbody id="fertilizersTableBody"
-                            class="divide-y
+                            <!-- Table Body -->
+                            <tbody id="fertilizersTableBody"
+                                class="divide-y
                             divide-slate-100
                             text-xs
                             text-slate-700">
 
-                            @forelse ($bookingSlots as $slot)
-                                <tr class="hover:bg-slate-50/60
+                                @forelse ($bookingSlots as $slot)
+                                    <tr class="hover:bg-slate-50/60
                                     transition-colors">
 
-                                    <!-- Day -->
-                                    <td
-                                        class="py-3 px-4
+                                        <td
+                                            class="py-3 px-4
                                         font-medium
                                         text-slate-800">
+                                            Day {{ $loop->iteration }}
+                                            <input type="hidden" name="slot_id[]" value="{{ $slot->id }}">
+                                        </td>
 
-                                        Day {{ $loop->iteration }}
-
-                                        <input type="hidden" name="slot_id[]" value="{{ $slot->id }}">
-
-                                    </td>
-
-
-                                    <!-- Date -->
-                                    <td class="py-3 px-4
+                                        <td class="py-3 px-4
                                         text-slate-600">
+                                            {{ \Carbon\Carbon::parse($slot->booking_date)->format('F j, Y') }}
+                                        </td>
 
-                                        {{ \Carbon\Carbon::parse($slot->booking_date)->format('F j, Y') }}
-
-                                    </td>
-
-
-                                    <!-- Start Time -->
-                                    <td class="py-3 px-4
+                                        <td class="py-3 px-4
                                         text-slate-600">
-
-                                        <input type="time"
-                                            value="{{ $slot->start_time ? \Carbon\Carbon::parse($slot->start_time)->format('H:i') : '' }}"
-                                            name="start_time[]"
-                                            class="start-time
+                                            <input type="time"
+                                                value="{{ $slot->start_time ? \Carbon\Carbon::parse($slot->start_time)->format('H:i') : '' }}"
+                                                name="start_time[]"
+                                                class="start-time
                                             px-3 py-2
                                             bg-slate-50
                                             border border-slate-200
@@ -718,18 +728,14 @@
                                             focus:ring-emerald-500
                                             focus:bg-white
                                             transition">
+                                        </td>
 
-                                    </td>
-
-
-                                    <!-- End Time -->
-                                    <td class="py-3 px-4
+                                        <td class="py-3 px-4
                                         text-slate-600">
-
-                                        <input type="time"
-                                            value="{{ $slot->end_time ? \Carbon\Carbon::parse($slot->end_time)->format('H:i') : '' }}"
-                                            name="end_time[]"
-                                            class="end-time
+                                            <input type="time"
+                                                value="{{ $slot->end_time ? \Carbon\Carbon::parse($slot->end_time)->format('H:i') : '' }}"
+                                                name="end_time[]"
+                                                class="end-time
                                             px-3 py-2
                                             bg-slate-50
                                             border border-slate-200
@@ -741,16 +747,12 @@
                                             focus:ring-emerald-500
                                             focus:bg-white
                                             transition">
+                                        </td>
 
-                                    </td>
-
-
-                                    <!-- Hours -->
-                                    <td class="py-3 px-4
+                                        <td class="py-3 px-4
                                         text-slate-600">
-
-                                        <input type="number" value="{{ $slot->hours ?? '' }}" name="hours[]"
-                                            class="hours
+                                            <input type="number" value="{{ $slot->hours ?? '' }}" name="hours[]"
+                                                class="hours
                                             px-3 py-2
                                             bg-slate-50
                                             border border-slate-200
@@ -762,18 +764,14 @@
                                             focus:ring-emerald-500
                                             focus:bg-white
                                             transition"
-                                            step="0.01" readonly>
+                                                step="0.01" readonly>
+                                        </td>
 
-                                    </td>
-
-
-                                    <!-- Update -->
-                                    @if ($booking->status === 'Approved')
-                                        <td class="py-3 px-4
+                                        @if ($booking->status === 'Approved')
+                                            <td class="py-3 px-4
                                             text-center">
-
-                                            <button type="submit"
-                                                class="inline-flex
+                                                <button type="submit"
+                                                    class="inline-flex
                                                 items-center
                                                 gap-2
                                                 bg-emerald-600
@@ -785,52 +783,45 @@
                                                 rounded-xl
                                                 shadow-sm
                                                 transition">
+                                                    <i class="fa-solid fa-floppy-disk"></i>
+                                                    UPDATE
+                                                </button>
+                                            </td>
+                                        @endif
+                                    </tr>
 
-                                                <i class="fa-solid fa-floppy-disk"></i>
+                                @empty
 
-                                                UPDATE
+                                    <tr>
 
-                                            </button>
-
-                                        </td>
-                                    @endif
-
-                                </tr>
-
-
-                            @empty
-
-                                <tr>
-
-                                    <td colspan="{{ $booking->status === 'Approved' ? 6 : 5 }}"
-                                        class="py-12
+                                        <td colspan="{{ $booking->status === 'Approved' ? 6 : 5 }}"
+                                            class="py-12
                                         text-center
                                         text-slate-400">
-
-                                        <div class="flex flex-col items-center gap-2">
-
-                                            <div
-                                                class="w-10 h-10
+                                            <div class="flex flex-col items-center gap-2">
+                                                <div
+                                                    class="w-10 h-10
                                                 rounded-xl
                                                 bg-slate-100
                                                 flex items-center
                                                 justify-center">
-
-                                                <i class="fa-solid fa-calendar-xmark text-slate-400"></i>
-
+                                                    <i class="fa-solid fa-calendar-xmark text-slate-400"></i>
+                                                </div>
+                                                <span>
+                                                    No bookings found.
+                                                </span>
                                             </div>
-                                            <span>
-                                                No bookings found.
-                                            </span>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </form>
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </form>
+                </div>
             </div>
-        </div>
+        @endif
+
+
     </main>
 
 @endsection
@@ -839,38 +830,22 @@
 @push('scripts')
     <script>
         const machinePrice = {{ $booking->machine->price ?? 0 }};
-
         function calculateTotalHours() {
-
             let totalHours = 0;
-
-
             document.querySelectorAll('.hours').forEach(input => {
-
                 totalHours += parseFloat(input.value) || 0;
-
             });
-
-
             const totalHoursEl = document.getElementById('totalHours');
-
             const totalCostEl = document.getElementById('totalCost');
-
             if (totalHoursEl) {
-
                 totalHoursEl.textContent =
                     totalHours.toFixed(2) + ' hrs';
-
             }
-
             const totalCost = totalHours * machinePrice;
 
-
             if (totalCostEl) {
-
                 totalCostEl.textContent =
                     totalCost.toFixed(2);
-
             }
 
             document
@@ -967,8 +942,6 @@
             () => {
 
                 calculateTotalHours();
-
-
                 document
                     .querySelectorAll('.hours')
                     .forEach(input => {
@@ -977,9 +950,7 @@
                             'input',
                             calculateTotalHours
                         );
-
                     });
-
             }
         );
     </script>

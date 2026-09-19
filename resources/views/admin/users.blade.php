@@ -391,93 +391,59 @@
                                                 is_admin: false,
                                                 created_at: @js(optional($user['created_at'])->format('M d, Y'))
                                             } })"
-																						class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-semibold text-slate-600 shadow-sm transition-all hover:bg-slate-50 hover:border-slate-300">
-																						<i class="fa-solid fa-eye text-[10px]"></i> View
-																				</button>
+                                            class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-semibold text-slate-600 shadow-sm transition-all hover:bg-slate-50 hover:border-slate-300">
+                                            <i class="fa-solid fa-eye text-[10px]"></i> View
+                                        </button>
 
-																				<x-confirm-modal title="Reactivate User"
-																						message="Are you sure you want to reactivate {{ $user['name'] }}? This action will restore their access to the system."
-																						confirm-text="Reactivate" cancel-text="Cancel"
-																						confirm-class="bg-emerald-600 hover:bg-emerald-700" :action="route('user-management.reactivateUser', $user['id'])" method="POST">
-																						<button type="button"
-																								class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-1.5 text-[11px] font-semibold text-emerald-700 shadow-sm transition-all hover:bg-emerald-600 hover:text-white hover:border-emerald-600 hover:shadow-md">
-																								<i class="fa-solid fa-user-check text-[10px]"></i>
-																								Reactivate
-																						</button>
-																				</x-confirm-modal>
+                                        <x-confirm-modal title="Reactivate User"
+                                            message="Are you sure you want to reactivate {{ $user['name'] }}? This action will restore their access to the system."
+                                            confirm-text="Reactivate" cancel-text="Cancel"
+                                            confirm-class="bg-emerald-600 hover:bg-emerald-700" :action="route('user-management.reactivateUser', $user['id'])"
+                                            method="POST">
+                                            <button type="button"
+                                                class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-1.5 text-[11px] font-semibold text-emerald-700 shadow-sm transition-all hover:bg-emerald-600 hover:text-white hover:border-emerald-600 hover:shadow-md">
+                                                <i class="fa-solid fa-user-check text-[10px]"></i>
+                                                Reactivate
+                                            </button>
+                                        </x-confirm-modal>
 
-																				<x-confirm-modal title="Delete User Permanently"
-																						message="This will permanently remove {{ $user['name'] }} from the system. This action cannot be undone and the account data will be deleted."
-																						confirm-text="Delete Permanently" cancel-text="Cancel"
-																						confirm-class="bg-red-600 hover:bg-red-700" :action="route('user-management.deleteUser', $user['id'])" method="POST">
-																						<button type="button"
-																								class="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-white px-3 py-1.5 text-[11px] font-semibold text-red-600 shadow-sm transition-all hover:bg-red-50 hover:border-red-300">
-																								<i class="fa-solid fa-trash text-[10px]"></i>
-																								Delete
-																						</button>
-																				</x-confirm-modal>
-																		</div>
-																</td>
-														</tr>
-												@empty
-														<tr>
-																<td colspan="6" class="py-10 text-center">
-																		<div class="flex flex-col items-center justify-center gap-2">
-																				<div class="flex h-10 w-10 items-center justify-center rounded-full bg-red-50 text-red-400">
-																						<i class="fa-solid fa-user-slash"></i>
-																				</div>
+                                        <x-confirm-modal title="Delete User Permanently"
+                                            message="This will permanently remove {{ $user['name'] }} from the system. This action cannot be undone and the account data will be deleted."
+                                            confirm-text="Delete Permanently" cancel-text="Cancel"
+                                            confirm-class="bg-red-600 hover:bg-red-700" :action="route('user-management.deleteUser', $user['id'])" method="POST">
+                                            <button type="button"
+                                                class="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-white px-3 py-1.5 text-[11px] font-semibold text-red-600 shadow-sm transition-all hover:bg-red-50 hover:border-red-300">
+                                                <i class="fa-solid fa-trash text-[10px]"></i>
+                                                Delete
+                                            </button>
+                                        </x-confirm-modal>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="py-10 text-center">
+                                    <div class="flex flex-col items-center justify-center gap-2">
+                                        <div
+                                            class="flex h-10 w-10 items-center justify-center rounded-full bg-red-50 text-red-400">
+                                            <i class="fa-solid fa-user-slash"></i>
+                                        </div>
 
-																				<p class="text-xs font-semibold text-slate-500">
-																						No inactive users
-																				</p>
+                                        <p class="text-xs font-semibold text-slate-500">
+                                            No inactive users
+                                        </p>
 
-																				<p class="text-[11px] text-slate-400">
-																						Deactivated accounts will appear here.
-																				</p>
-																		</div>
-																</td>
-														</tr>
-												@endforelse
-										</tbody>
-								</table>
-						</div>
+                                        <p class="text-[11px] text-slate-400">
+                                            Deactivated accounts will appear here.
+                                        </p>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
 
-				</div>
-		</main>
+        </div>
+    </main>
 @endsection
-
-@push('scripts')
-		<script>
-				function switchTab(tab) {
-						const activeSection = document.getElementById('activeSection');
-						const activeBtn = document.getElementById('activeTabBtn');
-						const inactiveSection = document.getElementById('inactiveSection');
-						const inactiveBtn = document.getElementById('inactiveTabBtn');
-
-						if (tab === 'active') {
-								activeSection.classList.remove('hidden');
-								inactiveSection.classList.add('hidden');
-								activeBtn.className = 'px-3 py-1.5 text-xs font-semibold rounded-xl bg-emerald-50 text-emerald-800 transition';
-								inactiveBtn.className =
-										'px-3 py-1.5 text-xs font-semibold rounded-xl text-slate-500 hover:bg-slate-50 transition flex items-center gap-1.5';
-						} else {
-								inactiveSection.classList.remove('hidden');
-								activeSection.classList.add('hidden');
-								inactiveBtn.className =
-										'px-3 py-1.5 text-xs font-semibold rounded-xl bg-red-50 text-red-800 transition flex items-center gap-1.5';
-								activeBtn.className = 'px-3 py-1.5 text-xs font-semibold rounded-xl text-slate-500 hover:bg-slate-50 transition';
-						}
-				}
-
-				function filterUsers() {
-						const term = (document.getElementById('searchInput')?.value || '').toLowerCase();
-						const visibleTable = document.querySelector('div:not(.hidden) > table tbody');
-						if (!visibleTable) return;
-
-						visibleTable.querySelectorAll('tr').forEach(row => {
-								const text = row.textContent?.toLowerCase() || '';
-								row.style.display = text.includes(term) ? '' : 'none';
-						});
-				}
-		</script>
-@endpush
