@@ -716,11 +716,11 @@ class ReportController extends Controller
         $table = $section->addTable($this->tableStyle());
 
         $columns = [
-            ['Name', 2200],
+            ['Name', 3600],
             ['Type', 1400],
             ['Quantity', 1000],
             ['Unit', 850],
-            ['Description', 5000],
+            ['Description', 3600],
             ['Price (₱)', 1500],
             ['Value (₱)', 1650],
             ['Reorder Level', 1700],
@@ -750,7 +750,7 @@ class ReportController extends Controller
 
             $table->addRow(100, ['exactHeight' => false]);
 
-            $table->addCell(2200)
+            $table->addCell(3600)
                 ->addText($item->name, $this->cellFontStyle());
 
             $table->addCell(1400)
@@ -770,7 +770,7 @@ class ReportController extends Controller
                     $this->numericParagraphStyle()
                 );
 
-            $table->addCell(5000)
+            $table->addCell(3600)
                 ->addText(
                     $item->description ?? '-',
                     $this->cellFontStyle()
