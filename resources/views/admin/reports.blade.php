@@ -251,93 +251,51 @@
                                 </div>
 
                                 <div>
-                                    <h3 class="text-sm font-bold text-slate-800">
-                                        Sales Reports
-                                    </h3>
-                                    <p class="text-[11px] text-slate-400">
-                                        Inventory sales and existing stock
-                                    </p>
+                                    <h3 class="text-sm font-bold text-slate-800"> Sales Reports </h3>
+                                    <p class="text-[11px] text-slate-400"> Inventory sales and existing stock </p>
                                 </div>
                             </div>
 
                             <div class="space-y-3">
                                 <label class="block cursor-pointer">
-                                    <input
-                                        type="checkbox"
-                                        name="types[]"
-                                        value="sales"
-                                        x-model="types"
-                                        class="sr-only"
-                                    >
-
-                                    <div
-                                        class="flex items-center gap-3 p-3 rounded-xl border transition"
-                                        :class="types.includes('sales')
-                                            ? 'bg-blue-50 border-blue-500 text-blue-700'
-                                            : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'"
-                                    >
-                                        <div
-                                            class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
-                                            :class="types.includes('sales')
-                                                ? 'bg-blue-100'
-                                                : 'bg-slate-100'"
-                                        >
+                                    <input type="checkbox" name="types[]" value="sales" x-model="types" class="sr-only" >
+                                    <div class="flex items-center gap-3 p-3 rounded-xl border transition" :class="types.includes('sales') ? 'bg-blue-50 border-blue-500 text-blue-700' : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'" >
+                                        <div class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" :class="types.includes('sales') ? 'bg-blue-100' : 'bg-slate-100'" >
                                             <i class="fa-solid fa-cart-shopping"></i>
                                         </div>
-
                                         <div class="flex-1">
                                             <p class="text-xs font-bold">Sales Report</p>
-                                            <p class="text-[10px] text-slate-400">
-                                                Sales transactions and income
-                                            </p>
+                                            <p class="text-[10px] text-slate-400"> Sales transactions and income </p>
                                         </div>
-
-                                        <i
-                                            class="fa-solid shrink-0"
-                                            :class="types.includes('sales')
-                                                ? 'fa-circle-check text-blue-600'
-                                                : 'fa-circle text-slate-300'"
-                                        ></i>
+                                        <i class="fa-solid shrink-0" :class="types.includes('sales') ? 'fa-circle-check text-blue-600' : 'fa-circle text-slate-300'" ></i>
                                     </div>
                                 </label>
 
                                 <label class="block cursor-pointer">
-                                    <input
-                                        type="checkbox"
-                                        name="types[]"
-                                        value="inventory"
-                                        x-model="types"
-                                        class="sr-only"
-                                    >
-
-                                    <div
-                                        class="flex items-center gap-3 p-3 rounded-xl border transition"
-                                        :class="types.includes('inventory')
-                                            ? 'bg-blue-50 border-blue-500 text-blue-700'
-                                            : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'"
-                                    >
-                                        <div
-                                            class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
-                                            :class="types.includes('inventory')
-                                                ? 'bg-blue-100'
-                                                : 'bg-slate-100'"
-                                        >
+                                    <input type="checkbox" name="types[]" value="inventory" x-model="types" class="sr-only" >
+                                    <div class="flex items-center gap-3 p-3 rounded-xl border transition" :class="types.includes('inventory') ? 'bg-blue-50 border-blue-500 text-blue-700' : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'" >
+                                        <div class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" :class="types.includes('inventory') ? 'bg-blue-100' : 'bg-slate-100'" >
                                             <i class="fa-solid fa-boxes-stacked"></i>
                                         </div>
-
                                         <div class="flex-1">
                                             <p class="text-xs font-bold">Inventory Report</p>
-                                            <p class="text-[10px] text-slate-400">
-                                                Existing inventory and stock levels
-                                            </p>
+                                            <p class="text-[10px] text-slate-400"> Existing inventory and stock levels </p>
                                         </div>
+                                        <i class="fa-solid shrink-0" :class="types.includes('inventory') ? 'fa-circle-check text-blue-600' : 'fa-circle text-slate-300'" ></i>
+                                    </div>
+                                </label>
 
-                                        <i
-                                            class="fa-solid shrink-0"
-                                            :class="types.includes('inventory')
-                                                ? 'fa-circle-check text-blue-600'
-                                                : 'fa-circle text-slate-300'"
-                                        ></i>
+                                <label class="block cursor-pointer">
+                                    <input type="checkbox" name="types[]" value="expiring" x-model="types" class="sr-only" >
+                                    <div class="flex items-center gap-3 p-3 rounded-xl border transition" :class="types.includes('expiring') ? 'bg-blue-50 border-blue-500 text-blue-700' : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'" >
+                                        <div class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" :class="types.includes('expiring') ? 'bg-blue-100' : 'bg-slate-100'" >
+                                            <i class="fa-solid fa-clock"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="text-xs font-bold">Expiring Products Report</p>
+                                            <p class="text-[10px] text-slate-400"> Products nearing expiration dates </p>
+                                        </div>
+                                        <i class="fa-solid shrink-0" :class="types.includes('expiring') ? 'fa-circle-check text-blue-600' : 'fa-circle text-slate-300'" ></i>
                                     </div>
                                 </label>
                             </div>
@@ -401,8 +359,7 @@
 
                 <div x-show="previewed" x-cloak class="space-y-5">
 
-                    <div x-show="types.includes('machinery')" x-cloak
-                         class="border border-slate-100 rounded-2xl overflow-hidden">
+                    <div x-show="types.includes('machinery')" x-cloak class="border border-slate-100 rounded-2xl overflow-hidden">
                         <div class="flex items-center justify-between px-4 py-3 bg-slate-50/70 border-b border-slate-100">
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
@@ -447,8 +404,7 @@
                         </div>
                     </div>
 
-                    <div x-show="types.includes('bookings')" x-cloak
-                         class="border border-slate-100 rounded-2xl overflow-hidden">
+                    <div x-show="types.includes('bookings')" x-cloak class="border border-slate-100 rounded-2xl overflow-hidden">
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-4 py-3 bg-slate-50/70 border-b border-slate-100">
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
@@ -504,8 +460,7 @@
                         </div>
                     </div>
 
-                    <div x-show="types.includes('sales')" x-cloak
-                         class="border border-slate-100 rounded-2xl overflow-hidden">
+                    <div x-show="types.includes('sales')" x-cloak class="border border-slate-100 rounded-2xl overflow-hidden">
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-4 py-3 bg-slate-50/70 border-b border-slate-100">
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
@@ -559,8 +514,7 @@
                         </div>
                     </div>
 
-                    <div x-show="types.includes('inventory')" x-cloak
-                         class="border border-slate-100 rounded-2xl overflow-hidden">
+                    <div x-show="types.includes('inventory')" x-cloak class="border border-slate-100 rounded-2xl overflow-hidden">
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-4 py-3 bg-slate-50/70 border-b border-slate-100">
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
@@ -617,6 +571,44 @@
                         </p>
                     </div>
 
+                    <div x-show="types.includes('expiring')" x-cloak class="border border-slate-100 rounded-2xl overflow-hidden">
+                        <div class="flex items-center gap-3 px-4 py-3 bg-slate-50/70 border-b border-slate-100">
+                            <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-triangle-exclamation text-xs"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold text-slate-800">Expiring Inventory Report</h3>
+                                <p class="text-[11px] text-slate-400">Inventory items that are expiring soon</p>
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-xs">
+                                <thead>
+                                    <tr class="bg-slate-50 text-slate-500 text-left">
+                                        <th class="py-3 px-3 font-semibold">Name</th>
+                                        <th class="py-3 px-3 font-semibold">Type</th>
+                                        <th class="py-3 px-3 font-semibold text-right">Quantity</th>
+                                        <th class="py-3 px-3 font-semibold">Unit</th>
+                                        <th class="py-3 px-3 font-semibold text-right">Price</th>
+                                        <th class="py-3 px-3 font-semibold text-right">Value</th>
+                                        <th class="py-3 px-3 font-semibold">Expiration</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Expiring inventory rows will be populated here -->
+                                    <tr x-show="inventory.length === 0">
+                                        <td colspan="7" class="py-8 text-center text-slate-400">No expiring inventory found for this period.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <p class="text-[10px] text-slate-400 px-4 py-3 border-t border-slate-100 flex items-center gap-2">
+                            <i class="fa-solid fa-circle-exclamation text-red-500"></i>
+                            Items shown in red are expiring soon.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -625,7 +617,7 @@
 
 @push('scripts')
 <script>
-   function reportsPage() {
+    function reportsPage() {
         return {
             startDate: '',
             endDate: '',

@@ -13,6 +13,7 @@ class Inventory extends Model
         'type',
         'quantity',
         'unit',
+        'description',
         'price',
         'reorder_level',
         'expiration_date',

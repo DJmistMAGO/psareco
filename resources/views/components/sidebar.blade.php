@@ -56,9 +56,9 @@
                         [ 'route' => 'booking.calendar', 'icon' => 'fa-calendar-alt', 'title' => 'Calendar Schedule', ],
                         [ 'route' => 'officer.index-booking', 'icon' => 'fa-calendar-plus', 'title' => 'Machinery Bookings', ],
                         [ 'route' => 'inventory.index', 'icon' => 'fa-boxes-stacked', 'title' => 'Inventory', ],
-                        [ 'route' => 'inventory.trash', 'icon' => 'fa-trash-can', 'title' => 'Trashbin', ],
                         [ 'route' => 'sales.index', 'icon' => 'fa-shopping-cart', 'title' => 'Sales', ],
                         [ 'route' => 'reports.index', 'icon' => 'fa-file-alt', 'title' => 'Reports', ],
+                        [ 'route' => 'inventory.trash', 'icon' => 'fa-box-archive', 'title' => 'Archive', ],
                     ];
 
                 } elseif (auth()->user()->hasRole('farmer')) {

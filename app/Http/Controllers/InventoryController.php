@@ -33,27 +33,11 @@ class InventoryController extends Controller
         $totalProducts = Inventory::count();
         $fertilizerCount = Inventory::where('type', 'Fertilizer')->count();
         $pesticideCount = Inventory::where('type', 'Pesticide')->count();
-        $lowStockCount = Inventory::whereColumn(
-            'quantity',
-            '<=',
-            'reorder_level'
-        )->count();
+        $lowStockCount = Inventory::whereColumn( 'quantity', '<=', 'reorder_level' )->count();
 
-        $expiringCount = Inventory::whereNotNull('expiration_date')
-            ->whereBetween('expiration_date', [
-                now()->startOfDay(),
-                now()->addDays(30)->endOfDay(),
-            ])
-            ->count();
+        $expiringCount = Inventory::whereNotNull('expiration_date') ->whereBetween('expiration_date', [ now()->startOfDay(), now()->addDays(30)->endOfDay(), ]) ->count();
 
-        return view('admin.inventory', compact(
-            'inventories',
-            'totalProducts',
-            'fertilizerCount',
-            'pesticideCount',
-            'lowStockCount',
-            'expiringCount'
-        ));
+        return view('admin.inventory', compact( 'inventories', 'totalProducts', 'fertilizerCount', 'pesticideCount', 'lowStockCount', 'expiringCount' ));
     }
 
 
@@ -64,6 +48,7 @@ class InventoryController extends Controller
             'type' => ['required', 'in:Fertilizer,Pesticide'],
             'quantity' => ['required', 'numeric', 'min:0'],
             'unit' => ['required', 'string', 'max:50'],
+            'description' => ['nullable', 'string', 'max:255'],
             'price' => ['required', 'numeric', 'min:0'],
             'reorder_level' => ['required', 'numeric', 'min:0'],
             'expiration_date' => ['nullable', 'date'],
@@ -101,6 +86,7 @@ class InventoryController extends Controller
             'type' => ['required', 'in:Fertilizer,Pesticide'],
             'quantity' => ['required', 'numeric', 'min:0'],
             'unit' => ['required', 'string', 'max:50'],
+            'description' => ['nullable', 'string', 'max:255'],
             'price' => ['required', 'numeric', 'min:0'],
             'reorder_level' => ['required', 'numeric', 'min:0'],
             'expiration_date' => ['nullable', 'date'],

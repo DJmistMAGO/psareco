@@ -307,16 +307,16 @@
                                         </button> --}}
 
                                         <x-confirm-modal
-                                            title="Delete Product"
-                                            :message="'Delete ' . $item->name . '? This will move it to trash — you can restore it later.'"
-                                            confirmText="Delete"
+                                            title="Archive Product"
+                                            :message="'Archive ' . $item->name . '? This will move it to the archive — you can restore it later.'"
+                                            confirmText="Archive"
                                             confirmClass="bg-red-600 hover:bg-red-700 text-white"
                                             icon="shield-alert"
                                             :action="route('inventory.deleteProduct', $item->id)"
                                             method="DELETE"
                                         >
-                                            <button type="button" title="Delete product" class="w-8 h-8 inline-flex items-center justify-center rounded-lg text-red-400 hover:text-red-600 hover:bg-red-50 transition">
-                                                <i class="fa-regular fa-trash-can text-xs"></i>
+                                            <button type="button" title="Archive product" class="w-8 h-8 inline-flex items-center justify-center rounded-lg text-red-400 hover:text-red-600 hover:bg-red-50 transition">
+                                                <i class="fa-solid fa-box-archive text-xs"></i>
                                             </button>
                                         </x-confirm-modal>
 
@@ -505,24 +505,16 @@
                             <div class="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center" :class="selected.type === 'Fertilizer' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'" >
                                 <i class="fa-solid" :class="selected.type === 'Fertilizer' ? 'fa-leaf' : 'fa-bug'" ></i>
                             </div>
-
                             <div class="min-w-0">
                                 <h2 class="text-base font-bold text-slate-800 truncate" x-text="selected.name" ></h2>
-                                <p class="text-xs text-slate-400 mt-0.5">
-                                    Product Details
-                                </p>
+                                <p class="text-xs text-slate-400 mt-0.5"> Product Details </p>
                             </div>
                         </div>
                     </div>
 
-
                     <div class="p-6 grid grid-cols-1 sm:grid-cols-[220px_1fr] gap-6">
-
                         <div>
-                            <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
-                                Product Image
-                            </p>
-
+                            <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3"> Product Image </p>
                             <div class="w-full aspect-square rounded-2xl bg-slate-50 border border-slate-200 flex flex-col items-center justify-center overflow-hidden">
                                 <template x-if="selected.image_path">
                                     <img :src="`/storage/${selected.image_path}`" alt="Product image" class="w-full h-full object-cover" >
@@ -536,104 +528,66 @@
                                 </template>
                             </div>
                         </div>
-
                         <div>
-
                             <div class="mb-6">
-                                <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
-                                    Product Information
-                                </p>
-
+                                <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3"> Product Information </p>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
                                     <div class="sm:col-span-2">
-                                        <label class="block text-xs font-semibold text-slate-600 mb-1.5">
-                                            Product Name
-                                        </label>
-
+                                        <label class="block text-xs font-semibold text-slate-600 mb-1.5"> Product Name </label>
                                         <div class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700">
                                             <span x-text="selected.name"></span>
                                         </div>
                                     </div>
-
                                     <div>
-                                        <label class="block text-xs font-semibold text-slate-600 mb-1.5">
-                                            Product Type
-                                        </label>
-
+                                        <label class="block text-xs font-semibold text-slate-600 mb-1.5"> Product Type </label>
                                         <div class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 flex items-center gap-2">
                                             <i class="fa-solid text-xs" :class="selected.type === 'Fertilizer' ? 'fa-leaf text-emerald-600' : 'fa-bug text-amber-600'"></i>
-
                                             <span x-text="selected.type"></span>
                                         </div>
                                     </div>
-
                                     <div>
-                                        <label class="block text-xs font-semibold text-slate-600 mb-1.5">
-                                            Unit
-                                        </label>
-
+                                        <label class="block text-xs font-semibold text-slate-600 mb-1.5"> Unit </label>
                                         <div class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700">
                                             <span x-text="selected.unit"></span>
                                         </div>
                                     </div>
-
+                                    <div class="sm:col-span-2">
+                                        <label class="block text-xs font-semibold text-slate-600 mb-1.5"> Description </label>
+                                        <div class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700">
+                                            <span x-text="selected.description || 'No description provided.'"></span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
-
                             <div class="mb-6">
-                                <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
-                                    Stock & Pricing
-                                </p>
-
+                                <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3"> Stock & Pricing </p>
                                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-
                                     <div>
-                                        <label class="block text-xs font-semibold text-slate-600 mb-1.5">
-                                            Current Quantity
-                                        </label>
-
+                                        <label class="block text-xs font-semibold text-slate-600 mb-1.5"> Current Quantity </label>
                                         <div class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200">
                                             <div class="flex items-baseline gap-1.5">
-                                                <span class="text-sm font-bold" :class="Number(selected.quantity) <= Number(selected.reorder_level)
-                                                        ? 'text-red-600'
-                                                        : 'text-slate-700'"
-                                                    x-text="selected.quantity"
-                                                ></span>
-
+                                                <span class="text-sm font-bold" :class="Number(selected.quantity) <= Number(selected.reorder_level) ? 'text-red-600' : 'text-slate-700'" x-text="selected.quantity" ></span>
                                                 <span class="text-xs font-medium text-slate-400" x-text="selected.unit"></span>
                                             </div>
                                         </div>
                                     </div>
 
-
                                     <div>
-                                        <label class="block text-xs font-semibold text-slate-600 mb-1.5">
-                                            Unit Price
-                                        </label>
-
+                                        <label class="block text-xs font-semibold text-slate-600 mb-1.5"> Unit Price </label>
                                         <div class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200">
                                             <div class="flex items-baseline gap-0.5">
-                                                <span class="text-sm font-bold text-slate-700">
-                                                    ₱
-                                                </span>
-
+                                                <span class="text-sm font-bold text-slate-700"> ₱ </span>
                                                 <span class="text-sm font-bold text-slate-700" x-text="Number(selected.price).toFixed(2)" ></span>
                                             </div>
                                         </div>
                                     </div>
 
-
                                     <div>
-                                        <label class="block text-xs font-semibold text-slate-600 mb-1.5">
-                                            Reorder Level
-                                        </label>
-
+                                        <label class="block text-xs font-semibold text-slate-600 mb-1.5"> Reorder Level </label>
                                         <div class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200">
                                             <div class="flex items-baseline gap-1.5">
                                                 <span class="text-sm font-bold text-slate-700" x-text="selected.reorder_level" ></span>
-
                                                 <span class="text-xs font-medium text-slate-400" x-text="selected.unit" ></span>
                                             </div>
                                         </div>
@@ -642,22 +596,15 @@
                                 </div>
                             </div>
 
-
                             <div class="mb-6">
-                                <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
-                                    Expiration
-                                </p>
-
+                                <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3"> Expiration </p>
                                 <div>
-                                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">
-                                        Expiration Date
-                                    </label>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1.5"> Expiration Date </label>
 
                                     <div class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm">
                                         <template x-if="selected.expiration_date">
                                             <div class="flex items-center gap-2">
                                                 <i class="fa-regular fa-calendar text-slate-400"></i>
-
                                                 <span class="text-slate-700 font-medium" x-text="selected.expiration_date.substring(0, 10)" ></span>
                                             </div>
                                         </template>
@@ -674,26 +621,15 @@
 
 
                             <div>
-                                <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
-                                    Inventory Status
-                                </p>
+                                <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3"> Inventory Status </p>
                                 <div class="rounded-2xl border border-slate-100 bg-slate-50 p-4">
                                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                                         <div class="flex items-center gap-3">
-                                            <div class="w-9 h-9 rounded-xl flex items-center justify-center" :class="Number(selected.quantity) <= Number(selected.reorder_level)
-                                                    ? 'bg-red-50 text-red-600'
-                                                    : 'bg-emerald-50 text-emerald-600'"
-                                            >
-                                                <i class="fa-solid" :class="Number(selected.quantity) <= Number(selected.reorder_level)
-                                                        ? 'fa-triangle-exclamation'
-                                                        : 'fa-circle-check'"></i>
+                                            <div class="w-9 h-9 rounded-xl flex items-center justify-center" :class="Number(selected.quantity) <= Number(selected.reorder_level) ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'" >
+                                                <i class="fa-solid" :class="Number(selected.quantity) <= Number(selected.reorder_level) ? 'fa-triangle-exclamation' : 'fa-circle-check'"></i>
                                             </div>
-
                                             <div>
-                                                <p class="text-xs font-semibold text-slate-500">
-                                                    Stock Level
-                                                </p>
-
+                                                <p class="text-xs font-semibold text-slate-500"> Stock Level </p>
                                                 <p class="text-sm font-bold" :class="Number(selected.quantity) <= Number(selected.reorder_level)
                                                         ? 'text-red-600'
                                                         : 'text-emerald-700'"
@@ -703,39 +639,6 @@
                                                 ></p>
                                             </div>
                                         </div>
-
-
-                                        {{-- <div class="flex items-center gap-3">
-                                            <div
-                                                class="w-9 h-9 rounded-xl flex items-center justify-center"
-                                                :class="!selected.expiration_date
-                                                    ? 'bg-slate-100 text-slate-400'
-                                                    : 'bg-emerald-50 text-emerald-600'"
-                                            >
-                                                <i
-                                                    class="fa-solid"
-                                                    :class="!selected.expiration_date
-                                                        ? 'fa-calendar'
-                                                        : 'fa-calendar-check'"
-                                                ></i>
-                                            </div>
-
-                                            <div>
-                                                <p class="text-xs font-semibold text-slate-500">
-                                                    Expiration
-                                                </p>
-
-                                                <p
-                                                    class="text-sm font-bold"
-                                                    :class="selected.expiration_date
-                                                        ? 'text-emerald-700'
-                                                        : 'text-slate-500'"
-                                                    x-text="selected.expiration_date
-                                                        ? 'Expiration date set'
-                                                        : 'No expiration'"
-                                                ></p>
-                                            </div>
-                                        </div> --}}
                                     </div>
                                 </div>
                             </div>
@@ -847,6 +750,10 @@
                                 <div>
                                     <label class="block text-xs font-semibold text-slate-600 mb-1.5">Unit</label>
                                     <input type="text" name="unit" x-model="editForm.unit" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+                                </div>
+                                <div class="sm:col-span-2">
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">Description</label>
+                                    <input type="text" name="description" x-model="editForm.description" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
                                 </div>
                             </div>
                         </div>
@@ -963,8 +870,12 @@
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">Unit</label>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">Unit of Measurement</label>
                                     <input type="text" name="unit" placeholder="e.g. bags, liters, kg" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+                                </div>
+                                <div class="sm:col-span-2">
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">Description</label>
+                                    <input type="text" name="description" placeholder="e.g. 50kg per bag/sack, 500ml per bottle" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
                                 </div>
                             </div>
                         </div>
