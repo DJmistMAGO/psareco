@@ -14,6 +14,7 @@ return new class extends Migration
             $table->string('type', 20);
             $table->integer('quantity')->default(0);
             $table->string('unit', 20)->nullable();
+            $table->text('description')->nullable();
             $table->decimal('price', 10, 2)->nullable();
             $table->integer('reorder_level')->default(10);
             $table->date('expiration_date')->nullable();
