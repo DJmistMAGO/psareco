@@ -174,6 +174,7 @@ class FarmersController extends Controller
                 'type'            => $item->type,
                 'price'           => $item->price,
                 'unit'            => $item->unit,
+                'description'     => $item->description,
                 'totalUnits'      => $item->quantity,
                 'reorder_level'   => $item->reorder_level,
                 'expiration_date' => $item->expiration_date,

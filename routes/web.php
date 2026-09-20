@@ -106,7 +106,7 @@ Route::middleware('auth')->group(function () {
         ->prefix('user-management')
         ->group(function () {
             Route::get('/', 'index')->name('user-management.index');
-            Route::get('/export', 'exportCsv')->name('user-management.export');
+            Route::get('/export', 'exportXlsx')->name('user-management.export');
             Route::post('/addUser', 'addUser')->name('user-management.adduser');
             Route::put('/{id}', 'updateUser')->name('user-management.updateUser');
             Route::post('/{id}/deactivate', 'deactivateUser')->name('user-management.deactivateUser');

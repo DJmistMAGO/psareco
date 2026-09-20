@@ -9,7 +9,7 @@
 			<x-page-header eyebrow="PSARECO User Management" title="User Management" description="Manage system administrators, cooperative officers, and farmer account approvals" icon="fa-solid fa-users-gear">
 				<x-slot:actions>
 					<button type="button" @click="$dispatch('open-add-user-modal')" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-600 text-white text-sm font-bold shadow-sm hover:bg-emerald-700 transition"> <i class="fa-solid fa-user-plus"></i> Add User </button>
-						<a href="{{ route('user-management.export') }}" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white text-emerald-700 text-sm font-bold shadow-sm hover:bg-emerald-50 transition"> <i class="fa-solid fa-file-export"></i> Export CSV </a>
+                    <a href="{{ route('user-management.export') }}" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white text-emerald-700 text-sm font-bold shadow-sm hover:bg-emerald-50 transition"> <i class="fa-solid fa-file-excel"></i> Export Excel </a>
 				</x-slot:actions>
 			</x-page-header>
 
@@ -86,7 +86,7 @@
 
 												<div>
 													<label for="address" class="block text-xs font-semibold text-slate-600 mb-1">Address</label>
-														<textarea id="address" name="address" rows="2" placeholder="Barangay / Municipality / Province" class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs text-slate-800 focus:outline-none transition {{ $errors->has('address') ? 'border-red-500 bg-red-50/30 focus:ring-2 focus:ring-red-400' : 'border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:bg-white' }}">{{ old('address') }}</textarea>textarea
+														<textarea id="address" name="address" rows="2" placeholder="Barangay / Municipality / Province" class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs text-slate-800 focus:outline-none transition {{ $errors->has('address') ? 'border-red-500 bg-red-50/30 focus:ring-2 focus:ring-red-400' : 'border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:bg-white' }}">{{ old('address') }}</textarea>
 														@error('address')
 																<p class="mt-1 text-red-500 text-[11px] font-medium flex items-center gap-1"><i
 																				class="fa-solid fa-circle-info text-[10px]"></i> {{ $message }}</p>

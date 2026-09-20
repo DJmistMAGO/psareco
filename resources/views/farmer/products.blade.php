@@ -61,6 +61,7 @@
                     $name = $product['name'] ?? ($product->name ?? 'Unnamed Product');
                     $type = $product['type'] ?? ($product->type ?? 'N/A');
                     $unit = $product['unit'] ?? ($product->unit ?? 'unit');
+                    $description = $product['description'] ?? ($product->description ?? 'No description available.');
                     $totalUnits = $product['totalUnits'] ?? ($product->total_units ?? 1);
                     $image =
                         $product['image'] ??
@@ -80,6 +81,9 @@
                                 ₱{{ number_format($rate, 2) }} <span class="text-[10px] font-normal text-slate-500">/ per
                                     {{ $unit }}</span>
                             </div>
+                            <p class="text-[11px] text-slate-500 line-clamp-2">
+                                {{ $description }}
+                            </p>
                         </div>
                     </div>
 
