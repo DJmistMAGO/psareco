@@ -112,6 +112,7 @@ Route::middleware('auth')->group(function () {
             Route::post('/{id}/deactivate', 'deactivateUser')->name('user-management.deactivateUser');
             Route::post('/{id}/reactivate', 'reactivateUser')->name('user-management.reactivateUser');
             Route::post('/{id}/delete', 'deleteUser')->name('user-management.deleteUser');
+            Route::post('/{id}/reset-password', 'resetPassword')->name('user-management.resetPassword');
             // Route::post('/{id}/approve', 'approveUser')->name('user-management.approveUser');
             // Route::post('/{id}/reject', 'rejectUser')->name('user-management.rejectUser');
         });

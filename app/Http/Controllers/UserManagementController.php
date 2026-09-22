@@ -32,17 +32,46 @@ class UserManagementController extends Controller
 
     public function index()
     {
-        $activeUsers = User::where('status', 'active')
+        $users = User::whereDoesntHave('roles', function ($query) {
+            $query->where('name', 'admin');
+        })
             ->orderBy('name')
-            ->get()
+            ->get();
+
+        $activeUsers = $users
+            ->where('status', 'active')
+            ->values()
             ->map(fn(User $user) => $this->userSummary($user));
 
-        $inactiveUsers = User::where('status', 'inactive')
-            ->orderBy('name')
-            ->get()
+        $inactiveUsers = $users
+            ->where('status', 'inactive')
+            ->values()
             ->map(fn(User $user) => $this->userSummary($user));
 
-        return view('admin.users', compact('activeUsers', 'inactiveUsers'));
+        $activeFarmers = $activeUsers
+            ->filter(fn($user) => in_array('farmer', $user['roles'], true))
+            ->values();
+
+        $activeOfficers = $activeUsers
+            ->filter(fn($user) => in_array('officer', $user['roles'], true))
+            ->values();
+
+        $inactiveFarmers = $inactiveUsers
+            ->filter(fn($user) => in_array('farmer', $user['roles'], true))
+            ->values();
+
+        $inactiveOfficers = $inactiveUsers
+            ->filter(fn($user) => in_array('officer', $user['roles'], true))
+            ->values();
+
+        return view('admin.users', compact(
+            'activeUsers',
+            'inactiveUsers',
+            'activeFarmers',
+            'activeOfficers',
+            'inactiveFarmers',
+            'inactiveOfficers'
+        ));
     }
 
     private function userValidationRules(?User $user = null): array
@@ -154,61 +183,22 @@ class UserManagementController extends Controller
         return redirect()->back()->with('success', 'User account permanently deleted successfully.');
     }
 
-    //     public function exportCsv()
-    //     {
-    //         $users = User::orderBy('status')
-    //             ->orderBy('name')
-    //             ->get();
+    public function resetPassword($id)
+    {
+        $user = User::findOrFail($id);
 
-        //         $fileName = 'psareco-user-list-' . now()->format('Y-m-d-His') . '.csv';
+        if ($user->hasRole('admin')) {
+            return redirect()->back()->with('error', 'Admin accounts cannot have their passwords reset from User Management.');
+        }
 
-        //         $handle = fopen('php://temp', 'r+');
+        $newPassword = 'DefaultPass123';
 
-        //         // UTF-8 BOM for proper Excel character encoding
-    //         fwrite($handle, "\xEF\xBB\xBF");
+        $user->password = bcrypt($newPassword);
+        $user->must_change_password = true;
+        $user->save();
 
-        //         $header = [
-    //             'ID',
-    //             'Name',
-    //             'Email',
-    //             'Role',
-    //             'Status',
-    //             'Contact Number',
-    //             'Address',
-    //             'Position',
-    //             'Created At',
-    //             'Must Change Password',
-    //         ];
-
-        //         fputcsv($handle, $header);
-
-        //         foreach ($users as $user) {
-    //             fputcsv($handle, [
-    //                 $user->id,
-    //                 $user->name,
-    //                 $user->email,
-    //                 $user->getRoleNames()->first() ?? 'N/A',
-    //                 ucfirst($user->status),
-    //                 $user->contact_number ?? '',
-    //                 $user->address ?? '',
-    //                 $user->position ?? '',
-    //                 $user->created_at?->format('Y-m-d H:i:s') ?? '',
-    //                 $user->must_change_password ? 'Yes' : 'No',
-    //             ]);
-    //         }
-
-        //         rewind($handle);
-
-        //         $csv = stream_get_contents($handle);
-
-        //         fclose($handle);
-
-        //         return Response::make($csv, 200, [
-    //             'Content-Type' => 'text/csv; charset=UTF-8',
-    //             'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
-    //         ]);
-    //     }
-    // }
+        return redirect()->back()->with('success', "User's password has been reset successfully. The new password is: {$newPassword}");
+    }
 
 
 
