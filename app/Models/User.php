@@ -16,9 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
-    use HasRoles;
-    use HasFactory;
-    use Notifiable;
+    use HasRoles, HasFactory, Notifiable;
 
     protected $fillable = [
         'name',

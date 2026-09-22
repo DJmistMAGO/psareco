@@ -6,6 +6,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FarmersController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\MachineryController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OfficerController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
@@ -22,6 +23,11 @@ Route::get('/', function () {
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 
+Route::middleware('auth')->group(function () {
+    Route::get('/notifications', [NotificationController::class, 'index']) ->name('notifications.index');
+    Route::get('/notifications/{notification}/redirect', [NotificationController::class, 'redirect']) ->name('notifications.redirect');
+    Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead']) ->name('notifications.markAllAsRead');
+});
 
 // Protected routes or accessible lang pag nakalogin :)
 Route::middleware('auth')->group(function () {
@@ -87,7 +93,7 @@ Route::middleware('auth')->group(function () {
 
         });
 
-    Route::middleware('role:officer')->controller(SalesController::class)->prefix('sales')
+    Route::middleware('role:officer|admin')->controller(SalesController::class)->prefix('sales')
         ->group(function () {
             Route::get('/', 'index')->name('sales.index');
             Route::post('/checkout', 'checkout')->name('sales.checkout');
@@ -101,6 +107,8 @@ Route::middleware('auth')->group(function () {
             Route::get('/preview', 'preview')->name('reports.preview');
 
         });
+
+
 
     Route::middleware('role:admin')->controller(UserManagementController::class)
         ->prefix('user-management')

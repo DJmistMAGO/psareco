@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Inventory;
 use App\Models\Sales;
+use App\Models\User;
+use App\Notifications\NewSaleNotification;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
@@ -34,9 +36,9 @@ class SalesController extends Controller
     {
         $validated = $request->validate([
             'buyer_name'          => ['required', 'string', 'max:255'],
-            'items'                => ['required', 'array', 'min:1'],
-            'items.*.product_id'   => ['required', 'integer', 'exists:inventories,id'],
-            'items.*.quantity'     => ['required', 'integer', 'min:1'],
+            'items'               => ['required', 'array', 'min:1'],
+            'items.*.product_id'  => ['required', 'integer', 'exists:inventories,id'],
+            'items.*.quantity'    => ['required', 'integer', 'min:1'],
         ]);
 
         try {
@@ -80,12 +82,20 @@ class SalesController extends Controller
             return response()->json(['message' => $e->getMessage()], 422);
         }
 
+        User::role('admin')->get()->each(function ($admin) use ($sale) {
+            $admin->notify(new NewSaleNotification(
+                $sale['buyer_name'],
+                $sale['total'],
+                $sale['sale_date'],
+                count($sale['items'])
+            ));
+        });
+
         return response()->json([
             'message' => 'Sale recorded successfully.',
             'sale'    => $sale,
         ]);
     }
-
 
     public function export()
     {
