@@ -17,12 +17,12 @@ use PhpOffice\PhpWord\Style\Language;
 class ReportController extends Controller
 {
 
-    private const DARK_GREEN   = '538135'; // headings, totals, thick divider
+    private const DARK_GREEN = '538135'; // headings, totals, thick divider
     private const BORDER_GREEN = 'A8D08D'; // table borders, thin divider
-    private const FILL_GREEN   = 'E2EFD9'; // header row / total row fill
-    private const LABEL_GRAY   = '808080'; // "Date Generated:" style labels
+    private const FILL_GREEN = 'E2EFD9'; // header row / total row fill
+    private const LABEL_GRAY = '808080'; // "Date Generated:" style labels
     private const LOW_STOCK_RED = 'DC2626';
-    private const FONT_FAMILY  = 'Arial';
+    private const FONT_FAMILY = 'Arial';
 
     private function logoPath(): ?string
     {
@@ -54,10 +54,10 @@ class ReportController extends Controller
         $srcY = (int) (($height - $size) / 2);
 
         $source = match ($info[2]) {
-            IMAGETYPE_PNG  => imagecreatefrompng($sourcePath),
+            IMAGETYPE_PNG => imagecreatefrompng($sourcePath),
             IMAGETYPE_JPEG => imagecreatefromjpeg($sourcePath),
-            IMAGETYPE_GIF  => imagecreatefromgif($sourcePath),
-            default        => null,
+            IMAGETYPE_GIF => imagecreatefromgif($sourcePath),
+            default => null,
         };
 
         if (!$source) {
@@ -81,7 +81,7 @@ class ReportController extends Controller
     public function index()
     {
         $monthStart = now()->startOfMonth();
-        $monthEnd   = now()->endOfMonth();
+        $monthEnd = now()->endOfMonth();
 
         $stats = [
             'monthly_sales_income' => Sales::whereBetween('sale_date', [$monthStart, $monthEnd])->sum('total'),
@@ -99,13 +99,13 @@ class ReportController extends Controller
     {
         $validated = $request->validate([
             'start_date' => ['required', 'date'],
-            'end_date'   => ['required', 'date', 'after_or_equal:start_date'],
-            'types'      => ['required', 'array', 'min:1'],
-            'types.*'    => ['in:machinery,bookings,sales,inventory,expiring'],
+            'end_date' => ['required', 'date', 'after_or_equal:start_date'],
+            'types' => ['required', 'array', 'min:1'],
+            'types.*' => ['in:machinery,bookings,sales,inventory,expiring'],
         ]);
 
         $start = Carbon::parse($validated['start_date'])->startOfDay();
-        $end   = Carbon::parse($validated['end_date'])->endOfDay();
+        $end = Carbon::parse($validated['end_date'])->endOfDay();
         $types = $validated['types'];
 
         $response = [];
@@ -113,12 +113,12 @@ class ReportController extends Controller
         if (\in_array('machinery', $types, true)) {
             $machinery = Machinery::orderBy('machinery_name')->get();
 
-            $response['machinery'] = $machinery->map(fn ($m) => [
+            $response['machinery'] = $machinery->map(fn($m) => [
                 'machinery_name' => $m->machinery_name,
-                'model'          => $m->model,
-                'serial_number'  => $m->serial_number,
-                'price'          => number_format((float) $m->price, 2),
-                'status'         => $m->status,
+                'model' => $m->model,
+                'serial_number' => $m->serial_number,
+                'price' => number_format((float) $m->price, 2),
+                'status' => $m->status,
             ]);
         }
 
@@ -129,14 +129,14 @@ class ReportController extends Controller
                 ->orderBy('start_date')
                 ->get();
 
-            $response['bookings'] = $bookings->map(fn ($b) => [
+            $response['bookings'] = $bookings->map(fn($b) => [
                 'machinery_name' => $b->machine->machinery_name ?? 'N/A',
-                'customer'       => $b->user->name ?? 'N/A',
-                'start_date'     => $b->start_date?->format('M d, Y'),
-                'end_date'       => $b->end_date?->format('M d, Y'),
-                'days'           => $b->days,
-                'total_hours'    => number_format((float) $b->total_hours, 2),
-                'total_amount'   => number_format((float) $b->total_amount, 2),
+                'customer' => $b->user->name ?? 'N/A',
+                'start_date' => $b->start_date?->format('M d, Y'),
+                'end_date' => $b->end_date?->format('M d, Y'),
+                'days' => $b->days,
+                'total_hours' => number_format((float) $b->total_hours, 2),
+                'total_amount' => number_format((float) $b->total_amount, 2),
             ]);
             $response['bookings_total'] = number_format($bookings->sum('total_amount'), 2);
         }
@@ -147,13 +147,13 @@ class ReportController extends Controller
                 ->orderBy('sale_date')
                 ->get();
 
-            $response['sales'] = $sales->map(fn ($s) => [
-                'sale_date'    => $s->sale_date?->format('M d, Y'),
+            $response['sales'] = $sales->map(fn($s) => [
+                'sale_date' => $s->sale_date?->format('M d, Y'),
                 'product_name' => $s->product->name ?? 'N/A',
-                'buyer_name'   => $s->buyer_name,
-                'quantity'     => (int) $s->quantity,
-                'price'        => number_format((float) $s->price, 2),
-                'total'        => number_format((float) $s->total, 2),
+                'buyer_name' => $s->buyer_name,
+                'quantity' => (int) $s->quantity,
+                'price' => number_format((float) $s->price, 2),
+                'total' => number_format((float) $s->total, 2),
             ]);
             $response['sales_total'] = number_format($sales->sum('total'), 2);
         }
@@ -161,20 +161,20 @@ class ReportController extends Controller
         if (\in_array('inventory', $types, true)) {
             $inventory = Inventory::orderBy('name')->get();
 
-            $response['inventory'] = $inventory->map(fn ($i) => [
-                'name'             => $i->name,
-                'type'             => $i->type,
-                'quantity'         => number_format((float) $i->quantity, 2),
-                'unit'             => $i->unit,
-                'description'      => $i->description ?? 'N/A',
-                'price'            => number_format((float) $i->price, 2),
-                'inventory_value'  => number_format((float) $i->quantity * (float) $i->price, 2),
-                'reorder_level'    => number_format((float) $i->reorder_level, 2),
-                'expiration'       => $i->expiration_date?->format('M d, Y'),
-                'low_stock'        => $i->quantity <= $i->reorder_level,
+            $response['inventory'] = $inventory->map(fn($i) => [
+                'name' => $i->name,
+                'type' => $i->type,
+                'quantity' => number_format((float) $i->quantity, 2),
+                'unit' => $i->unit,
+                'description' => $i->description ?? 'N/A',
+                'price' => number_format((float) $i->price, 2),
+                'inventory_value' => number_format((float) $i->quantity * (float) $i->price, 2),
+                'reorder_level' => number_format((float) $i->reorder_level, 2),
+                'expiration' => $i->expiration_date?->format('M d, Y'),
+                'low_stock' => $i->quantity <= $i->reorder_level,
             ]);
             $response['inventory_value'] = number_format(
-                $inventory->sum(fn ($i) => (float) $i->quantity * (float) $i->price),
+                $inventory->sum(fn($i) => (float) $i->quantity * (float) $i->price),
                 2
             );
         }
@@ -185,19 +185,19 @@ class ReportController extends Controller
                 ->orderBy('expiration_date')
                 ->get();
 
-            $response['expiring_inventory'] = $expiringInventory->map(fn ($i) => [
-                'name'             => $i->name,
-                'type'             => $i->type,
-                'quantity'         => number_format((float) $i->quantity, 2),
-                'unit'             => $i->unit,
-                'description'      => $i->description ?? 'N/A',
-                'price'            => number_format((float) $i->price, 2),
-                'inventory_value'  => number_format((float) $i->quantity * (float) $i->price, 2),
-                'reorder_level'    => number_format((float) $i->reorder_level, 2),
-                'expiration'       => $i->expiration_date
+            $response['expiring_inventory'] = $expiringInventory->map(fn($i) => [
+                'name' => $i->name,
+                'type' => $i->type,
+                'quantity' => number_format((float) $i->quantity, 2),
+                'unit' => $i->unit,
+                'description' => $i->description ?? 'N/A',
+                'price' => number_format((float) $i->price, 2),
+                'inventory_value' => number_format((float) $i->quantity * (float) $i->price, 2),
+                'reorder_level' => number_format((float) $i->reorder_level, 2),
+                'expiration' => $i->expiration_date
                     ? Carbon::parse($i->expiration_date)->format('M d, Y')
                     : 'N/A',
-                'low_stock'        => (float) $i->quantity <= (float) $i->reorder_level,
+                'low_stock' => (float) $i->quantity <= (float) $i->reorder_level,
             ])->values();
         }
 
@@ -208,13 +208,13 @@ class ReportController extends Controller
     {
         $validated = $request->validate([
             'start_date' => ['required', 'date'],
-            'end_date'   => ['required', 'date', 'after_or_equal:start_date'],
-            'types'      => ['required', 'array', 'min:1'],
-            'types.*'    => ['in:machinery,bookings,sales,inventory,expiring'],
+            'end_date' => ['required', 'date', 'after_or_equal:start_date'],
+            'types' => ['required', 'array', 'min:1'],
+            'types.*' => ['in:machinery,bookings,sales,inventory,expiring'],
         ]);
 
         $start = Carbon::parse($validated['start_date'])->startOfDay();
-        $end   = Carbon::parse($validated['end_date'])->endOfDay();
+        $end = Carbon::parse($validated['end_date'])->endOfDay();
         $types = $validated['types'];
 
         $phpWord = new PhpWord();
@@ -222,9 +222,9 @@ class ReportController extends Controller
         $phpWord->setDefaultFontName(self::FONT_FAMILY);
         $phpWord->setDefaultFontSize(10);
         $phpWord->setDefaultParagraphStyle([
-            'spaceAfter'  => 0,
+            'spaceAfter' => 0,
             'spaceBefore' => 0,
-            'lineHeight'  => 1.0,
+            'lineHeight' => 1.0,
         ]);
 
         if (\in_array('machinery', $types, true)) {
@@ -280,23 +280,23 @@ class ReportController extends Controller
         $header = $section->addHeader();
 
         $table = $header->addTable([
-            'borderSize'        => 0,
-            'borderColor'       => 'FFFFFF',
-            'borderTopSize'     => 0,
-            'borderBottomSize'  => 0,
-            'borderLeftSize'    => 0,
-            'borderRightSize'   => 0,
+            'borderSize' => 0,
+            'borderColor' => 'FFFFFF',
+            'borderTopSize' => 0,
+            'borderBottomSize' => 0,
+            'borderLeftSize' => 0,
+            'borderRightSize' => 0,
             'borderInsideHSize' => 0,
             'borderInsideVSize' => 0,
-            'cellMargin'        => 0,
-            'alignment'         => \PhpOffice\PhpWord\SimpleType\JcTable::CENTER,
+            'cellMargin' => 0,
+            'alignment' => \PhpOffice\PhpWord\SimpleType\JcTable::CENTER,
         ]);
 
         $table->addRow();
 
         $cellStyle = [
-            'valign'      => 'center',
-            'borderSize'  => 0,
+            'valign' => 'center',
+            'borderSize' => 0,
             'borderColor' => 'FFFFFF',
         ];
 
@@ -327,18 +327,18 @@ class ReportController extends Controller
             $run->addText(
                 $field['value'],
                 [
-                    'bold'  => true,
-                    'size'  => 9,
+                    'bold' => true,
+                    'size' => 9,
                     'color' => ($field['emphasize'] ?? false) ? self::DARK_GREEN : '000000',
-                    'name'  => self::FONT_FAMILY,
+                    'name' => self::FONT_FAMILY,
                 ]
             );
         }
 
         $section->addText('', [], [
-            'borderBottomSize'  => 18,
+            'borderBottomSize' => 18,
             'borderBottomColor' => self::DARK_GREEN,
-            'spaceAfter'        => 200,
+            'spaceAfter' => 200,
         ]);
     }
     private function addModuleFooter(Section $section, string $moduleLabel): void
@@ -358,13 +358,13 @@ class ReportController extends Controller
     private function tableStyle(): array
     {
         return [
-            'borderSize'  => 6,
+            'borderSize' => 6,
             'borderColor' => self::BORDER_GREEN,
-            'cellMargin'  => 50,
+            'cellMargin' => 50,
 
-            'alignment'   => \PhpOffice\PhpWord\SimpleType\JcTable::CENTER,
-            'layout'      => \PhpOffice\PhpWord\Style\Table::LAYOUT_FIXED,
-            'width'       => 100,
+            'alignment' => \PhpOffice\PhpWord\SimpleType\JcTable::CENTER,
+            'layout' => \PhpOffice\PhpWord\Style\Table::LAYOUT_FIXED,
+            'width' => 100,
         ];
     }
 
@@ -376,10 +376,10 @@ class ReportController extends Controller
             'pageSizeW' => \PhpOffice\PhpWord\Shared\Converter::inchToTwip(13),
             'pageSizeH' => \PhpOffice\PhpWord\Shared\Converter::inchToTwip(8.5),
 
-            'marginLeft'  => 720,
+            'marginLeft' => 720,
             'marginRight' => 720,
 
-            'marginTop'    => 700,
+            'marginTop' => 700,
             'marginBottom' => 700,
 
             'headerHeight' => 300,
@@ -424,20 +424,20 @@ class ReportController extends Controller
         $section->addTextBreak(2);
         $section->addText(
             'Generated by:',
-            [ 'size' => 9, 'color' => self::LABEL_GRAY, 'name' => self::FONT_FAMILY, ],
-            [ 'spaceAfter' => 250, ]
+            ['size' => 9, 'color' => self::LABEL_GRAY, 'name' => self::FONT_FAMILY,],
+            ['spaceAfter' => 250,]
         );
 
         $section->addText(
             '______________________________',
-            [ 'bold' => true, 'size' => 10, 'name' => self::FONT_FAMILY, ],
-            [ 'spaceAfter' => 40, ]
+            ['bold' => true, 'size' => 10, 'name' => self::FONT_FAMILY,],
+            ['spaceAfter' => 40,]
         );
 
         $section->addText(
             strtoupper($name),
-            [ 'bold' => true, 'size' => 9, 'name' => self::FONT_FAMILY, ],
-            [ 'spaceAfter' => 0, ]
+            ['bold' => true, 'size' => 9, 'name' => self::FONT_FAMILY,],
+            ['spaceAfter' => 0,]
         );
     }
 
@@ -734,7 +734,7 @@ class ReportController extends Controller
         $this->addModuleFooter($section, 'Inventory');
 
         $inventoryValue = $inventory->sum(
-            fn ($item) => (float) $item->quantity * (float) $item->price
+            fn($item) => (float) $item->quantity * (float) $item->price
         );
 
         $this->addMetaLine($section, [
@@ -874,122 +874,32 @@ class ReportController extends Controller
         $section = $phpWord->addSection($this->sectionStyle());
         $this->addMasthead($section, 'Expiring Inventory Report');
         $this->addModuleFooter($section, 'Inventory');
-
-        $expiringItems = $inventory->filter(
-            fn ($item) =>
-                $item->expiration_date &&
-                $item->expiration_date->isFuture() &&
-                $item->expiration_date->diffInDays(now()) <= 30
-        );
-
-        $this->addMetaLine($section, [
-            ['label' => 'Date Generated', 'value' => now()->format('M d, Y g:i A')],
-            ['label' => 'Expiring Items', 'value' => (string) $expiringItems->count(), 'emphasize' => true],
-        ]);
-
+        $expiringItems = $inventory->filter(fn($item) => $item->expiration_date && $item->expiration_date->isFuture() && $item->expiration_date->diffInDays(now()) <= 30);
+        $this->addMetaLine($section, [['label' => 'Date Generated', 'value' => now()->format('M d, Y g:i A')], ['label' => 'Expiring Items', 'value' => (string) $expiringItems->count(), 'emphasize' => true],]);
         $table = $section->addTable($this->tableStyle());
-
-        $columns = [
-            ['Name', 3000],
-            ['Type', 1500],
-            ['Quantity', 1100],
-            ['Description', 2280],
-            ['Unit', 900],
-            ['Price (₱)', 1700],
-            ['Value (₱)', 1900],
-            ['Reorder Level', 1900],
-            ['Expiration', 3000],
-        ];
-
+        $columns = [['Name', 2500], ['Type', 1200], ['Quantity', 1000], ['Description', 1900], ['Unit', 800], ['Price (₱)', 1500], ['Value (₱)', 1700], ['Reorder Level', 1700], ['Expiration', 1980],];
         $table->addRow(400);
-
         foreach ($columns as [$header, $width]) {
-            $table->addCell($width, $this->headerCellStyle())
-                ->addText(
-                    $header,
-                    $this->headerFontStyle(),
-                    $this->headerParagraphStyle()
-                );
+            $table->addCell($width, $this->headerCellStyle())->addText($header, $this->headerFontStyle(), $this->headerParagraphStyle());
         }
-
         foreach ($expiringItems as $item) {
             $table->addRow(100, ['exactHeight' => false]);
-
-            $table->addCell(3000)
-                ->addText($item->name, $this->cellFontStyle());
-
-            $table->addCell(1500)
-                ->addText($item->type ?? '-', $this->cellFontStyle());
-
-            $table->addCell(1100)
-                ->addText(
-                    number_format((float) $item->quantity, 2),
-                    $this->cellFontStyle(),
-                    $this->numericParagraphStyle()
-                );
-
-            $table->addCell(2280)
-                ->addText(
-                    $item->description ?? '-',
-                    $this->cellFontStyle(),
-                    $this->numericParagraphStyle()
-                );
-
-            $table->addCell(900)
-                ->addText(
-                    $item->unit ?? '-',
-                    $this->cellFontStyle(),
-                    $this->numericParagraphStyle()
-                );
-
-            $table->addCell(1700)
-                ->addText(
-                    '₱ ' . number_format((float) $item->price, 2),
-                    $this->cellFontStyle(),
-                    $this->numericParagraphStyle()
-                );
-
-            $table->addCell(1900)
-                ->addText(
-                    '₱ ' . number_format(
-                        (float) $item->quantity * (float) $item->price,
-                        2
-                    ),
-                    $this->cellFontStyle(),
-                    $this->numericParagraphStyle()
-                );
-
-            $table->addCell(1900)
-                ->addText(
-                    number_format((float) $item->reorder_level, 2),
-                    $this->cellFontStyle(),
-                    $this->numericParagraphStyle()
-                );
-
-            $table->addCell(3000)
-                ->addText(
-                    $item->expiration_date?->format('M d, Y') ?? '-',
-                    $this->cellFontStyle()
-                );
+            $table->addCell(2500)->addText($item->name, $this->cellFontStyle());
+            $table->addCell(1200)->addText($item->type ?? '-', $this->cellFontStyle());
+            $table->addCell(1000)->addText(number_format((float) $item->quantity, 2), $this->cellFontStyle(), $this->numericParagraphStyle());
+            $table->addCell(1900)->addText($item->description ?? '-', $this->cellFontStyle(), $this->numericParagraphStyle());
+            $table->addCell(800)->addText($item->unit ?? '-', $this->cellFontStyle(), $this->numericParagraphStyle());
+            $table->addCell(1500)->addText('₱ ' . number_format((float) $item->price, 2), $this->cellFontStyle(), $this->numericParagraphStyle());
+            $table->addCell(1700)->addText('₱ ' . number_format((float) $item->quantity * (float) $item->price, 2), $this->cellFontStyle(), $this->numericParagraphStyle());
+            $table->addCell(1700)->addText(number_format((float) $item->reorder_level, 2), $this->cellFontStyle(), $this->numericParagraphStyle());
+            $table->addCell(1980)->addText($item->expiration_date?->format('M d, Y') ?? '-', $this->cellFontStyle());
         }
-
         if ($expiringItems->isEmpty()) {
             $table->addRow();
-
-            $cell = $table->addCell(17280);
-            $cell->getStyle()->setGridSpan(8);
-
-            $cell->addText(
-                'No expiring inventory found within the next 30 days.',
-                [
-                    'italic' => true,
-                    'size' => 9,
-                    'color' => self::LABEL_GRAY,
-                    'name' => self::FONT_FAMILY,
-                ]
-            );
+            $cell = $table->addCell(16280);
+            $cell->getStyle()->setGridSpan(9);
+            $cell->addText('No expiring inventory found within the next 30 days.', ['italic' => true, 'size' => 9, 'color' => self::LABEL_GRAY, 'name' => self::FONT_FAMILY,]);
         }
-
         $this->addSignatory($section);
     }
 }
