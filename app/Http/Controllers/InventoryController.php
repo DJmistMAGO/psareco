@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Inventory;
+use App\Models\Machinery;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -18,7 +19,7 @@ class InventoryController extends Controller
 
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                ->orWhere('type', 'like', "%{$search}%");
+                    ->orWhere('type', 'like', "%{$search}%");
             });
         }
 
@@ -33,11 +34,11 @@ class InventoryController extends Controller
         $totalProducts = Inventory::count();
         $fertilizerCount = Inventory::where('type', 'Fertilizer')->count();
         $pesticideCount = Inventory::where('type', 'Pesticide')->count();
-        $lowStockCount = Inventory::whereColumn( 'quantity', '<=', 'reorder_level' )->count();
+        $lowStockCount = Inventory::whereColumn('quantity', '<=', 'reorder_level')->count();
 
-        $expiringCount = Inventory::whereNotNull('expiration_date') ->whereBetween('expiration_date', [ now()->startOfDay(), now()->addDays(30)->endOfDay(), ]) ->count();
+        $expiringCount = Inventory::whereNotNull('expiration_date')->whereBetween('expiration_date', [now()->startOfDay(), now()->addDays(30)->endOfDay(),])->count();
 
-        return view('admin.inventory', compact( 'inventories', 'totalProducts', 'fertilizerCount', 'pesticideCount', 'lowStockCount', 'expiringCount' ));
+        return view('admin.inventory', compact('inventories', 'totalProducts', 'fertilizerCount', 'pesticideCount', 'lowStockCount', 'expiringCount'));
     }
 
 
@@ -133,9 +134,15 @@ class InventoryController extends Controller
     {
         $deletedInventories = Inventory::onlyTrashed()
             ->latest('deleted_at')
-            ->paginate(12);
+            ->paginate(12, ['*'], 'products_page');
 
-        return view('admin.inventory-trash', compact('deletedInventories'));
+        $deletedMachineries = Machinery::onlyTrashed()
+            ->latest('deleted_at')
+            ->paginate(12, ['*'], 'machinery_page');
+
+        $totalDeleted = $deletedInventories->total() + $deletedMachineries->total();
+
+        return view('admin.inventory-trash', compact('deletedInventories', 'deletedMachineries', 'totalDeleted'));
     }
 
     public function restoreProduct($id)
@@ -152,6 +159,11 @@ class InventoryController extends Controller
     public function forceDeleteProduct($id)
     {
         $inventory = Inventory::onlyTrashed()->findOrFail($id);
+
+        // Delete the associated image file if it exists
+        if ($inventory->image_path && Storage::disk('public')->exists($inventory->image_path)) {
+            Storage::disk('public')->delete($inventory->image_path);
+        }
 
         $inventory->forceDelete();
 

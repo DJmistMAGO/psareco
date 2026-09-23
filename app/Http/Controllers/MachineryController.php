@@ -19,8 +19,8 @@ class MachineryController extends Controller
             $search = $request->input('search');
             $query->where(function ($q) use ($search) {
                 $q->where('machinery_name', 'like', "%{$search}%")
-                  ->orWhere('model', 'like', "%{$search}%")
-                  ->orWhere('serial_number', 'like', "%{$search}%");
+                    ->orWhere('model', 'like', "%{$search}%")
+                    ->orWhere('serial_number', 'like', "%{$search}%");
             });
         }
 
@@ -114,20 +114,36 @@ class MachineryController extends Controller
         return redirect()->route('machinery.index')->with('success', 'Machinery details updated successfully.');
     }
 
-    /**
-     * Remove the specified machinery item from storage.
-     */
-    public function destroy($id)
+    public function deleteMachinery(Machinery $machinery)
     {
-        $machinery = Machinery::findOrFail($id);
+        $machinery->delete();
 
-        // Delete associated image file from disk
+        return redirect()->route('machinery.index')->with('success', 'Machinery deleted successfully.');
+    }
+
+    public function restoreMachinery($id)
+    {
+        $machinery = Machinery::onlyTrashed()->findOrFail($id);
+
+        $machinery->restore();
+
+        return redirect()
+            ->route('inventory.trash')
+            ->with('success', 'Machinery restored successfully.');
+    }
+
+    public function forceDeleteMachinery($id)
+    {
+        $machinery = Machinery::onlyTrashed()->findOrFail($id);
+
         if ($machinery->image_path && Storage::disk('public')->exists($machinery->image_path)) {
             Storage::disk('public')->delete($machinery->image_path);
         }
 
-        $machinery->delete();
+        $machinery->forceDelete();
 
-        return redirect()->route('machinery.index')->with('success', 'Machinery deleted successfully.');
+        return redirect()
+            ->route('inventory.trash')
+            ->with('success', 'Machinery permanently deleted.');
     }
 }

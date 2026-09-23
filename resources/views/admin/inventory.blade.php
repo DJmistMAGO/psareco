@@ -31,9 +31,7 @@
 }">
 
 		<main class="w-full min-w-0 p-4 sm:p-6 lg:p-8">
-
 			<x-dashboard-header />
-
 			<x-page-header eyebrow="PSARECO Inventory" title="Inventory Management"
 				description="Monitor farm supplies, stock levels, pricing, and expiration dates." icon="fa-solid fa-boxes-stacked">
 				<x-slot:actions>
@@ -229,8 +227,13 @@
 										<td class="px-5 py-4">
 											<div class="flex items-center gap-3">
 												<div
-													class="w-9 h-9 shrink-0 rounded-lg {{ $iconBg }} {{ $iconColor }} flex items-center justify-center">
-													<i class="fa-solid {{ $icon }} text-sm"></i>
+													class="w-9 h-9 shrink-0 rounded-lg overflow-hidden {{ $iconBg }} {{ $iconColor }} flex items-center justify-center">
+													@if ($item->image_path)
+														<img src="{{ asset('storage/' . $item->image_path) }}" alt="{{ $item->name }}"
+															class="w-full h-full object-cover">
+													@else
+														<i class="fa-solid {{ $icon }} text-sm"></i>
+													@endif
 												</div>
 												<div class="min-w-0">
 													<p class="font-semibold text-slate-800 truncate">{{ $item->name }}</p>

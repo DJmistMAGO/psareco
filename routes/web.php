@@ -24,9 +24,9 @@ Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware('auth')->group(function () {
-    Route::get('/notifications', [NotificationController::class, 'index']) ->name('notifications.index');
-    Route::get('/notifications/{notification}/redirect', [NotificationController::class, 'redirect']) ->name('notifications.redirect');
-    Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead']) ->name('notifications.markAllAsRead');
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/{notification}/redirect', [NotificationController::class, 'redirect'])->name('notifications.redirect');
+    Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
 });
 
 // Protected routes or accessible lang pag nakalogin :)
@@ -51,7 +51,6 @@ Route::middleware('auth')->group(function () {
             Route::put('/update-bookingSlot/{id}', 'updateBookingSlot')->name('farmers.updateBookingSlot');
             Route::put('/complete-booking/{id}', 'completeBooking')->name('farmers.completeBooking');
             Route::delete('/delete/{booking}', 'deleteBooking')->name('farmers.deleteBooking');
-
         });
 
     Route::middleware('role:officer')->controller(OfficerController::class)
@@ -60,7 +59,6 @@ Route::middleware('auth')->group(function () {
             Route::get('/booking/index', 'indexBooking')->name('officer.index-booking');
             Route::put('/booking/approve/{id}', 'approveBooking')->name('officer.approve-booking');
             Route::put('/booking/decline/{id}', 'declineBooking')->name('officer.decline-booking');
-
         });
 
     Route::controller(CalendarController::class)
@@ -72,13 +70,15 @@ Route::middleware('auth')->group(function () {
 
 
     Route::controller(MachineryController::class)
-    ->prefix('machinery')
-    ->group(function () {
-        Route::get('/index', 'index')->name('machinery.index');
-        Route::post('/store', 'store')->name('machinery.store');
-        Route::put('/{id}', 'update')->name('machinery.update');
-        Route::delete('/{id}', 'destroy')->name('machinery.destroy');
-    });
+        ->prefix('machinery')
+        ->group(function () {
+            Route::get('/index', 'index')->name('machinery.index');
+            Route::post('/store', 'store')->name('machinery.store');
+            Route::put('/{id}', 'update')->name('machinery.update');
+            Route::delete('/{machinery}', 'deleteMachinery')->name('machinery.deleteMachinery');
+            Route::post('/{id}/restore', 'restoreMachinery')->name('machinery.restoreMachinery');
+            Route::delete('/{id}/force-delete', 'forceDeleteMachinery')->name('machinery.forceDeleteMachinery');
+        });
 
     Route::controller(InventoryController::class)
         ->prefix('inventory')
@@ -90,7 +90,6 @@ Route::middleware('auth')->group(function () {
             Route::delete('/{inventory}', 'deleteProduct')->name('inventory.deleteProduct');
             Route::post('/{id}/restore', 'restoreProduct')->name('inventory.restoreProduct');
             Route::delete('/{id}/force-delete', 'forceDeleteProduct')->name('inventory.forceDeleteProduct');
-
         });
 
     Route::middleware('role:officer|admin')->controller(SalesController::class)->prefix('sales')
@@ -105,7 +104,6 @@ Route::middleware('auth')->group(function () {
             Route::get('/', 'index')->name('reports.index');
             Route::get('/generate', 'generate')->name('reports.generate');
             Route::get('/preview', 'preview')->name('reports.preview');
-
         });
 
 
