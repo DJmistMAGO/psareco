@@ -15,35 +15,35 @@ use Illuminate\Support\Facades\Auth;
 class FarmersController extends Controller
 {
     public function index()
-    {
-        $availableMachinery = Machinery::where('status', 'Available')->get();
+{
+    $availableMachinery = Machinery::all();
 
-        $disabledDatesByMachine = BookingSlot::whereHas('booking', function ($query) {
-            $query->whereIn('status', ['Pending', 'Approved']);
+    $disabledDatesByMachine = BookingSlot::whereHas('booking', function ($query) {
+        $query->whereIn('status', ['Pending', 'Approved']);
+    })
+        ->whereDate('booking_date', '>=', Carbon::today())
+        ->get(['machine_id', 'booking_date'])
+        ->groupBy('machine_id')
+        ->map(function ($slots) {
+            return $slots
+                ->pluck('booking_date')
+                ->map(fn($date) => Carbon::parse($date)->format('Y-m-d'))
+                ->unique()
+                ->values()
+                ->toArray();
         })
-            ->whereDate('booking_date', '>=', Carbon::today())
-            ->get(['machine_id', 'booking_date'])
-            ->groupBy('machine_id')
-            ->map(function ($slots) {
-                return $slots
-                    ->pluck('booking_date')
-                    ->map(fn($date) => Carbon::parse($date)->format('Y-m-d'))
-                    ->unique()
-                    ->values()
-                    ->toArray();
-            })
-            ->toArray();
+        ->toArray();
 
-        // dd($disabledDatesByMachine);
+    $userBookings = Booking::where('user_id', Auth::id())
+        ->whereIn('status', ['Pending', 'Approved'])
+        ->get();
 
-        $userBookings = Booking::where('user_id', Auth::id())->whereIn('status', ['Pending', 'Approved'])->get();
-
-        return view('farmer.book-machinery', compact(
-            'availableMachinery',
-            'disabledDatesByMachine',
-            'userBookings'
-        ));
-    }
+    return view('farmer.book-machinery', compact(
+        'availableMachinery',
+        'disabledDatesByMachine',
+        'userBookings'
+    ));
+}
 
     public function bookingDetails($id)
 {
