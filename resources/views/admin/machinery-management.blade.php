@@ -1,6 +1,8 @@
 @extends('layouts.app')
 @section('title', 'Machinery Management - PSARECO')
+
 @section('content')
+
 	@php
 		$totalMachinery = $totalMachinery ?? ($machineries->count() ?? 12);
 		$availableCount = $availableCount ?? 7;
@@ -10,6 +12,7 @@
 		$storeRoute = Route::has('machinery.store') ? route('machinery.store') : '#';
 		$indexRoute = Route::has('machinery.index') ? route('machinery.index') : '#';
 	@endphp
+
 	<div x-data="{
     showView: false,
     showEdit: false,
@@ -289,6 +292,8 @@
 	    status: 'All',
 	    sort: 'default',
 	    machineries: @js($machineries->values()),
+	    showDetails: false,
+	    selected: null,
 	    get filteredMachineries() {
 	        let items = [...this.machineries];
 	        if (this.search.trim() !== '') {
@@ -312,6 +317,10 @@
 	            items.sort((a, b) => (a.machinery_name || '').localeCompare(b.machinery_name || ''));
 	        }
 	        return items;
+	    },
+	    openDetails(item) {
+	        this.selected = item;
+	        this.showDetails = true;
 	    }
 	}">
 					<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
@@ -324,6 +333,7 @@
 							<span><span x-text="filteredMachineries.length"></span> machines</span>
 						</div>
 					</div>
+
 					<section class="bg-white border border-slate-100 rounded-2xl shadow-sm p-4 mb-6">
 						<div class="flex flex-col lg:flex-row gap-3">
 							<div class="relative flex-1">
@@ -364,15 +374,17 @@
 							</template>
 						</div>
 					</section>
+
 					<template x-if="filteredMachineries.length > 0">
 						<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
 							<template x-for="item in filteredMachineries" :key="item.id">
-								<article
-									class="bg-white border border-slate-100 rounded-2xl shadow-sm overflow-hidden hover:shadow-md hover:border-emerald-100 transition">
+								<article @click="openDetails(item)"
+									class="group relative bg-white border border-slate-100 rounded-2xl shadow-sm overflow-hidden hover:shadow-lg hover:border-emerald-200 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer">
 									<div class="relative">
-										<div class="h-48 bg-slate-50 flex items-center justify-center overflow-hidden">
+										<div class="h-48 bg-slate-50 flex items-center justify-center overflow-hidden p-3">
 											<template x-if="item.image_path">
-												<img :src="`/storage/${item.image_path}`" :alt="item.machinery_name" class="w-full h-full object-cover">
+												<img :src="`/storage/${item.image_path}`" :alt="item.machinery_name"
+													class="max-w-full max-h-full w-auto h-auto object-contain transition-transform duration-300 group-hover:scale-105">
 											</template>
 											<template x-if="!item.image_path">
 												<div class="flex flex-col items-center justify-center text-slate-300">
@@ -381,6 +393,17 @@
 												</div>
 											</template>
 										</div>
+
+										{{-- Hover overlay tooltip --}}
+										<div
+											class="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/10 transition-colors duration-200 flex items-end justify-center pb-3 pointer-events-none">
+											<span
+												class="opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-200 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900/80 backdrop-blur-sm text-white text-[11px] font-semibold shadow-sm">
+												<i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+												Click for details
+											</span>
+										</div>
+
 										<div class="absolute top-3 right-3">
 											<span class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[10px] font-bold shadow-sm"
 												:class="{
@@ -397,16 +420,20 @@
 											</span>
 										</div>
 									</div>
+
 									<div class="p-4">
 										<div class="flex items-start justify-between gap-3">
 											<div class="min-w-0">
-												<h3 class="font-bold text-slate-800 truncate" x-text="item.machinery_name"></h3>
+												<h3 class="font-bold text-slate-800 truncate group-hover:text-emerald-700 transition-colors"
+													x-text="item.machinery_name"></h3>
 												<p class="text-xs text-slate-400 mt-0.5" x-text="item.model || 'Model not specified'"></p>
 											</div>
-											<div class="w-9 h-9 shrink-0 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+											<div
+												class="w-9 h-9 shrink-0 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:bg-emerald-100 transition-colors">
 												<i class="fa-solid fa-tractor text-sm"></i>
 											</div>
 										</div>
+
 										<div class="grid grid-cols-2 gap-3 mt-4">
 											<div class="rounded-xl bg-slate-50 border border-slate-100 p-3">
 												<p class="text-[10px] font-bold uppercase tracking-wide text-slate-400">Rent / Hour</p>
@@ -420,30 +447,21 @@
 												<p class="mt-1 text-sm font-bold text-slate-700" x-text="item.total_units || 1"></p>
 											</div>
 										</div>
+
 										<div class="mt-3 flex items-center justify-between text-xs">
-											<div class="flex items-center gap-2 text-slate-400 min-w-0">
-												<i class="fa-solid fa-barcode shrink-0"></i>
+											<div class="flex items-center gap-1.5 text-slate-400 min-w-0">
+												<i class="fa-solid fa-barcode text-[11px] shrink-0"></i>
 												<span class="font-mono text-slate-500 truncate" x-text="item.serial_number || 'N/A'"></span>
 											</div>
 											<span x-show="item.status === 'Available'" class="text-emerald-600 font-semibold shrink-0 ml-2">Ready to
 												rent</span>
-										</div>
-										<div class="mt-4 pt-3 border-t border-slate-100">
-											<div x-show="item.status === 'Available'"
-												class="flex items-center gap-2 text-xs text-emerald-700 font-semibold">
-												<i class="fa-solid fa-circle-check"></i>
-												Machinery is available
-											</div>
-											<div x-show="item.status !== 'Available'" class="flex items-center gap-2 text-xs text-slate-400 font-medium">
-												<i class="fa-solid fa-circle-info"></i>
-												Currently unavailable for rental
-											</div>
 										</div>
 									</div>
 								</article>
 							</template>
 						</div>
 					</template>
+
 					<template x-if="filteredMachineries.length === 0">
 						<section class="bg-white border border-dashed border-slate-200 rounded-2xl p-10 text-center">
 							<div class="mx-auto w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
@@ -458,6 +476,95 @@
 							</button>
 						</section>
 					</template>
+
+					{{-- DETAILS MODAL --}}
+					<div x-show="showDetails" x-cloak class="fixed inset-0 z-50 overflow-y-auto" aria-modal="true" role="dialog">
+						<div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm" @click="showDetails = false"></div>
+						<div class="relative min-h-screen flex items-center justify-center p-4">
+							<div class="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden" x-show="showDetails"
+								x-transition x-trap.noscroll="showDetails">
+								<template x-if="selected">
+									<div>
+										<div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+											<div class="flex items-center gap-3 min-w-0">
+												<div class="w-10 h-10 shrink-0 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+													<i class="fa-solid fa-tractor"></i>
+												</div>
+												<div class="min-w-0">
+													<h2 class="text-base font-bold text-slate-800 truncate" x-text="selected.machinery_name"></h2>
+													<p class="text-xs text-slate-400 mt-0.5" x-text="selected.model || 'Model not specified'"></p>
+												</div>
+											</div>
+											<button type="button" @click="showDetails = false"
+												class="px-5 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-600 text-xs font-semibold hover:bg-slate-100 transition">Close</button>
+										</div>
+
+										<div
+											class="h-64 sm:h-80 bg-slate-50 flex items-center justify-center overflow-hidden p-6 border-b border-slate-100">
+											<template x-if="selected.image_path">
+												<img :src="`/storage/${selected.image_path}`" :alt="selected.machinery_name"
+													class="max-w-full max-h-full w-auto h-auto object-contain">
+											</template>
+											<template x-if="!selected.image_path">
+												<div class="flex flex-col items-center justify-center text-slate-300">
+													<i class="fa-solid fa-tractor text-5xl mb-2"></i>
+													<span class="text-sm font-medium">No image available</span>
+												</div>
+											</template>
+										</div>
+
+										<div class="p-6">
+											<div class="flex items-center justify-between mb-5">
+												<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold"
+													:class="{
+													    'bg-emerald-50 text-emerald-700': selected.status === 'Available',
+													    'bg-blue-50 text-blue-700': selected.status === 'Reserved',
+													    'bg-amber-50 text-amber-700': selected.status === 'In Use',
+													    'bg-orange-50 text-orange-700': selected.status === 'Under Maintenance',
+													    'bg-red-50 text-red-700': selected.status === 'Unavailable',
+													    'bg-slate-50 text-slate-700': !['Available', 'Reserved', 'In Use', 'Under Maintenance', 'Unavailable']
+													        .includes(selected.status)
+													}">
+													<span class="w-1.5 h-1.5 rounded-full bg-current"></span>
+													<span x-text="selected.status"></span>
+												</span>
+												<p class="text-2xl font-bold text-emerald-700">
+													₱<span
+														x-text="Number(selected.price || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })"></span>
+													<span class="text-xs font-medium text-slate-400">/ hour</span>
+												</p>
+											</div>
+
+											<div class="grid grid-cols-2 gap-4">
+												<div class="rounded-xl bg-slate-50 border border-slate-100 p-4">
+													<p class="text-[10px] font-bold uppercase tracking-wide text-slate-400">Serial Number</p>
+													<p class="mt-1 text-sm font-mono font-semibold text-slate-700" x-text="selected.serial_number || 'N/A'">
+													</p>
+												</div>
+												<div class="rounded-xl bg-slate-50 border border-slate-100 p-4">
+													<p class="text-[10px] font-bold uppercase tracking-wide text-slate-400">Available Units</p>
+													<p class="mt-1 text-sm font-semibold text-slate-700" x-text="selected.total_units || 1"></p>
+												</div>
+											</div>
+
+											<div class="mt-5 pt-5 border-t border-slate-100">
+												<div x-show="selected.status === 'Available'"
+													class="flex items-center gap-2 text-sm text-emerald-700 font-semibold">
+													<i class="fa-solid fa-circle-check"></i>
+													This machinery is available for rental
+												</div>
+												<div x-show="selected.status !== 'Available'"
+													class="flex items-center gap-2 text-sm text-slate-400 font-medium">
+													<i class="fa-solid fa-circle-info"></i>
+													Currently unavailable for rental
+												</div>
+											</div>
+										</div>
+									</div>
+								</template>
+							</div>
+						</div>
+					</div>
 				</div>
 			@endrole
 		</main>
