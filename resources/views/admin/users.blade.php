@@ -416,7 +416,7 @@
 										</button>
 
 										<x-confirm-modal title="Reset Password"
-											message="Are you sure you want to reset the password for {{ $user['name'] }}? This will generate a new temporary password and send it to their email."
+											message="Are you sure you want to reset the password for {{ $user['name'] }}? This will generate a new temporary password."
 											confirm-text="Reset" cancel-text="Cancel" confirm-class="bg-emerald-600 hover:bg-emerald-700"
 											:action="route('user-management.resetPassword', $user['id'])" method="POST">
 											<button type="button"
