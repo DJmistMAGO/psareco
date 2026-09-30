@@ -370,17 +370,82 @@
                             </button>
                         </x-confirm-modal>
 
-                        <!-- Decline Button Modal / Prompt -->
-                        <x-confirm-modal title="Decline Booking" :message="'Are you sure you want to decline this booking request?'" confirmText="Decline Booking"
-                            confirmClass="bg-red-600 hover:bg-red-700 text-white" icon="fa-circle-xmark" :action="route('officer.decline-booking', $booking->id)"
-                            method="PUT" :data='"<div class=\"mt-3\"><label class=\"block text-xs font-semibold text-slate-700 mb-1\">Reason / Remarks</label><textarea name=\"remarks\" rows=\"3\" class=\"w-full p-2.5 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-red-500 focus:outline-none\" placeholder=\"Specify reason for declining...\" required></textarea></div>"'>
-
-                            <button type="button" title="Decline Booking"
+                        <!-- Custom Standalone Decline Modal -->
+                        <div x-data="{ open: false }">
+                            <!-- Trigger Button -->
+                            <button type="button" @click="open = true" title="Decline Booking"
                                 class="inline-flex items-center gap-1.5 bg-white text-red-600 border border-red-200 hover:bg-red-50 hover:border-red-300 font-semibold text-xs py-2 px-3.5 rounded-xl shadow-sm transition-all duration-150 focus:ring-2 focus:ring-red-500/20 active:scale-95">
                                 <i class="fa-solid fa-circle-xmark text-sm"></i>
                                 <span>Decline</span>
                             </button>
-                        </x-confirm-modal>
+
+                            <!-- Modal Backdrop and Container -->
+                            <div x-show="open" x-cloak
+                                class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm"
+                                x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0"
+                                x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150"
+                                x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+
+                                <!-- Modal Box -->
+                                <div @click.away="open = false" @keydown.escape.window="open = false"
+                                    class="relative w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden"
+                                    x-transition:enter="transition ease-out duration-200"
+                                    x-transition:enter-start="opacity-0 scale-95"
+                                    x-transition:enter-end="opacity-100 scale-100"
+                                    x-transition:leave="transition ease-in duration-150"
+                                    x-transition:leave-start="opacity-100 scale-100"
+                                    x-transition:leave-end="opacity-0 scale-95">
+
+                                    <!-- Header -->
+                                    <div class="flex items-center justify-between p-4 border-b border-slate-100">
+                                        <div class="flex items-center gap-2 text-red-600 font-semibold text-sm">
+                                            <i class="fa-solid fa-circle-xmark text-base"></i>
+                                            <span>Decline Booking</span>
+                                        </div>
+                                        <button @click="open = false" type="button"
+                                            class="text-slate-400 hover:text-slate-600 transition-colors">
+                                            <i class="fa-solid fa-xmark text-sm"></i>
+                                        </button>
+                                    </div>
+
+                                    <!-- Form -->
+                                    <form action="{{ route('officer.decline-booking', $booking->id) }}" method="POST">
+                                        @csrf
+                                        @method('PUT')
+
+                                        <div class="p-4 space-y-3">
+                                            <p class="text-xs text-slate-600">
+                                                Are you sure you want to decline this booking request? Please specify the reason
+                                                below.
+                                            </p>
+
+                                            <div>
+                                                <label class="block text-xs font-semibold text-slate-700 mb-1">
+                                                    Reason / Remarks <span class="text-red-500">*</span>
+                                                </label>
+                                                <textarea name="remarks" rows="3" required
+                                                    class="w-full p-2.5 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 focus:outline-none transition-all placeholder:text-slate-400 resize-none"
+                                                    placeholder="Specify reason for declining..."></textarea>
+                                            </div>
+                                        </div>
+
+                                        <!-- Footer / Actions -->
+                                        <div
+                                            class="flex items-center justify-end gap-2 p-4 bg-slate-50 border-t border-slate-100">
+                                            <button type="button" @click="open = false"
+                                                class="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-200/60 rounded-xl transition-all">
+                                                Cancel
+                                            </button>
+                                            <button type="submit"
+                                                class="inline-flex items-center gap-1.5 bg-red-600 hover:bg-red-700 text-white font-semibold text-xs py-2 px-3.5 rounded-xl shadow-sm transition-all duration-150 focus:ring-2 focus:ring-red-500/20 active:scale-95">
+                                                <i class="fa-solid fa-circle-xmark text-xs"></i>
+                                                <span>Decline Booking</span>
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 @elseif ($booking->status === 'Completed')
                     <div
@@ -406,7 +471,7 @@
         <x-success />
         <x-errors />
 
-        @if ($booking->status === 'Approved' || $booking->status === 'Completed' )
+        @if ($booking->status === 'Approved' || $booking->status === 'Completed')
             <div x-data="{ tab: 'pending' }"
                 class="bg-white
                 rounded-2xl
@@ -506,16 +571,12 @@
                                     <tr class="hover:bg-slate-50/60
                                     transition-colors">
 
-                                        <td
-                                            class="py-3 px-4
-                                        font-medium
-                                        text-slate-800">
+                                        <td class="py-3 px-4 font-medium text-slate-800">
                                             Day {{ $loop->iteration }}
                                             <input type="hidden" name="slot_id[]" value="{{ $slot->id }}">
                                         </td>
 
-                                        <td class="py-3 px-4
-                                        text-slate-600">
+                                        <td class="py-3 px-4 text-slate-600">
                                             {{ \Carbon\Carbon::parse($slot->booking_date)->format('F j, Y') }}
                                         </td>
 
