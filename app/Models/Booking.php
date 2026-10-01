@@ -15,7 +15,9 @@ class Booking extends Model
         'machine_id',
         'user_id',
         'start_date',
+        'start_day_type',
         'end_date',
+        'end_day_type',
         'days',
         'total_hours',
         'total_amount',
@@ -30,8 +32,6 @@ class Booking extends Model
         'total_hours' => 'decimal:2',
         'total_amount' => 'decimal:2',
     ];
-
-    /* --- Relationships --- */
 
     public function user(): BelongsTo
     {
@@ -48,11 +48,6 @@ class Booking extends Model
         return $this->hasMany(BookingSlot::class)->orderBy('booking_date', 'asc');
     }
 
-    /* --- Helper Methods --- */
-
-    /**
-     * Recalculate total hours based on child slots.
-     */
     public function recalculateTotalHours(): void
     {
         $this->update([
