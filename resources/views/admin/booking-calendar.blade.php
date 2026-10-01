@@ -1,3 +1,4 @@
+
 @extends('layouts.app')
 
 @section('title', 'Booking Calendar - PSARECO')
@@ -9,14 +10,13 @@
 		<x-page-header eyebrow="PSARECO Booking Calendar" title="Booking Calendar"
 			description="View your approved machinery booking schedule" icon="fa-solid fa-calendar" />
 
-		<div class="bg-white rounded-none shadow-sm border border-slate-200 px-6 sm:px-12 lg:px-20 py-8 mb-6 print:hidden">
+		<div class="bg-white rounded-none shadow-sm border border-slate-200 px-3 sm:px-6 lg:px-12 xl:px-20 py-4 sm:py-6 lg:py-8 mb-6 print:hidden overflow-hidden">
 			<div id="calendar" class="w-full mx-auto"></div>
 		</div>
 	</main>
 
-	{{-- Tooltip element, positioned via JS --}}
 	<div id="booking-tooltip"
-		class="hidden fixed z-50 w-64 bg-white rounded-xl shadow-lg border border-slate-200 p-4 pointer-events-none">
+		class="hidden fixed z-50 w-64 max-w-[calc(100vw-24px)] bg-white rounded-xl shadow-lg border border-slate-200 p-4 pointer-events-none">
 		<div class="flex items-center gap-2 mb-3">
 			<div id="booking-tooltip-dot" class="w-2.5 h-2.5 rounded-full shrink-0"></div>
 			<p id="booking-tooltip-machine" class="text-sm font-bold text-slate-800 truncate"></p>
@@ -76,13 +76,112 @@
 		.fc-event {
 			cursor: pointer;
 		}
+
+		.fc .fc-daygrid-day-number {
+			padding: 6px;
+			font-size: 0.875rem;
+		}
+
+		.fc .fc-event {
+			font-size: 0.75rem;
+		}
+
+		@media (max-width: 767px) {
+			.fc .fc-toolbar {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 8px;
+				margin-bottom: 12px;
+			}
+
+			.fc .fc-toolbar-chunk {
+				display: flex;
+				align-items: center;
+			}
+
+			.fc .fc-toolbar-title {
+				font-size: 1rem;
+				text-align: center;
+			}
+
+			.fc .fc-button {
+				padding: 0.4rem 0.6rem;
+				font-size: 0.75rem;
+			}
+
+			.fc .fc-toolbar-chunk:first-child {
+				order: 1;
+				width: 100%;
+				justify-content: center;
+			}
+
+			.fc .fc-toolbar-chunk:nth-child(2) {
+				order: 2;
+				width: 100%;
+				justify-content: center;
+			}
+
+			.fc .fc-toolbar-chunk:last-child {
+				order: 3;
+				width: 100%;
+				justify-content: center;
+			}
+
+			.fc .fc-daygrid-day-number {
+				padding: 4px;
+				font-size: 0.7rem;
+			}
+
+			.fc .fc-col-header-cell-cushion {
+				font-size: 0.65rem;
+				padding: 4px 2px;
+			}
+
+			.fc .fc-event {
+				font-size: 0.65rem;
+				padding: 1px 2px;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+
+			.fc .fc-daygrid-event {
+				margin-top: 1px;
+			}
+
+			.fc .fc-more-link {
+				font-size: 0.65rem;
+			}
+		}
+
+		@media (max-width: 480px) {
+			.fc .fc-toolbar-title {
+				font-size: 0.9rem;
+			}
+
+			.fc .fc-button {
+				padding: 0.35rem 0.5rem;
+				font-size: 0.7rem;
+			}
+
+			.fc .fc-daygrid-day-number {
+				font-size: 0.65rem;
+			}
+
+			.fc .fc-col-header-cell-cushion {
+				font-size: 0.6rem;
+			}
+
+			.fc .fc-event {
+				font-size: 0.6rem;
+			}
+		}
 	</style>
 @endpush
 
 @push('scripts')
 	<script>
 		document.addEventListener('DOMContentLoaded', function() {
-
 			const calendarDiv = document.getElementById('calendar');
 			const tooltip = document.getElementById('booking-tooltip');
 			const tooltipDot = document.getElementById('booking-tooltip-dot');
@@ -91,7 +190,11 @@
 			const tooltipDates = document.getElementById('booking-tooltip-dates');
 			const tooltipDuration = document.getElementById('booking-tooltip-duration');
 
+			const isMobile = window.innerWidth < 768;
+
 			function showTooltip(event, jsEvent) {
+				if (isMobile) return;
+
 				const props = event.extendedProps;
 
 				tooltipDot.style.backgroundColor = event.backgroundColor || '#64748b';
@@ -109,18 +212,23 @@
 			}
 
 			function positionTooltip(jsEvent) {
+				if (isMobile) return;
+
 				const padding = 12;
 				const tooltipRect = tooltip.getBoundingClientRect();
 				let left = jsEvent.clientX + padding;
 				let top = jsEvent.clientY + padding;
 
-				// Keep tooltip within viewport
 				if (left + tooltipRect.width > window.innerWidth) {
 					left = jsEvent.clientX - tooltipRect.width - padding;
 				}
+
 				if (top + tooltipRect.height > window.innerHeight) {
 					top = jsEvent.clientY - tooltipRect.height - padding;
 				}
+
+				left = Math.max(padding, left);
+				top = Math.max(padding, top);
 
 				tooltip.style.left = `${left}px`;
 				tooltip.style.top = `${top}px`;
@@ -137,9 +245,11 @@
 					window.interactionPlugin
 				],
 
-				initialView: 'dayGridMonth',
+				initialView: window.innerWidth < 768 ? 'dayGridMonth' : 'dayGridMonth',
 
-				height: '520px',
+				height: window.innerWidth < 768 ? 'auto' : '520px',
+
+				contentHeight: window.innerWidth < 768 ? 'auto' : undefined,
 
 				events: "{{ route('schedule.booking-calendar') }}",
 
@@ -152,14 +262,28 @@
 					right: 'dayGridMonth,timeGridWeek,timeGridDay'
 				},
 
+				dayMaxEvents: window.innerWidth < 768 ? 2 : false,
+
 				eventDidMount: function(info) {
-					info.el.addEventListener('mouseenter', (jsEvent) => showTooltip(info.event, jsEvent));
-					info.el.addEventListener('mousemove', (jsEvent) => positionTooltip(jsEvent));
-					info.el.addEventListener('mouseleave', hideTooltip);
+					if (!isMobile) {
+						info.el.addEventListener('mouseenter', (jsEvent) => {
+							showTooltip(info.event, jsEvent);
+						});
+
+						info.el.addEventListener('mousemove', (jsEvent) => {
+							positionTooltip(jsEvent);
+						});
+
+						info.el.addEventListener('mouseleave', hideTooltip);
+					}
 				}
 			});
 
 			calendar.render();
+
+			window.addEventListener('resize', function() {
+				calendar.updateSize();
+			});
 		});
 	</script>
 @endpush

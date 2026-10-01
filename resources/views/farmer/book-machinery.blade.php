@@ -219,7 +219,11 @@
                                     @endif
                                 </td>
                                 <td class="py-3 px-4 text-center">
-                                    @if ($booking->status === 'Pending')
+                                    <a href="{{ route('farmers.bookingDetails', $booking->id) }}"
+                                            class="mr-2 inline-flex items-center gap-1 bg-blue hover:bg-blue-50 text-slate-600 hover:text-emerald-700 font-small text-base py-1.5 px-3 rounded-lg border border-blue-200 hover:border-blue-200 shadow-sm transition-all duration-150">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </a>
+
                                         <x-confirm-modal
                                             title="Delete Booking"
                                             :message="'Are you sure you want to delete this booking?'"
@@ -233,12 +237,7 @@
                                                 <i class="fa-solid fa-trash-can"></i>
                                             </button>
                                         </x-confirm-modal>
-                                    @else
-                                        <a href="{{ route('farmers.bookingDetails', $booking->id) }}"
-                                            class="inline-flex items-center gap-1 bg-white hover:bg-emerald-50 text-slate-600 hover:text-emerald-700 font-medium text-base py-1.5 px-3 rounded-lg border border-slate-200 hover:border-emerald-200 shadow-sm transition-all duration-150">
-                                            <i class="fa-solid fa-calendar-days"></i>
-                                        </a>
-                                    @endif
+
                                 </td>
                             </tr>
                         @empty
