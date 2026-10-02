@@ -24,7 +24,6 @@
                         <p class="text-[11px] text-slate-400 mt-1">
                             Manage machinery rental requests and booking status.
                         </p>
-
                     </div>
 
                     <form action="{{ url()->current() }}" method="GET" class="relative w-full sm:w-64">
@@ -483,7 +482,6 @@
                                                                                     d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z">
                                                                                 </path>
                                                                             </svg>
-
                                                                             Processing...
                                                                         </span>
                                                                     </button>
