@@ -92,7 +92,7 @@ Route::middleware('auth')->group(function () {
             Route::delete('/{id}/force-delete', 'forceDeleteProduct')->name('inventory.forceDeleteProduct');
         });
 
-    Route::middleware('role:officer|admin')->controller(SalesController::class)->prefix('sales')
+    Route::middleware('role:officer')->controller(SalesController::class)->prefix('sales')
         ->group(function () {
             Route::get('/', 'index')->name('sales.index');
             Route::post('/checkout', 'checkout')->name('sales.checkout');

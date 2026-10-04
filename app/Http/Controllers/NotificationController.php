@@ -32,7 +32,7 @@ class NotificationController extends Controller
 
         $userNotification->markAsRead();
 
-        return redirect()->route('sales.index');
+        return redirect()->route('notifications.index');
     }
 
     public function markAllAsRead(Request $request)

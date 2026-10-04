@@ -10,62 +10,123 @@
 			description="Manage your farm resources efficiently with PSARECO Enterprise System" icon="fa-solid fa-chart-line" />
 
 		@role('admin|officer')
-			<section class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-				<div
-					class="bg-white rounded-2xl p-4 shadow-sm border-t-4 border-indigo-500 text-center flex flex-col items-center justify-between transition-transform hover:-translate-y-0.5">
-					<i class="fa-solid fa-boxes-stacked text-indigo-500 text-2xl mb-1"></i>
-					<span class="text-2xl sm:text-3xl font-extrabold text-slate-800 my-1">
-						{{ $totalInventory }}
-					</span>
-					<p class="text-xs font-medium text-slate-400">
-						Total Inventory Items
-					</p>
-				</div>
+			@if (auth()->user()->hasRole('admin'))
+				<section class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 mb-6">
+					<div
+						class="bg-white rounded-2xl p-4 shadow-sm border-t-4 border-slate-500 text-center flex flex-col items-center justify-between">
+						<i class="fa-solid fa-users text-slate-500 text-2xl mb-1"></i>
+						<span class="text-2xl sm:text-3xl font-extrabold text-slate-800 my-1">{{ $totalUsers }}</span>
+						<p class="text-xs font-medium text-slate-400">Total Users</p>
+					</div>
 
-				<div
-					class="bg-white rounded-2xl p-4 shadow-sm border-t-4 border-amber-400 text-center flex flex-col items-center justify-between transition-transform hover:-translate-y-0.5">
-					<i class="fa-solid fa-hourglass-half text-amber-400 text-2xl mb-1"></i>
-					<span class="text-2xl sm:text-3xl font-extrabold text-slate-800 my-1">
-						{{ $expiringCount }}
-					</span>
-					<p class="text-xs font-medium text-slate-400">
-						Expiring Soon (&lt;30 days)
-					</p>
-				</div>
+					<div
+						class="bg-white rounded-2xl p-4 shadow-sm border-t-4 border-emerald-500 text-center flex flex-col items-center justify-between">
+						<i class="fa-solid fa-seedling text-emerald-500 text-2xl mb-1"></i>
+						<span class="text-2xl sm:text-3xl font-extrabold text-slate-800 my-1">{{ $farmerUsers }}</span>
+						<p class="text-xs font-medium text-slate-400">Farmer Users</p>
+					</div>
 
-				<div
-					class="bg-white rounded-2xl p-4 shadow-sm border-t-4 border-red-500 text-center flex flex-col items-center justify-between transition-transform hover:-translate-y-0.5">
-					<i class="fa-solid fa-triangle-exclamation text-red-500 text-2xl mb-1"></i>
-					<span class="text-2xl sm:text-3xl font-extrabold text-slate-800 my-1">
-						{{ $lowStockCount }}
-					</span>
-					<p class="text-xs font-medium text-slate-400">
-						Low Stock Items
-					</p>
-				</div>
+					<div
+						class="bg-white rounded-2xl p-4 shadow-sm border-t-4 border-sky-500 text-center flex flex-col items-center justify-between">
+						<i class="fa-solid fa-user-tie text-sky-500 text-2xl mb-1"></i>
+						<span class="text-2xl sm:text-3xl font-extrabold text-slate-800 my-1">{{ $officerUsers }}</span>
+						<p class="text-xs font-medium text-slate-400">Officer Users</p>
+					</div>
 
-				<div
-					class="bg-white rounded-2xl p-4 shadow-sm border-t-4 border-emerald-500 text-center flex flex-col items-center justify-between transition-transform hover:-translate-y-0.5">
-					<i class="fa-solid fa-chart-line text-emerald-500 text-2xl mb-1"></i>
-					<span class="text-2xl sm:text-3xl font-extrabold text-slate-800 my-1">
-						₱{{ number_format($totalSales, 2) }}
-					</span>
-					<p class="text-xs font-medium text-slate-400">
-						Total Sales
-					</p>
-				</div>
+					<div
+						class="bg-white rounded-2xl p-4 shadow-sm border-t-4 border-teal-500 text-center flex flex-col items-center justify-between">
+						<i class="fa-solid fa-chart-line text-teal-500 text-2xl mb-1"></i>
+						<span class="text-xl sm:text-2xl font-extrabold text-slate-800 my-1">₱{{ number_format($totalSales, 2) }}</span>
+						<p class="text-xs font-medium text-slate-400">Total Sales</p>
+					</div>
 
-				<div
-					class="bg-white rounded-2xl p-4 shadow-sm border-t-4 border-sky-400 text-center flex flex-col items-center justify-between transition-transform hover:-translate-y-0.5">
-					<i class="fa-regular fa-clock text-sky-400 text-2xl mb-1"></i>
-					<span class="text-2xl sm:text-3xl font-extrabold text-slate-800 my-1">
-						{{ $pendingBookings }}
-					</span>
-					<p class="text-xs font-medium text-slate-400">
-						Pending Bookings
-					</p>
-				</div>
-			</section>
+					<div
+						class="bg-white rounded-2xl p-4 shadow-sm border-t-4 border-indigo-500 text-center flex flex-col items-center justify-between">
+						<i class="fa-solid fa-boxes-stacked text-indigo-500 text-2xl mb-1"></i>
+						<span class="text-2xl sm:text-3xl font-extrabold text-slate-800 my-1">{{ $totalInventory }}</span>
+						<p class="text-xs font-medium text-slate-400">Total Inventory</p>
+					</div>
+
+					<div
+						class="bg-white rounded-2xl p-4 shadow-sm border-t-4 border-amber-500 text-center flex flex-col items-center justify-between">
+						<i class="fa-solid fa-box-archive text-amber-500 text-2xl mb-1"></i>
+						<span class="text-2xl sm:text-3xl font-extrabold text-slate-800 my-1">{{ $totalArchivedItems }}</span>
+						<p class="text-xs font-medium text-slate-400">Archived Items</p>
+					</div>
+
+					<div
+						class="bg-white rounded-2xl p-4 shadow-sm border-t-4 border-orange-500 text-center flex flex-col items-center justify-between">
+						<i class="fa-solid fa-tractor text-orange-500 text-2xl mb-1"></i>
+						<span class="text-2xl sm:text-3xl font-extrabold text-slate-800 my-1">{{ $totalMachinery }}</span>
+						<p class="text-xs font-medium text-slate-400">Total Machineries</p>
+					</div>
+
+					<div
+						class="bg-white rounded-2xl p-4 shadow-sm border-t-4 border-blue-500 text-center flex flex-col items-center justify-between">
+						<i class="fa-solid fa-receipt text-blue-500 text-2xl mb-1"></i>
+						<span
+							class="text-2xl sm:text-3xl font-extrabold text-slate-800 my-1">{{ number_format($totalSalesTransactions) }}</span>
+						<p class="text-xs font-medium text-slate-400">Sales Transactions</p>
+					</div>
+				</section>
+			@else
+				<section class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+					<div
+						class="bg-white rounded-2xl p-4 shadow-sm border-t-4 border-indigo-500 text-center flex flex-col items-center justify-between transition-transform hover:-translate-y-0.5">
+						<i class="fa-solid fa-boxes-stacked text-indigo-500 text-2xl mb-1"></i>
+						<span class="text-2xl sm:text-3xl font-extrabold text-slate-800 my-1">
+							{{ $totalInventory }}
+						</span>
+						<p class="text-xs font-medium text-slate-400">
+							Total Inventory Items
+						</p>
+					</div>
+
+					<div
+						class="bg-white rounded-2xl p-4 shadow-sm border-t-4 border-amber-400 text-center flex flex-col items-center justify-between transition-transform hover:-translate-y-0.5">
+						<i class="fa-solid fa-hourglass-half text-amber-400 text-2xl mb-1"></i>
+						<span class="text-2xl sm:text-3xl font-extrabold text-slate-800 my-1">
+							{{ $expiringCount }}
+						</span>
+						<p class="text-xs font-medium text-slate-400">
+							Expiring Soon (&lt;30 days)
+						</p>
+					</div>
+
+					<div
+						class="bg-white rounded-2xl p-4 shadow-sm border-t-4 border-red-500 text-center flex flex-col items-center justify-between transition-transform hover:-translate-y-0.5">
+						<i class="fa-solid fa-triangle-exclamation text-red-500 text-2xl mb-1"></i>
+						<span class="text-2xl sm:text-3xl font-extrabold text-slate-800 my-1">
+							{{ $lowStockCount }}
+						</span>
+						<p class="text-xs font-medium text-slate-400">
+							Low Stock Items
+						</p>
+					</div>
+
+					<div
+						class="bg-white rounded-2xl p-4 shadow-sm border-t-4 border-emerald-500 text-center flex flex-col items-center justify-between transition-transform hover:-translate-y-0.5">
+						<i class="fa-solid fa-chart-line text-emerald-500 text-2xl mb-1"></i>
+						<span class="text-2xl sm:text-3xl font-extrabold text-slate-800 my-1">
+							₱{{ number_format($totalSales, 2) }}
+						</span>
+						<p class="text-xs font-medium text-slate-400">
+							Total Sales
+						</p>
+					</div>
+
+					<div
+						class="bg-white rounded-2xl p-4 shadow-sm border-t-4 border-sky-400 text-center flex flex-col items-center justify-between transition-transform hover:-translate-y-0.5">
+						<i class="fa-regular fa-clock text-sky-400 text-2xl mb-1"></i>
+						<span class="text-2xl sm:text-3xl font-extrabold text-slate-800 my-1">
+							{{ $pendingBookings }}
+						</span>
+						<p class="text-xs font-medium text-slate-400">
+							Pending Bookings
+						</p>
+					</div>
+				</section>
+			@endif
 		@endrole
 
 		@role('admin|officer')
@@ -148,6 +209,50 @@
 							</a>
 						</div>
 					</div>
+				@endrole
+
+				@role('admin')
+					<section class="bg-white rounded-2xl shadow-sm border border-slate-100/80 p-5">
+						<div class="flex items-center gap-2 pb-3 mb-2 border-b border-slate-100">
+							<i class="fa-solid fa-ranking-star text-emerald-700 text-sm"></i>
+							<h3 class="font-bold text-slate-700 text-sm">Product Sales Revenue</h3>
+						</div>
+						@if ($topSellingProducts->isNotEmpty())
+							<div class="h-64 w-full">
+								<canvas id="productSalesChart" aria-label="Product sales revenue chart" role="img"></canvas>
+							</div>
+						@else
+							<p class="py-8 text-center text-xs text-slate-400">No sales data</p>
+						@endif
+					</section>
+
+					<section class="bg-white rounded-2xl shadow-sm border border-slate-100/80 p-5">
+						<div class="flex items-center gap-2 pb-3 mb-2 border-b border-slate-100">
+							<i class="fa-solid fa-tractor text-sky-700 text-sm"></i>
+							<h3 class="font-bold text-slate-700 text-sm">Bookings by Machinery</h3>
+						</div>
+						@if ($topBookedMachinery->isNotEmpty())
+							<div class="h-64 w-full">
+								<canvas id="machineryBookingsChart" aria-label="Bookings by machinery chart" role="img"></canvas>
+							</div>
+						@else
+							<p class="py-8 text-center text-xs text-slate-400">No booking data</p>
+						@endif
+					</section>
+
+					<section class="bg-white rounded-2xl shadow-sm border border-slate-100/80 p-5">
+						<div class="flex items-center gap-2 pb-3 mb-2 border-b border-slate-100">
+							<i class="fa-solid fa-boxes-stacked text-indigo-700 text-sm"></i>
+							<h3 class="font-bold text-slate-700 text-sm">Current Stock by Product</h3>
+						</div>
+						@if ($inventoryStockItems->isNotEmpty())
+							<div class="h-64 w-full">
+								<canvas id="inventoryStockChart" aria-label="Current inventory stock by product chart" role="img"></canvas>
+							</div>
+						@else
+							<p class="py-8 text-center text-xs text-slate-400">No inventory data</p>
+						@endif
+					</section>
 				@endrole
 
 				<div class="bg-white rounded-2xl shadow-sm border border-slate-100/80 p-5 flex flex-col min-h-[180px]">
@@ -412,67 +517,205 @@
 	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 	<script>
 		document.addEventListener('DOMContentLoaded', function() {
-			const canvas = document.getElementById('salesTrendChart');
-
-			if (!canvas) return;
-
-			new Chart(canvas, {
-				type: 'line',
-				data: {
-					labels: @json($salesLabels),
-					datasets: [{
-						label: 'Sales',
-						data: @json($salesData),
-						borderWidth: 2,
-						tension: 0.4,
-						fill: true,
-						pointRadius: 3,
-						pointHoverRadius: 5
-					}]
-				},
-				options: {
-					responsive: true,
-					maintainAspectRatio: false,
-					plugins: {
-						legend: {
-							display: false
-						},
-						tooltip: {
-							callbacks: {
-								label: function(context) {
-									return '₱' + Number(context.raw).toLocaleString('en-PH', {
-										minimumFractionDigits: 2,
-										maximumFractionDigits: 2
-									});
-								}
-							}
-						}
+			const salesCanvas = document.getElementById('salesTrendChart');
+			if (salesCanvas) {
+				new Chart(salesCanvas, {
+					type: 'line',
+					data: {
+						labels: @json($salesLabels),
+						datasets: [{
+							label: 'Sales',
+							data: @json($salesData),
+							borderColor: '#16845b',
+							backgroundColor: 'rgba(22, 132, 91, 0.14)',
+							borderWidth: 2,
+							tension: 0.35,
+							fill: true,
+							pointRadius: 3,
+							pointHoverRadius: 5
+						}]
 					},
-					scales: {
-						x: {
-							grid: {
+					options: {
+						responsive: true,
+						maintainAspectRatio: false,
+						plugins: {
+							legend: {
 								display: false
 							},
-							ticks: {
-								font: {
-									size: 10
+							tooltip: {
+								callbacks: {
+									label: context => '₱' + Number(context.raw).toLocaleString('en-PH', {
+										minimumFractionDigits: 2,
+										maximumFractionDigits: 2
+									})
 								}
 							}
 						},
-						y: {
-							beginAtZero: true,
-							ticks: {
-								font: {
-									size: 10
+						scales: {
+							x: {
+								grid: {
+									display: false
 								},
-								callback: function(value) {
-									return '₱' + Number(value).toLocaleString('en-PH');
+								ticks: {
+									font: {
+										size: 10
+									}
+								}
+							},
+							y: {
+								beginAtZero: true,
+								ticks: {
+									font: {
+										size: 10
+									},
+									callback: value => '₱' + Number(value).toLocaleString('en-PH')
 								}
 							}
 						}
 					}
+				});
+			}
+
+			@role('admin')
+				const productSalesCanvas = document.getElementById('productSalesChart');
+				if (productSalesCanvas) {
+					const unitsSold = @json($topSellingProducts->pluck('units_sold')->values()).map(Number);
+					new Chart(productSalesCanvas, {
+						type: 'bar',
+						data: {
+							labels: @json($topSellingProducts->pluck('product_name')->values()),
+							datasets: [{
+								label: 'Sales Revenue',
+								data: @json($topSellingProducts->pluck('revenue')->values()).map(Number),
+								backgroundColor: '#16845b',
+								borderRadius: 4
+							}]
+						},
+						options: {
+							indexAxis: 'y',
+							responsive: true,
+							maintainAspectRatio: false,
+							plugins: {
+								legend: {
+									display: false
+								},
+								tooltip: {
+									callbacks: {
+										label: context => '₱' + Number(context.raw).toLocaleString('en-PH', {
+											minimumFractionDigits: 2,
+											maximumFractionDigits: 2
+										}) + ' revenue · ' + unitsSold[context.dataIndex] + ' units sold'
+									}
+								}
+							},
+							scales: {
+								x: {
+									beginAtZero: true,
+									ticks: {
+										callback: value => '₱' + Number(value).toLocaleString('en-PH')
+									}
+								},
+								y: {
+									grid: {
+										display: false
+									}
+								}
+							}
+						}
+					});
 				}
-			});
+
+				const machineryCanvas = document.getElementById('machineryBookingsChart');
+				if (machineryCanvas) {
+					new Chart(machineryCanvas, {
+						type: 'bar',
+						data: {
+							labels: @json($topBookedMachinery->pluck('machinery_name')->values()),
+							datasets: [{
+								label: 'Bookings',
+								data: @json($topBookedMachinery->pluck('booking_count')->values()).map(Number),
+								backgroundColor: '#1683a5',
+								borderRadius: 4
+							}]
+						},
+						options: {
+							indexAxis: 'y',
+							responsive: true,
+							maintainAspectRatio: false,
+							plugins: {
+								legend: {
+									display: false
+								},
+								tooltip: {
+									callbacks: {
+										label: context => Number(context.raw).toLocaleString('en-PH') +
+											' bookings'
+									}
+								}
+							},
+							scales: {
+								x: {
+									beginAtZero: true,
+									ticks: {
+										precision: 0
+									}
+								},
+								y: {
+									grid: {
+										display: false
+									}
+								}
+							}
+						}
+					});
+				}
+
+				const inventoryCanvas = document.getElementById('inventoryStockChart');
+				if (inventoryCanvas) {
+					const stockUnits = @json($inventoryStockItems->pluck('unit')->values());
+					new Chart(inventoryCanvas, {
+						type: 'bar',
+						data: {
+							labels: @json($inventoryStockItems->pluck('name')->values()),
+							datasets: [{
+								label: 'Units in Stock',
+								data: @json($inventoryStockItems->pluck('quantity')->values()).map(Number),
+								backgroundColor: '#6374b5',
+								borderRadius: 4
+							}]
+						},
+						options: {
+							indexAxis: 'y',
+							responsive: true,
+							maintainAspectRatio: false,
+							plugins: {
+								legend: {
+									display: false
+								},
+								tooltip: {
+									callbacks: {
+										label: context => Number(context.raw).toLocaleString('en-PH') + ' ' + (
+											stockUnits[context.dataIndex] || 'units')
+									}
+								}
+							},
+							scales: {
+								x: {
+									beginAtZero: true,
+									ticks: {
+										precision: 0
+									}
+								},
+								y: {
+									grid: {
+										display: false
+									}
+								}
+							}
+						}
+					});
+				}
+			@endrole
 		});
 	</script>
 @endpush

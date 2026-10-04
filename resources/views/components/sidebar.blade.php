@@ -5,8 +5,13 @@
 	class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 lg:hidden"></div>
 
 <aside @click.stop
-	:class="{ 'w-64': sidebarOpen, 'w-20': !sidebarOpen, '-translate-x-full lg:translate-x-0': !
-	    mobileOpen, 'translate-x-0': mobileOpen }"
+	:class="{
+	    'w-64': sidebarOpen,
+	    'w-20': !sidebarOpen,
+	    '-translate-x-full lg:translate-x-0': !
+	        mobileOpen,
+	    'translate-x-0': mobileOpen
+	}"
 	class="fixed lg:sticky inset-y-0 lg:top-0 left-0 z-50 bg-[#f2f8f4] flex flex-col justify-between border-r border-emerald-100/80 p-4 shrink-0 h-screen transition-all duration-300 ease-in-out">
 
 	<div>
@@ -48,11 +53,12 @@
 
 			@php
 				$menu = [];
+				$showAdminNotificationDot = auth()->user()->hasRole('admin') && auth()->user()->unreadNotifications()->exists();
 
 				if (auth()->user()->hasRole('admin')) {
 				    $menu = [
 				        ['route' => 'dashboard.index', 'icon' => 'fa-chart-line', 'title' => 'Dashboard'],
-				        ['route' => 'sales.index', 'icon' => 'fa-shopping-cart', 'title' => 'Sales'],
+				        // ['route' => 'sales.index', 'icon' => 'fa-shopping-cart', 'title' => 'Sales'],
 				        ['route' => 'reports.index', 'icon' => 'fa-file-alt', 'title' => 'Reports'],
 				        ['route' => 'user-management.index', 'icon' => 'fa-users-cog', 'title' => 'Users']
 				    ];
@@ -90,10 +96,16 @@
 				@endphp
 
 				<a href="{{ route($item['route']) }}" title="{{ $item['title'] }}" @click="mobileOpen = false"
-					class="flex items-center space-x-3 px-3 py-2.5 rounded-xl
+					class="relative flex items-center space-x-3 px-3 py-2.5 rounded-xl
                     transition-all duration-200 text-sm font-medium group {{ $active ? 'bg-[#3d8b68] text-white shadow-md' : 'text-slate-600 hover:bg-emerald-100/60 hover:text-emerald-900' }}">
 					<i
 						class="fa-solid {{ $item['icon'] }} w-5 text-center shrink-0 {{ $active ? 'text-white' : 'text-emerald-600 group-hover:text-emerald-700' }}"></i>
+					@if ($showAdminNotificationDot && $item['route'] === 'dashboard.index')
+						<span class="absolute left-7 top-2 z-10 flex h-2 w-2" aria-label="Unread notifications">
+							<span class="absolute -inset-1 inline-flex motion-safe:animate-ping rounded-full bg-red-300 opacity-100"></span>
+							<span class="relative z-10 inline-flex h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
+						</span>
+					@endif
 					<span x-show="sidebarOpen" x-transition class="truncate">
 						{{ $item['title'] }}
 					</span>
