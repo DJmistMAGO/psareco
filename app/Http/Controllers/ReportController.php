@@ -614,96 +614,28 @@ class ReportController extends Controller
 
         $table = $section->addTable($this->tableStyle());
 
-        $columns = [
-            ['Name', 3600],
-            ['Type', 1400],
-            ['Quantity', 1000],
-            ['Unit', 850],
-            ['Description', 3600],
-            ['Price (₱)', 1500],
-            ['Value (₱)', 1650],
-            ['Reorder Level', 1700],
-            ['Expiration', 1980],
-        ];
+        $columns = [['Name', 3600], ['Type', 1400], ['Quantity', 1000], ['Unit', 850], ['Description', 3600], ['Price (₱)', 1500], ['Value (₱)', 1650], ['Reorder Level', 1700], ['Expiration', 1980],];
 
         $table->addRow(400);
 
         foreach ($columns as [$header, $width]) {
-            $table->addCell($width, $this->headerCellStyle())
-                ->addText(
-                    $header,
-                    $this->headerFontStyle(),
-                    $this->headerParagraphStyle()
-                );
+            $table->addCell($width, $this->headerCellStyle())->addText($header, $this->headerFontStyle(), $this->headerParagraphStyle());
         }
 
-        $lowStockFontStyle = [
-            'size' => 9,
-            'color' => self::LOW_STOCK_RED,
-            'bold' => true,
-            'name' => self::FONT_FAMILY,
-        ];
+        $lowStockFontStyle = ['size' => 9, 'color' => self::LOW_STOCK_RED, 'bold' => true, 'name' => self::FONT_FAMILY,];
 
         foreach ($inventory as $item) {
             $isLowStock = $item->quantity <= $item->reorder_level;
-
             $table->addRow(100, ['exactHeight' => false]);
-
-            $table->addCell(3600)
-                ->addText($item->name, $this->cellFontStyle());
-
-            $table->addCell(1400)
-                ->addText($item->type ?? '-', $this->cellFontStyle());
-
-            $table->addCell(1000)
-                ->addText(
-                    number_format((float) $item->quantity, 2),
-                    $isLowStock ? $lowStockFontStyle : $this->cellFontStyle(),
-                    $this->numericParagraphStyle()
-                );
-
-            $table->addCell(850)
-                ->addText(
-                    $item->unit ?? '-',
-                    $this->cellFontStyle(),
-                    $this->numericParagraphStyle()
-                );
-
-            $table->addCell(3600)
-                ->addText(
-                    $item->description ?? '-',
-                    $this->cellFontStyle()
-                );
-
-            $table->addCell(1500)
-                ->addText(
-                    '₱ ' . number_format((float) $item->price, 2),
-                    $this->cellFontStyle(),
-                    $this->numericParagraphStyle()
-                );
-
-            $table->addCell(1650)
-                ->addText(
-                    '₱ ' . number_format(
-                        (float) $item->quantity * (float) $item->price,
-                        2
-                    ),
-                    $this->cellFontStyle(),
-                    $this->numericParagraphStyle()
-                );
-
-            $table->addCell(1700)
-                ->addText(
-                    number_format((float) $item->reorder_level, 2),
-                    $this->cellFontStyle(),
-                    $this->numericParagraphStyle()
-                );
-
-            $table->addCell(1980)
-                ->addText(
-                    $item->expiration_date?->format('M d, Y') ?? '-',
-                    $this->cellFontStyle()
-                );
+            $table->addCell(3600)->addText($item->name, $this->cellFontStyle());
+            $table->addCell(1400)->addText($item->type ?? '-', $this->cellFontStyle());
+            $table->addCell(1000)->addText($item->quantity, $isLowStock ? $lowStockFontStyle : $this->cellFontStyle(), $this->numericParagraphStyle());
+            $table->addCell(850)->addText($item->unit ?? '-', $this->cellFontStyle(), $this->numericParagraphStyle());
+            $table->addCell(3600)->addText($item->description ?? '-', $this->cellFontStyle());
+            $table->addCell(1500)->addText('₱ ' . number_format((float) $item->price, 2), $this->cellFontStyle(), $this->numericParagraphStyle());
+            $table->addCell(1650)->addText('₱ ' . number_format((float) $item->quantity * (float) $item->price, 2), $this->cellFontStyle(), $this->numericParagraphStyle());
+            $table->addCell(1700)->addText($item->reorder_level, $this->cellFontStyle(), $this->numericParagraphStyle());
+            $table->addCell(1980)->addText($item->expiration_date?->format('M d, Y') ?? '-', $this->cellFontStyle());
         }
 
         if ($inventory->isEmpty()) {
@@ -712,28 +644,12 @@ class ReportController extends Controller
             $cell = $table->addCell(17280);
             $cell->getStyle()->setGridSpan(9);
 
-            $cell->addText(
-                'No existing inventory found.',
-                [
-                    'italic' => true,
-                    'size' => 9,
-                    'color' => self::LABEL_GRAY,
-                    'name' => self::FONT_FAMILY,
-                ]
-            );
+            $cell->addText('No existing inventory found.', ['italic' => true, 'size' => 9, 'color' => self::LABEL_GRAY, 'name' => self::FONT_FAMILY,]);
         }
 
         $section->addTextBreak(1);
 
-        $section->addText(
-            'Items in red indicate quantity at or below reorder level.',
-            [
-                'italic' => true,
-                'size' => 8,
-                'color' => self::LABEL_GRAY,
-                'name' => self::FONT_FAMILY,
-            ]
-        );
+        $section->addText('Items in red indicate quantity at or below reorder level.', ['italic' => true, 'size' => 8, 'color' => self::LABEL_GRAY, 'name' => self::FONT_FAMILY,]);
 
         $this->addSignatory($section);
     }
@@ -755,12 +671,12 @@ class ReportController extends Controller
             $table->addRow(100, ['exactHeight' => false]);
             $table->addCell(2500)->addText($item->name, $this->cellFontStyle());
             $table->addCell(1200)->addText($item->type ?? '-', $this->cellFontStyle());
-            $table->addCell(1000)->addText(number_format((float) $item->quantity, 2), $this->cellFontStyle(), $this->numericParagraphStyle());
+            $table->addCell(1000)->addText($item->quantity, $this->cellFontStyle(), $this->numericParagraphStyle());
             $table->addCell(1900)->addText($item->description ?? '-', $this->cellFontStyle(), $this->numericParagraphStyle());
             $table->addCell(800)->addText($item->unit ?? '-', $this->cellFontStyle(), $this->numericParagraphStyle());
             $table->addCell(1500)->addText('₱ ' . number_format((float) $item->price, 2), $this->cellFontStyle(), $this->numericParagraphStyle());
             $table->addCell(1700)->addText('₱ ' . number_format((float) $item->quantity * (float) $item->price, 2), $this->cellFontStyle(), $this->numericParagraphStyle());
-            $table->addCell(1700)->addText(number_format((float) $item->reorder_level, 2), $this->cellFontStyle(), $this->numericParagraphStyle());
+            $table->addCell(1700)->addText($item->reorder_level, $this->cellFontStyle(), $this->numericParagraphStyle());
             $table->addCell(1980)->addText($item->expiration_date?->format('M d, Y') ?? '-', $this->cellFontStyle());
         }
         if ($expiringItems->isEmpty()) {
