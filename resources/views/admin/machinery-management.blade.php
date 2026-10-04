@@ -706,7 +706,8 @@
 											</template>
 										</div>
 									</label>
-									<input type="file" id="edit_image_path" name="image_path" accept="image/*" class="hidden"
+									<input type="file" id="edit_image_path" name="image_path" accept=".jpg,.jpeg,.png,image/jpeg,image/png"
+										class="hidden"
 										@change="
                             const file = $event.target.files[0];
                             if (file) {
@@ -805,8 +806,8 @@
 											</div>
 										</div>
 									</label>
-									<input type="file" id="image_path" name="image_path" accept="image/*" required class="hidden"
-										onchange="previewProductImage(this)">
+									<input type="file" id="image_path" name="image_path" accept=".jpg,.jpeg,.png,image/jpeg,image/png"
+										required class="hidden" onchange="previewProductImage(this)">
 									<p id="imageFileName" class="mt-2 text-[11px] text-slate-400 text-center truncate">PNG, JPG up to 2MB.
 										Required.</p>
 								</div>

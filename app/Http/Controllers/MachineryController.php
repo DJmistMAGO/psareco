@@ -55,8 +55,12 @@ class MachineryController extends Controller
             'model'          => 'required|string|max:255',
             'serial_number'  => 'required|string|max:255|unique:machineries,serial_number',
             'price'          => 'required|numeric|min:0',
-            'image_path'     => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'image_path'     => 'required|image|mimes:jpeg,png,jpg|extensions:jpg,jpeg,png|max:2048',
             'status'         => 'required|in:Available,Reserved,In Use,Under Maintenance,Unavailable',
+        ], [
+            'image_path.image' => 'Please upload a valid JPG, JPEG, or PNG image.',
+            'image_path.mimes' => 'Please upload a valid JPG, JPEG, or PNG image.',
+            'image_path.extensions' => 'Please upload a valid JPG, JPEG, or PNG image.',
         ]);
 
         if ($request->hasFile('image_path')) {
@@ -90,8 +94,12 @@ class MachineryController extends Controller
                 Rule::unique('machineries', 'serial_number')->ignore($machinery->id),
             ],
             'price'          => 'required|numeric|min:0',
-            'image_path'     => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'image_path'     => 'nullable|image|mimes:jpeg,png,jpg|extensions:jpg,jpeg,png|max:2048',
             'status'         => 'required|in:Available,Reserved,In Use,Under Maintenance,Unavailable',
+        ], [
+            'image_path.image' => 'Please upload a valid JPG, JPEG, or PNG image.',
+            'image_path.mimes' => 'Please upload a valid JPG, JPEG, or PNG image.',
+            'image_path.extensions' => 'Please upload a valid JPG, JPEG, or PNG image.',
         ]);
 
         // Handle image update and cleanup of old file
