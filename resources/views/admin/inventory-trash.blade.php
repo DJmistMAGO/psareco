@@ -13,20 +13,7 @@
 		<x-success />
 		<x-errors />
 
-		{{-- Stat cards ARE the tabs — no separate tab bar needed --}}
 		<section class="mb-6">
-			{{-- <div class="flex items-center gap-3 mb-4">
-				<div class="w-10 h-10 rounded-xl bg-red-50 text-red-600 flex items-center justify-center">
-					<i class="fa-solid fa-box-archive text-base"></i>
-				</div>
-				<div>
-					<h3 class="text-sm font-bold text-slate-800">Archived Inventory</h3>
-					<p class="text-xs text-slate-400">
-						{{ $totalDeleted }} {{ Str::plural('item', $totalDeleted) }} removed from active stock
-					</p>
-				</div>
-			</div> --}}
-
 			<div class="grid gap-4 sm:grid-cols-2" role="tablist">
 				<button type="button" role="tab" :aria-selected="tab === 'products'" @click="tab = 'products'"
 					class="relative text-left rounded-2xl border p-4 flex items-center gap-3 transition-all"
@@ -72,7 +59,6 @@
 			</div>
 		</section>
 
-		{{-- PRODUCTS PANEL --}}
 		<div x-show="tab === 'products'" x-cloak>
 			@if ($deletedInventories->count())
 				<section class="bg-white border border-slate-100 rounded-2xl shadow-sm overflow-hidden">
@@ -129,11 +115,13 @@
 										</td>
 										<td class="px-5 py-4">
 											<div class="flex items-center justify-end gap-2">
-												<form action="{{ route('inventory.restoreProduct', $item->id) }}" method="POST">
+												<form action="{{ route('inventory.restoreProduct', $item->id) }}" method="POST" x-data="{ submitting: false }"
+													x-on:submit="if (submitting) $event.preventDefault(); else submitting = true;">
 													@csrf
-													<button type="submit" title="Restore product"
-														class="w-9 h-9 inline-flex items-center justify-center rounded-lg text-emerald-600 hover:bg-emerald-50 transition">
-														<i class="fa-solid fa-rotate-left text-xs"></i>
+													<button type="submit" title="Restore product" :disabled="submitting" :aria-busy="submitting"
+														class="w-9 h-9 inline-flex items-center justify-center rounded-lg text-emerald-600 hover:bg-emerald-50 transition disabled:cursor-not-allowed disabled:opacity-50">
+														<i x-show="!submitting" class="fa-solid fa-rotate-left text-xs"></i>
+														<i x-show="submitting" class="fa-solid fa-spinner fa-spin text-xs" aria-hidden="true"></i>
 													</button>
 												</form>
 
@@ -198,12 +186,14 @@
 									</div>
 								</div>
 								<div class="mt-3 flex items-center justify-end gap-2">
-									<form action="{{ route('inventory.restoreProduct', $item->id) }}" method="POST">
+									<form action="{{ route('inventory.restoreProduct', $item->id) }}" method="POST" x-data="{ submitting: false }"
+										x-on:submit="if (submitting) $event.preventDefault(); else submitting = true;">
 										@csrf
-										<button type="submit"
-											class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-xs font-semibold transition">
-											<i class="fa-solid fa-rotate-left"></i>
-											Restore
+										<button type="submit" :disabled="submitting" :aria-busy="submitting"
+											class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-50">
+											<i x-show="!submitting" class="fa-solid fa-rotate-left"></i>
+											<i x-show="submitting" class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>
+											<span x-text="submitting ? 'Restoring...' : 'Restore'">Restore</span>
 										</button>
 									</form>
 									<x-confirm-modal title="Permanently Delete Product" :message="'Permanently delete ' . $item->name . '? This action cannot be undone.'" confirmText="Delete Permanently"
@@ -315,11 +305,13 @@
 										</td>
 										<td class="px-5 py-4">
 											<div class="flex items-center justify-end gap-2">
-												<form action="{{ route('machinery.restoreMachinery', $item->id) }}" method="POST">
+												<form action="{{ route('machinery.restoreMachinery', $item->id) }}" method="POST"
+													x-data="{ submitting: false }" x-on:submit="if (submitting) $event.preventDefault(); else submitting = true;">
 													@csrf
-													<button type="submit" title="Restore machinery"
-														class="w-9 h-9 inline-flex items-center justify-center rounded-lg text-emerald-600 hover:bg-emerald-50 transition">
-														<i class="fa-solid fa-rotate-left text-xs"></i>
+													<button type="submit" title="Restore machinery" :disabled="submitting" :aria-busy="submitting"
+														class="w-9 h-9 inline-flex items-center justify-center rounded-lg text-emerald-600 hover:bg-emerald-50 transition disabled:cursor-not-allowed disabled:opacity-50">
+														<i x-show="!submitting" class="fa-solid fa-rotate-left text-xs"></i>
+														<i x-show="submitting" class="fa-solid fa-spinner fa-spin text-xs" aria-hidden="true"></i>
 													</button>
 												</form>
 
@@ -389,12 +381,14 @@
 									</div>
 								</div>
 								<div class="mt-3 flex items-center justify-end gap-2">
-									<form action="{{ route('machinery.restoreMachinery', $item->id) }}" method="POST">
+									<form action="{{ route('machinery.restoreMachinery', $item->id) }}" method="POST" x-data="{ submitting: false }"
+										x-on:submit="if (submitting) $event.preventDefault(); else submitting = true;">
 										@csrf
-										<button type="submit"
-											class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-xs font-semibold transition">
-											<i class="fa-solid fa-rotate-left"></i>
-											Restore
+										<button type="submit" :disabled="submitting" :aria-busy="submitting"
+											class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-50">
+											<i x-show="!submitting" class="fa-solid fa-rotate-left"></i>
+											<i x-show="submitting" class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>
+											<span x-text="submitting ? 'Restoring...' : 'Restore'">Restore</span>
 										</button>
 									</form>
 									<x-confirm-modal title="Permanently Delete Machinery" :message="'Permanently delete ' . $item->machinery_name . '? This action cannot be undone.'" confirmText="Delete Permanently"
