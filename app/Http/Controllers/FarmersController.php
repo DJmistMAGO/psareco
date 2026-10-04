@@ -16,31 +16,63 @@ class FarmersController extends Controller
 {
     public function index()
     {
-        $availableMachinery = Machinery::where('status', 'Available')->get();
+        $availableMachinery = Machinery::all();
 
-        $disabledDatesByMachine = BookingSlot::whereHas('booking', function ($query) {
-            $query->whereIn('status', ['Pending', 'Approved']);
-        })
-            ->whereDate('booking_date', '>=', Carbon::today())
-            ->get(['machine_id', 'booking_date'])
-            ->groupBy('machine_id')
-            ->map(function ($slots) {
-                return $slots
-                    ->pluck('booking_date')
-                    ->map(fn($date) => Carbon::parse($date)->format('Y-m-d'))
-                    ->unique()
-                    ->values()
-                    ->toArray();
-            })
-            ->toArray();
+        // Query active bookings from today onwards
+        $bookings = Booking::whereIn('status', ['Pending', 'Approved'])
+            ->whereDate('end_date', '>=', Carbon::today())
+            ->get(['machine_id', 'start_date', 'end_date', 'start_day_type', 'end_day_type']);
 
-        // dd($disabledDatesByMachine);
+        $bookingDetailsByMachine = [];
 
-        $userBookings = Booking::where('user_id', Auth::id())->whereIn('status', ['Pending', 'Approved'])->get();
+        foreach ($bookings as $booking) {
+            $startDate = Carbon::parse($booking->start_date)->startOfDay();
+            $endDate = Carbon::parse($booking->end_date)->startOfDay();
+
+            // Convert CarbonPeriod to a standard zero-indexed array
+            $period = CarbonPeriod::create($startDate, $endDate)->toArray();
+            $totalDays = count($period);
+            $machineId = $booking->machine_id;
+
+            foreach ($period as $i => $date) {
+                $formattedDate = $date->format('Y-m-d');
+
+                // Determine session type using zero-indexed integer ($i)
+                if ($totalDays === 1) {
+                    // Single-day booking
+                    $dayType = $booking->start_day_type;
+                } elseif ($i === 0) {
+                    // Start date of multi-day booking
+                    $dayType = $booking->start_day_type;
+                } elseif ($i === $totalDays - 1) {
+                    // End date of multi-day booking
+                    $dayType = $booking->end_day_type;
+                } else {
+                    // Middle dates of multi-day booking
+                    $dayType = 'Whole Day';
+                }
+
+                // Initialize machine date array if not set
+                if (!isset($bookingDetailsByMachine[$machineId][$formattedDate])) {
+                    $bookingDetailsByMachine[$machineId][$formattedDate] = [];
+                }
+
+                // Prevent duplicate session entries
+                if (!in_array($dayType, $bookingDetailsByMachine[$machineId][$formattedDate])) {
+                    $bookingDetailsByMachine[$machineId][$formattedDate][] = $dayType;
+                }
+            }
+        }
+
+        //dd($bookingDetailsByMachine);
+
+        $userBookings = Booking::where('user_id', Auth::id())
+            ->whereIn('status', ['Pending', 'Approved'])
+            ->get();
 
         return view('farmer.book-machinery', compact(
             'availableMachinery',
-            'disabledDatesByMachine',
+            'bookingDetailsByMachine',
             'userBookings'
         ));
     }
@@ -188,10 +220,17 @@ class FarmersController extends Controller
 
     public function store(Request $request)
     {
+
+        $request->merge([
+            'end_day_type' => $request->input('end_day_type', $request->input('start_day_type'))
+        ]);
+
         $validated = $request->validate([
             'machine_id' => 'required|exists:machineries,id',
-            'start_date' => 'required|date|after_or_equal:today',
-            'end_date'   => 'required|date|after_or_equal:start_date',
+            'start_date'     => 'required|date|after_or_equal:today',
+            'start_day_type' => 'required|in:Whole Day,Morning Half Day,Afternoon Half Day',
+            'end_date'       => 'required|date|after_or_equal:start_date',
+            'end_day_type'   => 'required|in:Whole Day,Morning Half Day,Afternoon Half Day',
             'total_amount' => 'nullable|numeric|min:0',
         ]);
 
@@ -202,14 +241,14 @@ class FarmersController extends Controller
             $booking = Booking::create([
                 'machine_id'   => $validated['machine_id'],
                 'user_id'      => Auth::id(),
-                'start_date'   => $validated['start_date'],
-                'end_date'     => $validated['end_date'],
+                'start_date'     => $validated['start_date'],
+                'start_day_type' => $validated['start_day_type'],
+                'end_date'       => $validated['end_date'],
+                'end_day_type'   => $validated['end_day_type'],
                 'days'         => $period->count(),
                 'total_amount' => $validated['total_amount'] ?? 0,
                 'status'       => 'Pending',
             ]);
-
-            // $booking->machine->update(['status' => 'Reserved']);
 
             foreach ($period as $date) {
                 $booking->slots()->create([

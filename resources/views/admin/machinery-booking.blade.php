@@ -24,7 +24,6 @@
 						<p class="text-[11px] text-slate-400 mt-1">
 							Manage machinery rental requests and booking status.
 						</p>
-
 					</div>
 
 					<form action="{{ url()->current() }}" method="GET" class="relative w-full sm:w-64">
@@ -266,14 +265,19 @@
 										<i class="fa-solid fa-arrow-right text-[10px] text-slate-300"></i>
 
 										<div>
+
 											<p class="text-[10px] text-slate-400">
 												End
 											</p>
+
 											<p class="font-semibold text-slate-700">
 												{{ $booking->end_date->format('M j, Y') }}
 											</p>
+
 										</div>
+
 									</div>
+
 								</td>
 
 								<td class="px-5 py-4">
@@ -335,6 +339,13 @@
 								<td class="px-5 py-4 text-center">
 									@if ($booking->status === 'Pending')
 										<div x-data="{ declineModalOpen: false, submitting: false }" class="inline-flex items-center gap-1.5">
+
+											<div class="inline-flex items-center">
+												<a href="{{ route('farmers.bookingDetails', $booking->id) }}"
+													class="inline-flex items-center gap-2 bg-emerald-600 text-white hover:bg-emerald-700 font-semibold text-xs py-2 px-3.5 rounded-xl shadow-sm transition">
+													View Details
+												</a>
+											</div>
 
 											<x-confirm-modal title="Approve Booking" :message="'Are you sure you want to approve this booking?'" confirmText="Approve"
 												confirmClass="bg-green-600 hover:bg-green-700 text-white" icon="shield-alert" :action="route('officer.approve-booking', $booking->id)"
@@ -445,7 +456,6 @@
 																				<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z">
 																				</path>
 																			</svg>
-
 																			Processing...
 																		</span>
 																	</button>
@@ -458,7 +468,7 @@
 										</div>
 									@endif
 
-									@if ($booking->status === 'Approved')
+									@if ($booking->status === 'Approved' || $booking->status === 'Completed' || $booking->status === 'Declined')
 										<div class="inline-flex items-center">
 											<a href="{{ route('farmers.bookingDetails', $booking->id) }}"
 												class="inline-flex items-center gap-2 bg-emerald-600 text-white hover:bg-emerald-700 font-semibold text-xs py-2 px-3.5 rounded-xl shadow-sm transition">
