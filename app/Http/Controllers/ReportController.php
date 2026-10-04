@@ -556,54 +556,22 @@ class ReportController extends Controller
 
         $table = $section->addTable($this->tableStyle());
 
-        $columns = [
-            ['Date and Time', 2800],
-            ['Product', 3900],
-            ['Quantity', 1100],
-            ['Unit Price', 1900],
-            ['Total', 1900],
-            ['Buyer', 5680],
-        ];
+        $columns = [['Date and Time', 2800], ['Product', 3900], ['Quantity', 1100], ['Unit Price', 1900], ['Total', 1900], ['Buyer', 5680],];
 
         $table->addRow(400);
 
         foreach ($columns as [$header, $width]) {
-            $table->addCell($width, $this->headerCellStyle())
-                ->addText(
-                    $header,
-                    $this->headerFontStyle(),
-                    $this->headerParagraphStyle()
-                );
+            $table->addCell($width, $this->headerCellStyle())->addText($header, $this->headerFontStyle(), $this->headerParagraphStyle());
         }
 
         foreach ($sales as $sale) {
             $table->addRow(100, ['exactHeight' => false]);
-
-            $table->addCell(2800)
-                ->addText($sale->sale_date?->format('M d, Y g:i A') ?? '-', $this->cellFontStyle());
-
-            $table->addCell(3900)
-                ->addText($sale->product?->name ?? 'N/A', $this->cellFontStyle());
-
-            $table->addCell(1100)
-                ->addText(number_format((int) $sale->quantity), $this->cellFontStyle());
-
-            $table->addCell(1900)
-                ->addText(
-                    '₱ ' . number_format((float) $sale->price, 2),
-                    $this->cellFontStyle(),
-                    $this->numericParagraphStyle()
-                );
-
-            $table->addCell(1900)
-                ->addText(
-                    '₱ ' . number_format((float) $sale->total, 2),
-                    $this->cellFontStyle(),
-                    $this->numericParagraphStyle()
-                );
-
-            $table->addCell(5680)
-                ->addText($sale->buyer_name ?? 'N/A', $this->cellFontStyle());
+            $table->addCell(2800)->addText($sale->sale_date?->format('M d, Y g:i A') ?? '-', $this->cellFontStyle());
+            $table->addCell(3900)->addText($sale->product?->name ?? 'N/A', $this->cellFontStyle());
+            $table->addCell(1100)->addText(number_format((int) $sale->quantity), $this->cellFontStyle());
+            $table->addCell(1900)->addText('₱ ' . number_format((float) $sale->price, 2), $this->cellFontStyle(), $this->numericParagraphStyle());
+            $table->addCell(1900)->addText('₱ ' . number_format((float) $sale->total, 2), $this->cellFontStyle(), $this->numericParagraphStyle());
+            $table->addCell(5680)->addText($sale->buyer_name ?? 'N/A', $this->cellFontStyle());
         }
 
         if ($sales->isEmpty()) {
@@ -612,32 +580,17 @@ class ReportController extends Controller
             $cell = $table->addCell(17280);
             $cell->getStyle()->setGridSpan(6);
 
-            $cell->addText(
-                'No sales transactions found for this period.',
-                [
-                    'italic' => true,
-                    'size' => 9,
-                    'color' => self::LABEL_GRAY,
-                    'name' => self::FONT_FAMILY,
-                ]
-            );
+            $cell->addText('No sales transactions found for this period.', ['italic' => true, 'size' => 9, 'color' => self::LABEL_GRAY, 'name' => self::FONT_FAMILY,]);
         } else {
             $table->addRow();
 
-            // First 5 columns = 11600 twips
-            $totalLabelCell = $table->addCell(11600, $this->totalRowStyle());
-            $totalLabelCell->getStyle()->setGridSpan(5);
+            $totalLabelCell = $table->addCell(9700, $this->totalRowStyle());
+            $totalLabelCell->getStyle()->setGridSpan(4);
 
-            $totalLabelCell->addText(
-                'TOTAL SALES',
-                $this->totalFontStyle()
-            );
+            $totalLabelCell->addText('TOTAL SALES', $this->totalFontStyle());
 
-            $table->addCell(5680, $this->totalRowStyle())
-                ->addText(
-                    '₱ ' . number_format($salesIncome, 2),
-                    $this->totalFontStyle()
-                );
+            $table->addCell(1900, $this->totalRowStyle())->addText('₱ ' . number_format($salesIncome, 2), $this->totalFontStyle(), $this->numericParagraphStyle());
+            $table->addCell(5680, $this->totalRowStyle());
         }
 
         $this->addSignatory($section);
