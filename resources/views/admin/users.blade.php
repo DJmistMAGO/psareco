@@ -22,15 +22,66 @@
 		<x-success />
 
 		<div x-data="{
-    open: {{ $errors->any() && old('_form') === 'add_user' ? 'true' : 'false' }},
+    open: {{ old('_form') === 'add_user' ? 'true' : 'false' }},
     selectedRole: '{{ old('role', 'officer') }}',
+    emailTouched: false,
+    emailValid: false,
+    emailMessage: '',
+    contactTouched: false,
+    contactValid: false,
+    contactMessage: '',
+    validateEmail() {
+        const email = this.$refs.emailInput;
+        const value = email.value.trim();
+
+        this.emailTouched = true;
+
+        const emailRegex =
+            /^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)+$/;
+
+        if (!value) {
+            this.emailValid = false;
+            this.emailMessage = 'Email is required.';
+            return;
+        }
+
+        this.emailValid = emailRegex.test(value);
+
+        this.emailMessage = this.emailValid ?
+            'Email format is valid.' :
+            'Enter a valid email address.';
+    },
+
+    validateContactNumber() {
+        const contactNumber = this.$refs.contactNumberInput.value.trim();
+
+        this.contactTouched = true;
+
+        if (!contactNumber) {
+            this.contactValid = true;
+            this.contactMessage = '';
+            return;
+        }
+
+        // Allowed formats only:
+        // 09xxxxxxxxx
+        // +63xxxxxxxxxx
+        const phoneRegex = /^(09\d{9}|\+63\d{10})$/;
+
+        this.contactValid = phoneRegex.test(contactNumber);
+
+        this.contactMessage = this.contactValid ?
+            'Phone number format is valid.' :
+            'Use 09xxxxxxxxx or +63xxxxxxxxxx format.';
+    },
+
     generatePassword() {
         const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%';
         let pw = '';
         for (let i = 0; i < 12; i++) { pw += chars.charAt(Math.floor(Math.random() * chars.length)); } this.$refs.passwordInput.value = pw;
         this.$refs.passwordInput.type = 'text';
     }
-}" @open-add-user-modal.window="open = true" x-show="open" x-cloak
+}" x-init="$nextTick(() => { if ($refs.emailInput.value) validateEmail(); if ($refs.contactNumberInput.value) validateContactNumber(); })" @open-add-user-modal.window="open = true" x-show="open" x-cloak
 			class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
 			<div @click.outside="open = false"
 				class="w-full max-w-md max-h-[90vh] overflow-y-auto bg-white rounded-2xl shadow-xl">
@@ -68,7 +119,7 @@
 							<label for="name" class="block text-xs font-semibold text-slate-600 mb-1"> Full Name <span
 									class="text-red-500">*</span> </label>
 							<input type="text" id="name" name="name" value="{{ old('name') }}" placeholder="e.g. Juan Dela Cruz"
-								required
+								required pattern="[\p{L}\p{M} .'-]+" title="Use letters, spaces, apostrophes, periods, or hyphens."
 								class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs text-slate-800 focus:outline-none transition {{ $errors->has('name') ? 'border-red-500 bg-red-50/30 focus:ring-2 focus:ring-red-400' : 'border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:bg-white' }}">
 							@error('name')
 								<p class="mt-1 text-red-500 text-[11px] font-medium flex items-center gap-1"> <i
@@ -79,9 +130,14 @@
 						<div>
 							<label for="email" class="block text-xs font-semibold text-slate-600 mb-1"> Email Address <span
 									class="text-red-500">*</span> </label>
-							<input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="name@psareco.org"
-								required
+							<input type="email" id="email" name="email" value="{{ old('email') }}"
+								placeholder="mistmago.dev@gmail.com" required
+								pattern="[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)+"
+								title="Enter a valid email address, e.g. mistmago.dev@gmail.com" x-ref="emailInput" @input="validateEmail()"
+								@blur="validateEmail()" :aria-invalid="emailTouched && !emailValid"
 								class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs text-slate-800 focus:outline-none transition {{ $errors->has('email') ? 'border-red-500 bg-red-50/30 focus:ring-2 focus:ring-red-400' : 'border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:bg-white' }}">
+							<p x-show="emailTouched && emailMessage" x-text="emailMessage" aria-live="polite"
+								:class="emailValid ? 'text-emerald-600' : 'text-red-500'" class="mt-1 text-[11px] font-medium" x-cloak></p>
 							@error('email')
 								<p class="mt-1 text-red-500 text-[11px] font-medium flex items-center gap-1">
 									<i class="fa-solid fa-circle-info text-[10px]"></i> {{ $message }}
@@ -92,8 +148,12 @@
 						<div>
 							<label for="contact_number" class="block text-xs font-semibold text-slate-600 mb-1">Contact Number</label>
 							<input type="text" id="contact_number" name="contact_number" value="{{ old('contact_number') }}"
-								placeholder="09xx-xxx-xxxx"
+								placeholder="09xxxxxxxxx or +63xxxxxxxxxx" pattern="(09[0-9]{9}|\+63[0-9]{10})"
+								title="Use either 09xxxxxxxxx or +63xxxxxxxxxx." maxlength="13" inputmode="tel" x-ref="contactNumberInput"
+								@input="validateContactNumber()" @blur="validateContactNumber()" :aria-invalid="contactTouched && !contactValid"
 								class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs text-slate-800 focus:outline-none transition {{ $errors->has('contact_number') ? 'border-red-500 bg-red-50/30 focus:ring-2 focus:ring-red-400' : 'border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:bg-white' }}">
+							<p x-show="contactTouched && contactMessage" x-text="contactMessage" aria-live="polite"
+								:class="contactValid ? 'text-emerald-600' : 'text-red-500'" class="mt-1 text-[11px] font-medium" x-cloak></p>
 							@error('contact_number')
 								<p class="mt-1 text-red-500 text-[11px] font-medium flex items-center gap-1"><i
 										class="fa-solid fa-circle-info text-[10px]"></i> {{ $message }}</p>
@@ -132,7 +192,8 @@
 							<label for="position" class="block text-xs font-semibold text-slate-600 mb-1"> Position <span
 									class="text-slate-400 font-normal">(Optional)</span> </label>
 							<input type="text" id="position" name="position" value="{{ old('position') }}"
-								placeholder="Officer / Staff"
+								placeholder="Officer or Staff" pattern="[\p{L}\p{M} .'-]+"
+								title="Use letters, spaces, apostrophes, periods, or hyphens."
 								class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs text-slate-800 focus:outline-none transition {{ $errors->has('position') ? 'border-red-500 bg-red-50/30 focus:ring-2 focus:ring-red-400' : 'border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:bg-white' }}">
 							@error('position')
 								<p class="mt-1 text-red-500 text-[11px] font-medium flex items-center gap-1"><i
@@ -146,14 +207,113 @@
 							class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 transition"> Cancel </button>
 						<button type="submit"
 							class="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold text-xs py-2 px-4 rounded-xl shadow-sm transition-all cursor-pointer">
-							<i class="fa-solid fa-plus text-[11px]"></i> Register User </button>button
+							<i class="fa-solid fa-plus text-[11px]"></i> Register User </button>
 					</div>
 				</form>
 			</div>
 		</div>
 
 		{{-- View / Edit User modal --}}
-		<div x-data="{ open: false, urlTemplate: '{{ route('user-management.updateUser', ['id' => '__ID__']) }}', selectedUser: { id: null, name: '', email: '', contact_number: '', address: '', position: '', role: 'farmer', status: 'active', is_self: false, is_admin: false, created_at: '' }, get formAction() { return this.urlTemplate.replace('__ID__', this.selectedUser.id); } }" @open-view-user-modal.window="open = true; selectedUser = $event.detail.user"
+		<div x-data="{
+    open: {{ old('_form') === 'edit_user' ? 'true' : 'false' }},
+
+    urlTemplate: '{{ route('user-management.updateUser', ['id' => '__ID__']) }}',
+
+    selectedUser: {
+        id: @js(old('_user_id')),
+        name: @js(old('name', '')),
+        email: @js(old('email', '')),
+        contact_number: @js(old('contact_number', '')),
+        address: @js(old('address', '')),
+        position: @js(old('position', '')),
+        role: @js(old('role', 'farmer')),
+        status: @js(old('status', 'active')),
+        is_self: {{ old('_user_id') && (int) old('_user_id') === auth()->id() ? 'true' : 'false' }},
+        is_admin: false,
+        created_at: ''
+    },
+
+    emailTouched: false,
+    emailValid: false,
+    emailMessage: '',
+
+    contactTouched: false,
+    contactValid: true,
+    contactMessage: '',
+
+    validateEmail() {
+        const email = this.$refs.editEmailInput;
+        const value = email.value.trim();
+
+        this.emailTouched = true;
+
+        const emailRegex =
+            /^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)+$/;
+
+        if (!value) {
+            this.emailValid = false;
+            this.emailMessage = 'Email is required.';
+            return;
+        }
+
+        this.emailValid = emailRegex.test(value);
+
+        this.emailMessage = this.emailValid ?
+            'Email format is valid.' :
+            'Enter a valid email address.';
+    },
+
+    validateContactNumber() {
+        const contactNumber = this.$refs.editContactNumberInput.value.trim();
+
+        this.contactTouched = true;
+
+        // Contact number is optional.
+        if (!contactNumber) {
+            this.contactValid = true;
+            this.contactMessage = '';
+            return;
+        }
+
+        const phoneRegex = /^(09\d{9}|\+63\d{10})$/;
+
+        this.contactValid = phoneRegex.test(contactNumber);
+
+        this.contactMessage = this.contactValid ?
+            'Phone number format is valid.' :
+            'Use 09xxxxxxxxx or +63xxxxxxxxxx format.';
+    },
+
+    openUser(user) {
+        this.selectedUser = { ...user };
+
+        this.emailTouched = false;
+        this.emailValid = false;
+        this.emailMessage = '';
+
+        this.contactTouched = false;
+        this.contactValid = true;
+        this.contactMessage = '';
+
+        this.open = true;
+
+        this.$nextTick(() => {
+            if (!this.selectedUser.is_admin) {
+                this.validateEmail();
+                this.validateContactNumber();
+            }
+        });
+    },
+
+    get formAction() {
+        return this.urlTemplate.replace('__ID__', this.selectedUser.id);
+    }
+}" x-init="$nextTick(() => {
+    if (open) {
+        validateEmail();
+        validateContactNumber();
+    }
+})" @open-view-user-modal.window="openUser($event.detail.user)"
 			x-show="open" x-cloak
 			class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4" aria-modal="true"
 			role="dialog">
@@ -174,6 +334,8 @@
 				<form :action="formAction" method="POST" class="p-5">
 					@csrf
 					@method('PUT')
+					<input type="hidden" name="_form" value="edit_user">
+					<input type="hidden" name="_user_id" :value="selectedUser.id">
 
 					<div class="mb-5">
 						<label class="block text-xs font-semibold text-slate-600 mb-2">Assigned Role</label>
@@ -198,22 +360,63 @@
 						<div>
 							<label class="block text-xs font-semibold text-slate-600 mb-1"> Full Name <span class="text-red-500">*</span>
 							</label>
-							<input type="text" name="name" x-model="selectedUser.name" required :disabled="selectedUser.is_admin"
+							<input type="text" name="name" x-model="selectedUser.name" required pattern="[\p{L}\p{M} .'-]+"
+								title="Use letters, spaces, apostrophes, periods, or hyphens." :disabled="selectedUser.is_admin"
 								class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs text-slate-800 focus:outline-none transition {{ $errors->has('name') ? 'border-red-500 bg-red-50/30 focus:ring-2 focus:ring-red-400' : 'border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:bg-white' }} disabled:opacity-60 disabled:cursor-not-allowed">
 						</div>
 
 						<div>
-							<label class="block text-xs font-semibold text-slate-600 mb-1"> Email Address <span
-									class="text-red-500">*</span> </label>
-							<input type="email" name="email" x-model="selectedUser.email" required :disabled="selectedUser.is_admin"
-								class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs text-slate-800 focus:outline-none transition {{ $errors->has('email') ? 'border-red-500 bg-red-50/30 focus:ring-2 focus:ring-red-400' : 'border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:bg-white' }} disabled:opacity-60 disabled:cursor-not-allowed">
+							<label class="block text-xs font-semibold text-slate-600 mb-1">
+								Email Address <span class="text-red-500">*</span>
+							</label>
+
+							<input type="email" name="email" x-model="selectedUser.email" required
+								pattern="[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)+"
+								title="Enter a valid email address, e.g. mistmago.dev@gmail.com" x-ref="editEmailInput"
+								@input="validateEmail()" @blur="validateEmail()" :aria-invalid="emailTouched && !emailValid"
+								:disabled="selectedUser.is_admin"
+								class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs text-slate-800 focus:outline-none transition {{ $errors->has('email') ? 'border-red-500 bg-red-50/30 focus:ring-2 focus:ring-red-400' : 'border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:bg-white' }}
+                                    disabled:opacity-60 disabled:cursor-not-allowed">
+
+							<p x-show="emailTouched && emailMessage && !selectedUser.is_admin" x-text="emailMessage" aria-live="polite"
+								:class="emailValid ? 'text-emerald-600' : 'text-red-500'" class="mt-1 text-[11px] font-medium" x-cloak>
+							</p>
+
+							@error('email')
+								<p class="mt-1 text-red-500 text-[11px] font-medium flex items-center gap-1">
+									<i class="fa-solid fa-circle-info text-[10px]"></i>
+									{{ $message }}
+								</p>
+							@enderror
 						</div>
 
 						<div>
-							<label class="block text-xs font-semibold text-slate-600 mb-1">Contact Number</label>
+							<label class="block text-xs font-semibold text-slate-600 mb-1">
+								Contact Number
+							</label>
+
 							<input type="text" name="contact_number" x-model="selectedUser.contact_number"
-								:disabled="selectedUser.is_admin"
-								class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs text-slate-800 focus:outline-none transition border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:bg-white disabled:opacity-60 disabled:cursor-not-allowed">
+								placeholder="09xxxxxxxxx or +63xxxxxxxxxx" pattern="(09[0-9]{9}|\+63[0-9]{10})"
+								title="Use either 09xxxxxxxxx or +63xxxxxxxxxx." maxlength="13" inputmode="tel"
+								x-ref="editContactNumberInput" @input="validateContactNumber()" @blur="validateContactNumber()"
+								:aria-invalid="contactTouched && !contactValid" :disabled="selectedUser.is_admin"
+								class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs text-slate-800 focus:outline-none transition
+                                    {{ $errors->has('contact_number')
+																																				    ? 'border-red-500 bg-red-50/30 focus:ring-2 focus:ring-red-400'
+																																				    : 'border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:bg-white' }}
+                                    disabled:opacity-60 disabled:cursor-not-allowed">
+
+							<p x-show="contactTouched && contactMessage && !selectedUser.is_admin" x-text="contactMessage"
+								aria-live="polite" :class="contactValid ? 'text-emerald-600' : 'text-red-500'"
+								class="mt-1 text-[11px] font-medium" x-cloak>
+							</p>
+
+							@error('contact_number')
+								<p class="mt-1 text-red-500 text-[11px] font-medium flex items-center gap-1">
+									<i class="fa-solid fa-circle-info text-[10px]"></i>
+									{{ $message }}
+								</p>
+							@enderror
 						</div>
 
 						<div>
@@ -252,7 +455,8 @@
 						<div x-show="selectedUser.role === 'officer'">
 							<label class="block text-xs font-semibold text-slate-600 mb-1"> Position <span
 									class="text-slate-400 font-normal">(Optional)</span> </label>
-							<input type="text" name="position" x-model="selectedUser.position" :disabled="selectedUser.is_admin"
+							<input type="text" name="position" x-model="selectedUser.position" pattern="[\p{L}\p{M} .'-]+"
+								title="Use letters, spaces, apostrophes, periods, or hyphens." :disabled="selectedUser.is_admin"
 								class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs text-slate-800 focus:outline-none transition border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:bg-white disabled:opacity-60 disabled:cursor-not-allowed">
 						</div>
 					</div>

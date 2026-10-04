@@ -77,13 +77,13 @@ class UserManagementController extends Controller
     private function userValidationRules(?User $user = null): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', 'unique:users,email,' . ($user?->id ?? 'NULL')],
-            'contact_number' => ['nullable', 'string', 'max:20'],
-            'address' => ['nullable', 'string', 'max:255'],
-            'position' => ['nullable', 'string', 'max:100'],
-            'role' => ['required', 'in:officer,farmer'],
-            'status' => ['sometimes', 'required', 'in:active,inactive'],
+            'name' => ['required', 'string', 'max:255', 'regex:/^[\p{L}\p{M} .\'-]+$/u',],
+            'email' => ['required', 'string', 'max:255', 'regex:/^[A-Za-z0-9.!#$%&\'*+\/=?^_`{|}~-]+@[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)+$/', 'unique:users,email,' . ($user?->id ?? 'NULL'),],
+            'contact_number' => ['nullable', 'regex:/^(09[0-9]{9}|\+63[0-9]{10})$/',],
+            'address' => ['nullable', 'string', 'max:255',],
+            'position' => ['nullable', 'string', 'max:100', 'regex:/^[\p{L}\p{M} .\'-]+$/u',],
+            'role' => ['required', 'in:officer,farmer',],
+            'status' => ['sometimes', 'required', 'in:active,inactive',],
         ];
     }
 
@@ -551,7 +551,7 @@ class UserManagementController extends Controller
 
         $sheet->mergeCells(
             "A" . ($signatoryLineRow + 1) .
-            ":C" . ($signatoryLineRow + 1)
+                ":C" . ($signatoryLineRow + 1)
         );
 
         $generatedBy = auth()->user()?->name ?? 'N/A';
@@ -563,7 +563,7 @@ class UserManagementController extends Controller
 
         $sheet->getStyle(
             "A" . ($signatoryLineRow + 1) .
-            ":C" . ($signatoryLineRow + 1)
+                ":C" . ($signatoryLineRow + 1)
         )
             ->getFont()
             ->setName('Arial')
@@ -573,7 +573,7 @@ class UserManagementController extends Controller
         $sheet->getHeaderFooter()
             ->setOddFooter(
                 '&LPSARECO User Management Report' .
-                '&RPage &P of &N'
+                    '&RPage &P of &N'
             );
 
         $sheet->getHeaderFooter()
@@ -596,7 +596,7 @@ class UserManagementController extends Controller
             $fileName,
             [
                 'Content-Type' =>
-                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             ]
         );
     }
