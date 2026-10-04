@@ -454,46 +454,21 @@ class ReportController extends Controller
 
         $table = $section->addTable($this->tableStyle());
 
-        $columns = [
-            ['Machinery', 3200],
-            ['Model', 2800],
-            ['Serial Number', 3400],
-            ['Price (₱)', 2200],
-            ['Status', 5680],
-        ];
+        $columns = [['Machinery', 3200], ['Model', 2800], ['Serial Number', 3400], ['Price (₱)', 2200], ['Status', 5680],];
 
         $table->addRow(400);
 
         foreach ($columns as [$header, $width]) {
-            $table->addCell($width, $this->headerCellStyle())
-                ->addText(
-                    $header,
-                    $this->headerFontStyle(),
-                    $this->headerParagraphStyle()
-                );
+            $table->addCell($width, $this->headerCellStyle())->addText($header, $this->headerFontStyle(), $this->headerParagraphStyle());
         }
 
         foreach ($machinery as $machine) {
             $table->addRow(100, ['exactHeight' => false]);
-
-            $table->addCell(3200)
-                ->addText($machine->machinery_name, $this->cellFontStyle());
-
-            $table->addCell(2800)
-                ->addText($machine->model ?? '-', $this->cellFontStyle());
-
-            $table->addCell(3400)
-                ->addText($machine->serial_number ?? '-', $this->cellFontStyle());
-
-            $table->addCell(2200)
-                ->addText(
-                    number_format((float) $machine->price, 2),
-                    $this->cellFontStyle(),
-                    $this->numericParagraphStyle()
-                );
-
-            $table->addCell(5680)
-                ->addText($machine->status ?? '-', $this->cellFontStyle());
+            $table->addCell(3200)->addText($machine->machinery_name, $this->cellFontStyle());
+            $table->addCell(2800)->addText($machine->model ?? '-', $this->cellFontStyle());
+            $table->addCell(3400)->addText($machine->serial_number ?? '-', $this->cellFontStyle());
+            $table->addCell(2200)->addText('₱ ' . number_format((float) $machine->price, 2), $this->cellFontStyle(), $this->numericParagraphStyle());
+            $table->addCell(5680)->addText($machine->status ?? '-', $this->cellFontStyle());
         }
 
         if ($machinery->isEmpty()) {
@@ -502,15 +477,7 @@ class ReportController extends Controller
             $cell = $table->addCell(17280);
             $cell->getStyle()->setGridSpan(5);
 
-            $cell->addText(
-                'No machinery found.',
-                [
-                    'italic' => true,
-                    'size' => 9,
-                    'color' => self::LABEL_GRAY,
-                    'name' => self::FONT_FAMILY,
-                ]
-            );
+            $cell->addText('No machinery found.', ['italic' => true, 'size' => 9, 'color' => self::LABEL_GRAY, 'name' => self::FONT_FAMILY,]);
         }
 
         $this->addSignatory($section);
@@ -533,58 +500,23 @@ class ReportController extends Controller
 
         $table = $section->addTable($this->tableStyle());
 
-        $columns = [
-            ['Machinery', 3400],
-            ['Customer', 3800],
-            ['Start Date', 2200],
-            ['End Date', 2200],
-            ['Days', 900],
-            ['Hours', 1800],
-            ['Amount (₱)', 2980],
-        ];
+        $columns = [['Machinery', 3400], ['Customer', 3800], ['Start Date', 2200], ['End Date', 2200], ['Days', 900], ['Hours', 1800], ['Amount (₱)', 2980],];
 
         $table->addRow(400);
 
         foreach ($columns as [$header, $width]) {
-            $table->addCell($width, $this->headerCellStyle())
-                ->addText(
-                    $header,
-                    $this->headerFontStyle(),
-                    $this->headerParagraphStyle()
-                );
+            $table->addCell($width, $this->headerCellStyle())->addText($header, $this->headerFontStyle(), $this->headerParagraphStyle());
         }
 
         foreach ($bookings as $booking) {
             $table->addRow(100, ['exactHeight' => false]);
-
-            $table->addCell(3400)
-                ->addText($booking->machine?->machinery_name ?? 'N/A', $this->cellFontStyle());
-
-            $table->addCell(3800)
-                ->addText($booking->user?->name ?? 'N/A', $this->cellFontStyle());
-
-            $table->addCell(2200)
-                ->addText($booking->start_date?->format('M d, Y') ?? '-', $this->cellFontStyle());
-
-            $table->addCell(2200)
-                ->addText($booking->end_date?->format('M d, Y') ?? '-', $this->cellFontStyle());
-
-            $table->addCell(900)
-                ->addText((string) $booking->days, $this->cellFontStyle());
-
-            $table->addCell(1800)
-                ->addText(
-                    '₱ ' . number_format((float) $booking->total_hours, 2),
-                    $this->cellFontStyle(),
-                    $this->numericParagraphStyle()
-                );
-
-            $table->addCell(2980)
-                ->addText(
-                    '₱ ' . number_format((float) $booking->total_amount, 2),
-                    $this->cellFontStyle(),
-                    $this->numericParagraphStyle()
-                );
+            $table->addCell(3400)->addText($booking->machine?->machinery_name ?? 'N/A', $this->cellFontStyle());
+            $table->addCell(3800)->addText($booking->user?->name ?? 'N/A', $this->cellFontStyle());
+            $table->addCell(2200)->addText($booking->start_date?->format('M d, Y') ?? '-', $this->cellFontStyle());
+            $table->addCell(2200)->addText($booking->end_date?->format('M d, Y') ?? '-', $this->cellFontStyle());
+            $table->addCell(900)->addText((string) $booking->days, $this->cellFontStyle());
+            $table->addCell(1800)->addText(number_format((float) $booking->total_hours, 2), $this->cellFontStyle(), $this->numericParagraphStyle());
+            $table->addCell(2980)->addText('₱ ' . number_format((float) $booking->total_amount, 2), $this->cellFontStyle(), $this->numericParagraphStyle());
         }
 
         if ($bookings->isEmpty()) {
@@ -593,15 +525,7 @@ class ReportController extends Controller
             $cell = $table->addCell(17280);
             $cell->getStyle()->setGridSpan(7);
 
-            $cell->addText(
-                'No completed bookings found for this period.',
-                [
-                    'italic' => true,
-                    'size' => 9,
-                    'color' => self::LABEL_GRAY,
-                    'name' => self::FONT_FAMILY,
-                ]
-            );
+            $cell->addText('No completed bookings found for this period.', ['italic' => true, 'size' => 9, 'color' => self::LABEL_GRAY, 'name' => self::FONT_FAMILY,]);
         } else {
             $table->addRow();
 
@@ -609,16 +533,8 @@ class ReportController extends Controller
             $totalLabelCell = $table->addCell(14300, $this->totalRowStyle());
             $totalLabelCell->getStyle()->setGridSpan(6);
 
-            $totalLabelCell->addText(
-                'Total Booking Income',
-                $this->totalFontStyle()
-            );
-
-            $table->addCell(2980, $this->totalRowStyle())
-                ->addText(
-                    '₱ ' . number_format($bookingIncome, 2),
-                    $this->totalFontStyle()
-                );
+            $totalLabelCell->addText('Total Booking Income', $this->totalFontStyle());
+            $table->addCell(2980, $this->totalRowStyle())->addText('₱ ' . number_format($bookingIncome, 2), $this->totalFontStyle(), $this->numericParagraphStyle());
         }
 
         $this->addSignatory($section);

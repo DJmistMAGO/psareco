@@ -266,19 +266,14 @@
 										<i class="fa-solid fa-arrow-right text-[10px] text-slate-300"></i>
 
 										<div>
-
 											<p class="text-[10px] text-slate-400">
 												End
 											</p>
-
 											<p class="font-semibold text-slate-700">
 												{{ $booking->end_date->format('M j, Y') }}
 											</p>
-
 										</div>
-
 									</div>
-
 								</td>
 
 								<td class="px-5 py-4">
