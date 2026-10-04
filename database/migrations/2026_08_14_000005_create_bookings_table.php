@@ -16,9 +16,7 @@ return new class extends Migration
             $table->foreignId('machine_id')->nullable()->constrained('machineries')->nullOnDelete();
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->date('start_date');
-            $table->enum('start_day_type', ['Whole Day', 'Morning Half Day', 'Afternoon Half Day'])->default('Whole Day');
             $table->date('end_date');
-            $table->enum('end_day_type', ['Whole Day', 'Morning Half Day', 'Afternoon Half Day'])->default('Whole Day');
             $table->unsignedInteger('days')->default(1);
             $table->decimal('total_hours', 8, 2)->default(0);
             $table->decimal('total_amount', 10, 2)->nullable();
