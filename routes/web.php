@@ -85,6 +85,7 @@ Route::middleware('auth')->group(function () {
         ->group(function () {
             Route::get('/', 'index')->name('inventory.index');
             Route::post('/addProduct', 'addProduct')->name('inventory.addProduct');
+            Route::post('/{inventory}/restock', 'restock')->name('inventory.restock');
             Route::get('/trash', 'trash')->name('inventory.trash');
             Route::put('/{inventory}', 'updateProduct')->name('inventory.updateProduct');
             Route::delete('/{inventory}', 'deleteProduct')->name('inventory.deleteProduct');

@@ -7,8 +7,10 @@
 	<div x-data="{
     showView: false,
     showEdit: false,
+    showRestock: false,
     selected: null,
     editForm: {},
+    restockForm: {},
     openView(item) {
         this.selected = item;
         this.showView = true;
@@ -20,13 +22,15 @@
             type: item.type,
             unit: item.unit,
             description: item.description,
-            quantity: item.quantity,
             price: item.price,
             reorder_level: item.reorder_level,
-            expiration_date: item.expiration_date ? item.expiration_date.substring(0, 10) : '',
             image_path: item.image_path,
         };
         this.showEdit = true;
+    },
+    openRestock(item) {
+        this.restockForm = { id: item.id, name: item.name, quantity: '', expiration_date: '' };
+        this.showRestock = true;
     },
 }">
 
@@ -313,6 +317,11 @@
 													<i class="fa-regular fa-eye text-xs"></i>
 												</button>
 
+												<button type="button" @click="openRestock(@js($item))" title="Restock product"
+													class="w-8 h-8 inline-flex items-center justify-center rounded-lg text-blue-400 hover:text-blue-600 hover:bg-blue-50 transition">
+													<i class="fa-solid fa-boxes-stacked text-xs"></i>
+												</button>
+
 												<x-confirm-modal title="Archive Product" :message="'Archive ' . $item->name . '? This will move it to the archive — you can restore it later.'" confirmText="Archive"
 													confirmClass="bg-red-600 hover:bg-red-700 text-white" icon="shield-alert" :action="route('inventory.deleteProduct', $item->id)"
 													method="DELETE">
@@ -417,6 +426,11 @@
 								</div>
 
 								<div class="mt-3 flex items-center justify-end gap-1">
+
+									<button type="button" @click="openRestock(@js($item))" title="Restock product"
+										class="w-8 h-8 inline-flex items-center justify-center rounded-lg text-blue-400 hover:text-blue-600 hover:bg-blue-50 transition">
+										<i class="fa-solid fa-boxes-stacked text-xs"></i>
+									</button>
 
 									<button type="button" @click="openView(@js($item))" title="View details"
 										class="w-8 h-8 inline-flex items-center justify-center rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition">
@@ -623,6 +637,22 @@
 										</div>
 									</div>
 
+									<div class="mb-6">
+										<p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">Stock Batches</p>
+										<div class="border border-slate-200 rounded-xl divide-y divide-slate-100">
+											<template x-for="batch in (selected.batches || [])" :key="batch.id">
+												<div class="px-4 py-3 flex items-center justify-between gap-3 text-sm">
+													<span class="font-semibold text-slate-700" x-text="`${batch.quantity} ${selected.unit}`"></span>
+													<span class="text-slate-500"
+														x-text="batch.expiration_date ? batch.expiration_date.substring(0, 10) : 'No expiration date'"></span>
+												</div>
+											</template>
+											<template x-if="!selected.batches || selected.batches.length === 0">
+												<p class="px-4 py-3 text-sm text-slate-400">No stock batches available.</p>
+											</template>
+										</div>
+									</div>
+
 									<div>
 										<p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3"> Inventory Status </p>
 										<div class="rounded-2xl border border-slate-100 bg-slate-50 p-4">
@@ -773,14 +803,9 @@
 								</div>
 
 								<div class="mb-6">
-									<p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">Stock & Pricing</p>
+									<p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">Pricing & Threshold</p>
 
-									<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-										<div>
-											<label class="block text-xs font-semibold text-slate-600 mb-1.5">Quantity</label>
-											<input type="number" name="quantity" x-model="editForm.quantity" min="0" step="0.01" required
-												class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
-										</div>
+									<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
 										<div>
 											<label class="block text-xs font-semibold text-slate-600 mb-1.5">Unit Price</label>
@@ -799,20 +824,6 @@
 										</div>
 									</div>
 								</div>
-
-								<div>
-									<p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">Expiration</p>
-									<div>
-										<label class="block text-xs font-semibold text-slate-600 mb-1.5">
-											Expiration Date
-											<span class="font-normal text-slate-400">(optional)</span>
-										</label>
-										<input type="date" name="expiration_date" min="{{ now()->format('Y-m-d') }}"
-											x-model="editForm.expiration_date"
-											class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
-									</div>
-								</div>
-
 							</div>
 						</div>
 
@@ -829,6 +840,44 @@
 							</button>
 						</div>
 
+					</form>
+				</div>
+			</div>
+		</div>
+
+		{{-- restock modal --}}
+		<div x-show="showRestock" x-cloak class="fixed inset-0 z-50 overflow-y-auto" aria-modal="true" role="dialog">
+			<div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm" @click="showRestock = false"></div>
+			<div class="relative min-h-screen flex items-center justify-center p-4">
+				<div class="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden">
+					<div class="px-6 py-5 border-b border-slate-100">
+						<h2 class="text-base font-bold text-slate-800">Add Stock Batch</h2>
+						<p class="text-xs text-slate-500 mt-1" x-text="restockForm.name"></p>
+					</div>
+					<form method="POST" :action="`{{ url('inventory') }}/${restockForm.id}/restock`">
+						@csrf
+						<div class="p-6 space-y-4">
+							<div>
+								<label class="block text-xs font-semibold text-slate-600 mb-1.5">Quantity received</label>
+								<input type="number" name="quantity" min="1" step="1" x-model="restockForm.quantity" required
+									class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+							</div>
+							<div>
+								<label class="block text-xs font-semibold text-slate-600 mb-1.5">Expiration date <span
+										class="font-normal text-slate-400">(optional)</span></label>
+								<input type="date" name="expiration_date" min="{{ now()->format('Y-m-d') }}"
+									x-model="restockForm.expiration_date"
+									class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+							</div>
+						</div>
+						<div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-2">
+							<button type="button" @click="showRestock = false"
+								class="px-5 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-600 text-xs font-semibold">Cancel</button>
+							<button type="submit"
+								class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700">
+								<i class="fa-solid fa-boxes-stacked"></i> Add Batch
+							</button>
+						</div>
 					</form>
 				</div>
 			</div>

@@ -18,10 +18,14 @@ class DashboardController extends Controller
 
         // Data for Admin & Officer Roles
         $totalInventory = Inventory::count();
-        $expiringCount = Inventory::whereNotNull('expiration_date')->whereBetween('expiration_date', [
-            now()->startOfDay(),
-            now()->addDays(30)->endOfDay(),
-        ])->count();
+        $expiringSoonBatches = function ($query) {
+            $query->where('quantity', '>', 0)->whereBetween('expiration_date', [
+                now()->startOfDay(),
+                now()->addDays(30)->endOfDay(),
+            ]);
+        };
+        $expiringProducts = Inventory::whereHas('batches', $expiringSoonBatches);
+        $expiringCount = (clone $expiringProducts)->count();
 
         $lowStockCount = Inventory::whereColumn('quantity', '<=', 'reorder_level')->count();
         $pendingBookings = Booking::where('status', 'pending')->count();
@@ -37,10 +41,13 @@ class DashboardController extends Controller
 
         $lowStockItems = Inventory::whereColumn('quantity', '<=', 'reorder_level')->orderBy('quantity', 'asc')->take(5)->get();
 
-        $expiringItems = Inventory::whereNotNull('expiration_date')->whereBetween('expiration_date', [
-            now()->startOfDay(),
-            now()->addDays(30)->endOfDay(),
-        ])->orderBy('expiration_date', 'asc')->take(5)->get();
+        $expiringItems = $expiringProducts
+            ->with(['batches' => function ($query) use ($expiringSoonBatches) {
+                $expiringSoonBatches($query);
+                $query->orderBy('expiration_date');
+            }])
+            ->take(5)
+            ->get();
 
         $monthlySales = Sales::selectRaw('MONTH(sale_date) as month, SUM(total) as total')
             ->whereYear('sale_date', now()->year)

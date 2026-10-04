@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Inventory;
 use App\Models\Machinery;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -12,7 +13,7 @@ class InventoryController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Inventory::query();
+        $query = Inventory::with(['batches' => fn($query) => $query->where('quantity', '>', 0)->orderBy('expiration_date')]);
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -36,7 +37,10 @@ class InventoryController extends Controller
         $pesticideCount = Inventory::where('type', 'Pesticide')->count();
         $lowStockCount = Inventory::whereColumn('quantity', '<=', 'reorder_level')->count();
 
-        $expiringCount = Inventory::whereNotNull('expiration_date')->whereBetween('expiration_date', [now()->startOfDay(), now()->addDays(30)->endOfDay(),])->count();
+        $expiringCount = Inventory::whereHas('batches', function ($query) {
+            $query->where('quantity', '>', 0)
+                ->whereBetween('expiration_date', [now()->startOfDay(), now()->addDays(30)->endOfDay()]);
+        })->count();
 
         return view('admin.inventory', compact('inventories', 'totalProducts', 'fertilizerCount', 'pesticideCount', 'lowStockCount', 'expiringCount'));
     }
@@ -74,7 +78,14 @@ class InventoryController extends Controller
             $validated['image_path'] = $path;
         }
 
-        Inventory::create($validated);
+        $inventory = Inventory::create($validated);
+
+        if ($inventory->quantity > 0) {
+            $inventory->batches()->create([
+                'quantity' => $inventory->quantity,
+                'expiration_date' => $inventory->expiration_date,
+            ]);
+        }
 
         return redirect()->route('inventory.index')->with('success', 'Product added successfully.');
     }
@@ -85,12 +96,10 @@ class InventoryController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'type' => ['required', 'in:Fertilizer,Pesticide'],
-            'quantity' => ['required', 'numeric', 'min:0'],
             'unit' => ['required', 'string', 'max:50'],
             'description' => ['nullable', 'string', 'max:255'],
             'price' => ['required', 'numeric', 'min:0'],
             'reorder_level' => ['required', 'numeric', 'min:0'],
-            'expiration_date' => ['nullable', 'date'],
             'image_path' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
         ]);
 
@@ -120,6 +129,23 @@ class InventoryController extends Controller
         $inventory->update($validated);
 
         return redirect()->route('inventory.index')->with('success', 'Product updated successfully.');
+    }
+
+    public function restock(Request $request, Inventory $inventory)
+    {
+        $validated = $request->validate([
+            'quantity' => ['required', 'integer', 'min:1'],
+            'expiration_date' => ['nullable', 'date', 'after_or_equal:today'],
+        ]);
+
+        DB::transaction(function () use ($inventory, $validated): void {
+            $inventory = Inventory::whereKey($inventory->id)->lockForUpdate()->firstOrFail();
+            $inventory->ensureInitialBatch();
+            $inventory->batches()->create($validated);
+            $inventory->syncBatchSummary();
+        });
+
+        return redirect()->route('inventory.index')->with('success', 'Stock batch added successfully.');
     }
 
 

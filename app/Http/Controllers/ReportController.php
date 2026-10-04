@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Booking;
 use App\Models\Inventory;
+use App\Models\InventoryBatch;
 use App\Models\Machinery;
 use App\Models\Sales;
 use Illuminate\Http\Request;
@@ -180,25 +181,31 @@ class ReportController extends Controller
         }
 
         if (\in_array('expiring', $types, true)) {
-            $expiringInventory = Inventory::whereNotNull('expiration_date')
+            $expiringInventory = InventoryBatch::with('inventory')
+                ->whereHas('inventory')
+                ->where('quantity', '>', 0)
                 ->whereBetween('expiration_date', [$start, $end])
                 ->orderBy('expiration_date')
                 ->get();
 
-            $response['expiring_inventory'] = $expiringInventory->map(fn($i) => [
-                'name' => $i->name,
-                'type' => $i->type,
-                'quantity' => number_format((float) $i->quantity, 2),
-                'unit' => $i->unit,
-                'description' => $i->description ?? 'N/A',
-                'price' => number_format((float) $i->price, 2),
-                'inventory_value' => number_format((float) $i->quantity * (float) $i->price, 2),
-                'reorder_level' => number_format((float) $i->reorder_level, 2),
-                'expiration' => $i->expiration_date
-                    ? Carbon::parse($i->expiration_date)->format('M d, Y')
-                    : 'N/A',
-                'low_stock' => (float) $i->quantity <= (float) $i->reorder_level,
-            ])->values();
+            $response['expiring_inventory'] = $expiringInventory->map(function ($batch) {
+                $product = $batch->inventory;
+
+                return [
+                    'name' => $product->name,
+                    'type' => $product->type,
+                    'quantity' => number_format((float) $batch->quantity, 2),
+                    'unit' => $product->unit,
+                    'description' => $product->description ?? 'N/A',
+                    'price' => number_format((float) $product->price, 2),
+                    'inventory_value' => number_format((float) $batch->quantity * (float) $product->price, 2),
+                    'reorder_level' => number_format((float) $product->reorder_level, 2),
+                    'expiration' => $batch->expiration_date
+                        ? Carbon::parse($batch->expiration_date)->format('M d, Y')
+                        : 'N/A',
+                    'low_stock' => (float) $product->quantity <= (float) $product->reorder_level,
+                ];
+            })->values();
         }
 
         return response()->json($response);
@@ -257,7 +264,9 @@ class ReportController extends Controller
         }
 
         if (\in_array('expiring', $types, true)) {
-            $expiringInventory = Inventory::whereNotNull('expiration_date')
+            $expiringInventory = InventoryBatch::with('inventory')
+                ->whereHas('inventory')
+                ->where('quantity', '>', 0)
                 ->whereBetween('expiration_date', [$start, $end])
                 ->orderBy('expiration_date')
                 ->get();
@@ -667,17 +676,18 @@ class ReportController extends Controller
         foreach ($columns as [$header, $width]) {
             $table->addCell($width, $this->headerCellStyle())->addText($header, $this->headerFontStyle(), $this->headerParagraphStyle());
         }
-        foreach ($expiringItems as $item) {
+        foreach ($expiringItems as $batch) {
+            $item = $batch->inventory;
             $table->addRow(100, ['exactHeight' => false]);
             $table->addCell(3100)->addText($item->name, $this->cellFontStyle());
             $table->addCell(1400)->addText($item->type ?? '-', $this->cellFontStyle());
-            $table->addCell(1100)->addText(number_format((float) $item->quantity, 0, '.', ','), $this->cellFontStyle(), $this->numericParagraphStyle());
+            $table->addCell(1100)->addText(number_format((float) $batch->quantity, 0, '.', ','), $this->cellFontStyle(), $this->numericParagraphStyle());
             $table->addCell(2700)->addText($item->description ?? '-', $this->cellFontStyle(), $this->numericParagraphStyle());
             $table->addCell(900)->addText($item->unit ?? '-', $this->cellFontStyle(), $this->numericParagraphStyle());
             $table->addCell(1800)->addText('₱ ' . number_format((float) $item->price, 2), $this->cellFontStyle(), $this->numericParagraphStyle());
-            $table->addCell(2000)->addText('₱ ' . number_format((float) $item->quantity * (float) $item->price, 2), $this->cellFontStyle(), $this->numericParagraphStyle());
+            $table->addCell(2000)->addText('₱ ' . number_format((float) $batch->quantity * (float) $item->price, 2), $this->cellFontStyle(), $this->numericParagraphStyle());
             $table->addCell(2000)->addText(number_format((float) $item->reorder_level, 0, '.', ','), $this->cellFontStyle(), $this->numericParagraphStyle());
-            $table->addCell(2280)->addText($item->expiration_date?->format('M d, Y') ?? '-', $this->cellFontStyle());
+            $table->addCell(2280)->addText($batch->expiration_date?->format('M d, Y') ?? '-', $this->cellFontStyle());
         }
         if ($expiringItems->isEmpty()) {
             $table->addRow();

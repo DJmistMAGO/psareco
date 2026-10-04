@@ -308,10 +308,10 @@
 
 								<div class="text-right">
 									<p class="text-xs font-bold text-amber-600">
-										{{ $item->expiration_date->format('M d, Y') }}
+										{{ $item->batches->first()->expiration_date->format('M d, Y') }}
 									</p>
 									<p class="text-[10px] text-slate-400">
-										{{ $item->expiration_date->diffForHumans() }}
+										{{ $item->batches->first()->expiration_date->diffForHumans() }}
 									</p>
 								</div>
 							</div>

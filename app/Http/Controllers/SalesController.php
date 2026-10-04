@@ -49,10 +49,20 @@ class SalesController extends Controller
 
                 foreach ($validated['items'] as $item) {
                     $product = Inventory::where('id', $item['product_id'])->lockForUpdate()->firstOrFail();
+                    $product->ensureInitialBatch();
 
-                    if ($product->quantity < $item['quantity']) {
+                    $batches = $product->batches()
+                        ->where('quantity', '>', 0)
+                        ->orderByRaw('CASE WHEN expiration_date IS NULL THEN 1 ELSE 0 END')
+                        ->orderBy('expiration_date')
+                        ->orderBy('id')
+                        ->lockForUpdate()
+                        ->get();
+                    $availableQuantity = $batches->sum('quantity');
+
+                    if ($availableQuantity < $item['quantity']) {
                         throw ValidationException::withMessages([
-                            'items' => "Insufficient stock for {$product->name}. Only {$product->quantity} {$product->unit} left.",
+                            'items' => "Insufficient stock for {$product->name}. Only {$availableQuantity} {$product->unit} left.",
                         ]);
                     }
 
@@ -70,7 +80,18 @@ class SalesController extends Controller
                         'sale_date'  => $saleDate,
                     ]);
 
-                    $product->decrement('quantity', $item['quantity']);
+                    $quantityToDeduct = $item['quantity'];
+                    foreach ($batches as $batch) {
+                        if ($quantityToDeduct === 0) {
+                            break;
+                        }
+
+                        $deducted = min($batch->quantity, $quantityToDeduct);
+                        $batch->decrement('quantity', $deducted);
+                        $quantityToDeduct -= $deducted;
+                    }
+
+                    $product->syncBatchSummary();
                 }
 
                 return [
