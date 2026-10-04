@@ -199,20 +199,12 @@
 								@foreach ($inventories as $item)
 									@php
 										$isLowStock = $item->quantity <= $item->reorder_level;
-
-										$isExpired = false;
-										$isExpiring = false;
-										$daysUntilExpiration = null;
-
-										if ($item->expiration_date) {
-										    $today = now()->startOfDay();
-										    $expirationDate = \Carbon\Carbon::parse($item->expiration_date)->startOfDay();
-										    $isExpired = $expirationDate->lt($today);
-
-										    if (!$isExpired) {
-										        $daysUntilExpiration = $today->diffInDays($expirationDate);
-										        $isExpiring = $daysUntilExpiration <= 30;
-										    }
+										$today = now()->startOfDay();
+										$hasExpiredBatch = $item->batches->contains(
+										    fn($batch) => $batch->expiration_date && $batch->expiration_date->lt($today)
+										);
+										if ($item->batches->isEmpty() && $item->expiration_date) {
+										    $hasExpiredBatch = $item->expiration_date->lt($today);
 										}
 
 										if ($item->type === 'Fertilizer') {
@@ -268,17 +260,38 @@
 										</td>
 
 										<td class="px-5 py-4">
-											@if ($isExpired)
-												<span class="text-red-600 font-semibold">Expired</span>
-											@elseif($item->expiration_date)
-												<span class="{{ $isExpiring ? 'text-amber-600 font-semibold' : 'text-slate-600' }}">
-													{{ $item->expiration_date->format('M d, Y') }}
+											@if ($item->batches->isNotEmpty())
+												<div class="flex flex-col gap-1">
+													@foreach ($item->batches as $batch)
+														@php
+															$batchExpired = $batch->expiration_date && $batch->expiration_date->lt($today);
+															$batchDaysLeft =
+															    $batch->expiration_date && !$batchExpired ? $today->diffInDays($batch->expiration_date) : null;
+															$batchExpiring = $batchDaysLeft !== null && $batchDaysLeft <= 30;
+														@endphp
+														<div class="text-xs">
+															<span class="font-medium text-slate-600">{{ $batch->quantity }} {{ $item->unit }}</span>
+															<span class="text-slate-400">·</span>
+															@if (!$batch->expiration_date)
+																<span class="text-slate-400">No expiration date</span>
+															@else
+																<span
+																	class="{{ $batchExpired ? 'text-red-600 font-semibold' : ($batchExpiring ? 'text-amber-600 font-semibold' : 'text-slate-600') }}">
+																	{{ $batch->expiration_date->format('M d, Y') }}
+																	@if ($batchExpired)
+																		(Expired)
+																	@elseif ($batchExpiring)
+																		(in {{ $batchDaysLeft }} {{ Str::plural('day', $batchDaysLeft) }})
+																	@endif
+																</span>
+															@endif
+														</div>
+													@endforeach
+												</div>
+											@elseif ($item->expiration_date)
+												<span class="{{ $hasExpiredBatch ? 'text-red-600 font-semibold' : 'text-slate-600' }}">
+													{{ $item->expiration_date->format('M d, Y') }}{{ $hasExpiredBatch ? ' (Expired)' : '' }}
 												</span>
-												@if ($isExpiring)
-													<div class="text-[11px] text-amber-500">
-														in {{ $daysUntilExpiration }} {{ Str::plural('day', $daysUntilExpiration) }}
-													</div>
-												@endif
 											@else
 												<span class="text-slate-400">—</span>
 											@endif
@@ -300,7 +313,7 @@
 													</span>
 												@endif
 
-												@if ($isExpired)
+												@if ($hasExpiredBatch)
 													<span
 														class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-red-50 text-red-600 text-[10px] font-bold">
 														Expired
@@ -347,20 +360,12 @@
 						@foreach ($inventories as $item)
 							@php
 								$isLowStock = $item->quantity <= $item->reorder_level;
-
-								$isExpired = false;
-								$isExpiring = false;
-								$daysUntilExpiration = null;
-
-								if ($item->expiration_date) {
-								    $today = now()->startOfDay();
-								    $expirationDate = \Carbon\Carbon::parse($item->expiration_date)->startOfDay();
-								    $isExpired = $expirationDate->lt($today);
-
-								    if (!$isExpired) {
-								        $daysUntilExpiration = $today->diffInDays($expirationDate);
-								        $isExpiring = $daysUntilExpiration <= 30;
-								    }
+								$today = now()->startOfDay();
+								$hasExpiredBatch = $item->batches->contains(
+								    fn($batch) => $batch->expiration_date && $batch->expiration_date->lt($today)
+								);
+								if ($item->batches->isEmpty() && $item->expiration_date) {
+								    $hasExpiredBatch = $item->expiration_date->lt($today);
 								}
 
 								if ($item->type === 'Fertilizer') {
@@ -413,11 +418,37 @@
 									</div>
 									<div class="col-span-2">
 										<span class="text-slate-400">Expiration: </span>
-										@if ($isExpired)
-											<span class="text-red-600 font-semibold">Expired</span>
-										@elseif($item->expiration_date)
-											<span class="{{ $isExpiring ? 'text-amber-600 font-semibold' : 'text-slate-600' }}">
-												{{ $item->expiration_date->format('M d, Y') }}
+										@if ($item->batches->isNotEmpty())
+											<div class="mt-1 flex flex-col gap-1">
+												@foreach ($item->batches as $batch)
+													@php
+														$batchExpired = $batch->expiration_date && $batch->expiration_date->lt($today);
+														$batchDaysLeft =
+														    $batch->expiration_date && !$batchExpired ? $today->diffInDays($batch->expiration_date) : null;
+														$batchExpiring = $batchDaysLeft !== null && $batchDaysLeft <= 30;
+													@endphp
+													<div class="text-xs">
+														<span class="font-medium text-slate-600">{{ $batch->quantity }} {{ $item->unit }}</span>
+														<span class="text-slate-400">·</span>
+														@if (!$batch->expiration_date)
+															<span class="text-slate-400">No expiration date</span>
+														@else
+															<span
+																class="{{ $batchExpired ? 'text-red-600 font-semibold' : ($batchExpiring ? 'text-amber-600 font-semibold' : 'text-slate-600') }}">
+																{{ $batch->expiration_date->format('M d, Y') }}
+																@if ($batchExpired)
+																	(Expired)
+																@elseif ($batchExpiring)
+																	(in {{ $batchDaysLeft }} {{ Str::plural('day', $batchDaysLeft) }})
+																@endif
+															</span>
+														@endif
+													</div>
+												@endforeach
+											</div>
+										@elseif ($item->expiration_date)
+											<span class="{{ $hasExpiredBatch ? 'text-red-600 font-semibold' : 'text-slate-600' }}">
+												{{ $item->expiration_date->format('M d, Y') }}{{ $hasExpiredBatch ? ' (Expired)' : '' }}
 											</span>
 										@else
 											<span class="text-slate-400">—</span>
