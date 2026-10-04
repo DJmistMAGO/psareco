@@ -61,6 +61,8 @@ class SalesController extends Controller
 
                     $rows[] = Sales::create([
                         'product_id' => $product->id,
+                        'product_name' => $product->name,
+                        'product_unit' => $product->unit,
                         'quantity'   => $item['quantity'],
                         'price'      => $product->price,
                         'total'      => $lineTotal,
@@ -121,7 +123,7 @@ class SalesController extends Controller
                 $row = $index + 1;
 
                 $templateProcessor->setValue("date#{$row}", optional($sale->sale_date)->format('M. d, Y g:ia'));
-                $templateProcessor->setValue("product#{$row}", $sale->product->name ?? '—');
+                $templateProcessor->setValue("product#{$row}", $sale->product_name ?? $sale->product?->name ?? '—');
                 $templateProcessor->setValue("qty#{$row}", $sale->quantity);
                 $templateProcessor->setValue("unit_price#{$row}", '₱' . number_format($sale->price, 2));
                 $templateProcessor->setValue("total#{$row}", '₱' . number_format($sale->total, 2));
@@ -144,7 +146,7 @@ class SalesController extends Controller
         $grouped = Sales::with('product')
             ->orderByDesc('sale_date')
             ->get()
-            ->groupBy(fn ($sale) => $sale->buyer_name . '|' . $sale->sale_date)
+            ->groupBy(fn($sale) => $sale->buyer_name . '|' . $sale->sale_date)
             ->map(function ($rows) {
                 $first = $rows->first();
 
@@ -152,10 +154,10 @@ class SalesController extends Controller
                     'sale_date'  => $first->sale_date,
                     'buyer_name' => $first->buyer_name,
                     'total'      => $rows->sum('total'),
-                    'items'      => $rows->map(fn ($r) => [
-                        'name'     => $r->product->name ?? '—',
+                    'items'      => $rows->map(fn($r) => [
+                        'name'     => $r->product_name ?? $r->product?->name ?? '—',
                         'quantity' => $r->quantity,
-                        'unit'     => $r->product->unit ?? '',
+                        'unit'     => $r->product_unit ?? $r->product?->unit ?? '',
                     ])->values(),
                 ];
             })
@@ -170,7 +172,7 @@ class SalesController extends Controller
                 }
 
                 return $sale['items']->contains(
-                    fn ($item) => str_contains(mb_strtolower($item['name']), $needle)
+                    fn($item) => str_contains(mb_strtolower($item['name']), $needle)
                 );
             })->values();
         }

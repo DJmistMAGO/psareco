@@ -149,7 +149,7 @@ class ReportController extends Controller
 
             $response['sales'] = $sales->map(fn($s) => [
                 'sale_date' => $s->sale_date?->format('M d, Y'),
-                'product_name' => $s->product->name ?? 'N/A',
+                'product_name' => $s->product_name ?? $s->product?->name ?? 'N/A',
                 'buyer_name' => $s->buyer_name,
                 'quantity' => (int) $s->quantity,
                 'price' => number_format((float) $s->price, 2),
@@ -567,7 +567,7 @@ class ReportController extends Controller
         foreach ($sales as $sale) {
             $table->addRow(100, ['exactHeight' => false]);
             $table->addCell(2800)->addText($sale->sale_date?->format('M d, Y g:i A') ?? '-', $this->cellFontStyle());
-            $table->addCell(3900)->addText($sale->product?->name ?? 'N/A', $this->cellFontStyle());
+            $table->addCell(3900)->addText($sale->product_name ?? $sale->product?->name ?? 'N/A', $this->cellFontStyle());
             $table->addCell(1100)->addText(number_format((int) $sale->quantity), $this->cellFontStyle());
             $table->addCell(1900)->addText('₱ ' . number_format((float) $sale->price, 2), $this->cellFontStyle(), $this->numericParagraphStyle());
             $table->addCell(1900)->addText('₱ ' . number_format((float) $sale->total, 2), $this->cellFontStyle(), $this->numericParagraphStyle());

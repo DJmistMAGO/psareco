@@ -10,6 +10,8 @@ class Sales extends Model
 
     protected $fillable = [
         'product_id',
+        'product_name',
+        'product_unit',
         'quantity',
         'price',
         'total',
@@ -26,6 +28,6 @@ class Sales extends Model
 
     public function product()
     {
-        return $this->belongsTo(Inventory::class);
+        return $this->belongsTo(Inventory::class)->withTrashed();
     }
 }

@@ -166,7 +166,7 @@
 									@endphp
 									<div class="flex items-center gap-1.5" x-data="{ open: false }">
 										<span class="truncate">
-											{{ $visibleItems->map(fn($i) => "{$i['name']} (x{$i['quantity']})")->implode(', ') }}
+											{{ $visibleItems->map(fn($i) => $i['name'] . ' (x' . $i['quantity'] . ($i['unit'] !== '' ? ' ' . $i['unit'] : '') . ')')->implode(', ') }}
 										</span>
 
 										@if ($remainingCount > 0)
@@ -181,7 +181,7 @@
 													@foreach ($items as $item)
 														<div class="flex justify-between gap-2">
 															<span class="truncate">{{ $item['name'] }}</span>
-															<span class="text-slate-400 font-medium shrink-0">x{{ $item['quantity'] }}</span>
+															<span class="text-slate-400 font-medium shrink-0">x{{ $item['quantity'] }} {{ $item['unit'] }}</span>
 														</div>
 													@endforeach
 												</div>
