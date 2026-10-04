@@ -6,7 +6,9 @@ use App\Models\Inventory;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Role;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Tests\TestCase;
+use ZipArchive;
 
 class InventoryBatchTest extends TestCase
 {
@@ -129,5 +131,57 @@ class InventoryBatchTest extends TestCase
             ->assertJsonCount(1, 'expiring_inventory')
             ->assertJsonPath('expiring_inventory.0.quantity', '5.00')
             ->assertJsonPath('expiring_inventory.0.expiration', $upcomingBatch->expiration_date->format('M d, Y'));
+    }
+
+    public function test_generated_inventory_and_expiring_reports_list_each_batch_separately(): void
+    {
+        Role::create(['name' => 'officer', 'guard_name' => 'web']);
+        /** @var User $officer */
+        $officer = User::factory()->create([
+            'status' => 'active',
+            'must_change_password' => false,
+        ]);
+        $officer->assignRole('officer');
+        $this->actingAs($officer);
+
+        $product = Inventory::create([
+            'name' => 'Batch Test Urea',
+            'type' => 'Fertilizer',
+            'quantity' => 0,
+            'unit' => 'bag',
+            'price' => 20,
+            'reorder_level' => 2,
+        ]);
+        $firstExpiration = now()->addDays(10);
+        $secondExpiration = now()->addDays(60);
+        $product->batches()->create([
+            'quantity' => 5,
+            'expiration_date' => $firstExpiration->toDateString(),
+        ]);
+        $product->batches()->create([
+            'quantity' => 7,
+            'expiration_date' => $secondExpiration->toDateString(),
+        ]);
+        $product->syncBatchSummary();
+
+        $report = $this->get(route('reports.generate', [
+            'start_date' => now()->toDateString(),
+            'end_date' => now()->addDays(90)->toDateString(),
+            'types' => ['inventory', 'expiring'],
+        ]));
+        $report->assertDownload();
+
+        /** @var BinaryFileResponse $download */
+        $download = $report->baseResponse;
+        $zip = new ZipArchive();
+        $this->assertSame(true, $zip->open($download->getFile()->getPathname()));
+        $document = $zip->getFromName('word/document.xml');
+        $zip->close();
+
+        $this->assertSame(4, substr_count($document, 'Batch Test Urea'));
+        $this->assertSame(2, substr_count($document, $firstExpiration->format('M d, Y')));
+        $this->assertSame(2, substr_count($document, $secondExpiration->format('M d, Y')));
+        $this->assertSame(2, substr_count($document, '>5</w:t>'));
+        $this->assertSame(2, substr_count($document, '>7</w:t>'));
     }
 }

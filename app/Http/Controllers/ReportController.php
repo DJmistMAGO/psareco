@@ -112,7 +112,9 @@ class ReportController extends Controller
         $response = [];
 
         if (\in_array('machinery', $types, true)) {
-            $machinery = Machinery::orderBy('machinery_name')->get();
+            $machinery = Machinery::whereBetween('created_at', [$start, $end])
+                ->orderBy('machinery_name')
+                ->get();
 
             $response['machinery'] = $machinery->map(fn($m) => [
                 'machinery_name' => $m->machinery_name,
@@ -235,8 +237,10 @@ class ReportController extends Controller
         ]);
 
         if (\in_array('machinery', $types, true)) {
-            $machinery = Machinery::orderBy('machinery_name')->get();
-            $this->addMachinerySection($phpWord, $machinery);
+            $machinery = Machinery::whereBetween('created_at', [$start, $end])
+                ->orderBy('machinery_name')
+                ->get();
+            $this->addMachinerySection($phpWord, $machinery, $start, $end);
         }
 
         if (\in_array('bookings', $types, true)) {
@@ -255,12 +259,17 @@ class ReportController extends Controller
                 ->orderBy('sale_date')
                 ->get();
 
-            $this->addSalesSection($phpWord, $sales);
+            $this->addSalesSection($phpWord, $sales, $start, $end);
         }
 
         if (\in_array('inventory', $types, true)) {
-            $inventory = Inventory::orderBy('name')->get();
-            $this->addInventorySection($phpWord, $inventory);
+            $inventory = Inventory::with(['batches' => fn($query) => $query
+                ->where('quantity', '>', 0)
+                ->orderBy('expiration_date')
+                ->orderBy('id')])
+                ->orderBy('name')
+                ->get();
+            $this->addInventorySection($phpWord, $inventory, $start, $end);
         }
 
         if (\in_array('expiring', $types, true)) {
@@ -271,7 +280,7 @@ class ReportController extends Controller
                 ->orderBy('expiration_date')
                 ->get();
 
-            $this->addExpiringSection($phpWord, $expiringInventory);
+            $this->addExpiringSection($phpWord, $expiringInventory, $start, $end);
         }
 
         $filename = 'psareco-report-' . now()->format('Y-m-d_His') . '.docx';
@@ -350,6 +359,15 @@ class ReportController extends Controller
             'spaceAfter' => 200,
         ]);
     }
+
+    private function periodField(Carbon $start, Carbon $end): array
+    {
+        return [
+            'label' => 'Period',
+            'value' => $start->format('M d, Y') . ' - ' . $end->format('M d, Y'),
+        ];
+    }
+
     private function addModuleFooter(Section $section, string $moduleLabel): void
     {
         $footer = $section->addFooter();
@@ -450,7 +468,7 @@ class ReportController extends Controller
         );
     }
 
-    private function addMachinerySection(PhpWord $phpWord, $machinery): void
+    private function addMachinerySection(PhpWord $phpWord, $machinery, Carbon $start, Carbon $end): void
     {
         $section = $phpWord->addSection($this->sectionStyle());
         $this->addMasthead($section, 'Machinery Inventory Report');
@@ -458,6 +476,7 @@ class ReportController extends Controller
 
         $this->addMetaLine($section, [
             ['label' => 'Date Generated', 'value' => now()->format('M d, Y g:i A')],
+            $this->periodField($start, $end),
             ['label' => 'Total Machinery', 'value' => (string) $machinery->count(), 'emphasize' => true],
         ]);
 
@@ -502,7 +521,7 @@ class ReportController extends Controller
 
         $this->addMetaLine($section, [
             ['label' => 'Date Generated', 'value' => now()->format('M d, Y g:i A')],
-            ['label' => 'Period', 'value' => $start->format('M d, Y') . ' - ' . $end->format('M d, Y')],
+            $this->periodField($start, $end),
             ['label' => 'Total Records', 'value' => (string) $bookings->count()],
             ['label' => 'Total Income', 'value' => '₱ ' . number_format($bookingIncome, 2), 'emphasize' => true],
         ]);
@@ -549,7 +568,7 @@ class ReportController extends Controller
         $this->addSignatory($section);
     }
 
-    private function addSalesSection(PhpWord $phpWord, $sales): void
+    private function addSalesSection(PhpWord $phpWord, $sales, Carbon $start, Carbon $end): void
     {
         $section = $phpWord->addSection($this->sectionStyle());
         $this->addMasthead($section, 'Sales History Report');
@@ -559,6 +578,7 @@ class ReportController extends Controller
 
         $this->addMetaLine($section, [
             ['label' => 'Date Generated', 'value' => now()->format('M d, Y g:i A')],
+            $this->periodField($start, $end),
             ['label' => 'Total Records', 'value' => (string) $sales->count()],
             ['label' => 'Total Amount', 'value' => '₱ ' . number_format($salesIncome, 2), 'emphasize' => true],
         ]);
@@ -605,7 +625,7 @@ class ReportController extends Controller
         $this->addSignatory($section);
     }
 
-    private function addInventorySection(PhpWord $phpWord, $inventory): void
+    private function addInventorySection(PhpWord $phpWord, $inventory, Carbon $start, Carbon $end): void
     {
         $section = $phpWord->addSection($this->sectionStyle());
         $this->addMasthead($section, 'Inventory Report');
@@ -617,6 +637,7 @@ class ReportController extends Controller
 
         $this->addMetaLine($section, [
             ['label' => 'Date Generated', 'value' => now()->format('M d, Y g:i A')],
+            $this->periodField($start, $end),
             ['label' => 'Existing Items', 'value' => (string) $inventory->count()],
             ['label' => 'Inventory Value', 'value' => '₱ ' . number_format($inventoryValue, 2), 'emphasize' => true],
         ]);
@@ -634,17 +655,27 @@ class ReportController extends Controller
         $lowStockFontStyle = ['size' => 9, 'color' => self::LOW_STOCK_RED, 'bold' => true, 'name' => self::FONT_FAMILY,];
 
         foreach ($inventory as $item) {
-            $isLowStock = $item->quantity <= $item->reorder_level;
-            $table->addRow(100, ['exactHeight' => false]);
-            $table->addCell(3600)->addText($item->name, $this->cellFontStyle());
-            $table->addCell(1400)->addText($item->type ?? '-', $this->cellFontStyle());
-            $table->addCell(1000)->addText(number_format((float) $item->quantity, 0), $isLowStock ? $lowStockFontStyle : $this->cellFontStyle(), $this->numericParagraphStyle());
-            $table->addCell(850)->addText($item->unit ?? '-', $this->cellFontStyle(), $this->numericParagraphStyle());
-            $table->addCell(3600)->addText($item->description ?? '-', $this->cellFontStyle());
-            $table->addCell(1500)->addText('₱ ' . number_format((float) $item->price, 2), $this->cellFontStyle(), $this->numericParagraphStyle());
-            $table->addCell(1650)->addText('₱ ' . number_format((float) $item->quantity * (float) $item->price, 2), $this->cellFontStyle(), $this->numericParagraphStyle());
-            $table->addCell(1700)->addText(number_format((float) $item->reorder_level, 0), $this->cellFontStyle(), $this->numericParagraphStyle());
-            $table->addCell(1980)->addText($item->expiration_date?->format('M d, Y') ?? '-', $this->cellFontStyle());
+            $batches = $item->batches;
+            if ($batches->isEmpty()) {
+                $batches = collect([(object) [
+                    'quantity' => $item->quantity,
+                    'expiration_date' => $item->expiration_date,
+                ]]);
+            }
+
+            foreach ($batches as $batch) {
+                $isLowStock = $item->quantity <= $item->reorder_level;
+                $table->addRow(100, ['exactHeight' => false]);
+                $table->addCell(3600)->addText($item->name, $this->cellFontStyle());
+                $table->addCell(1400)->addText($item->type ?? '-', $this->cellFontStyle());
+                $table->addCell(1000)->addText(number_format((float) $batch->quantity, 0), $isLowStock ? $lowStockFontStyle : $this->cellFontStyle(), $this->numericParagraphStyle());
+                $table->addCell(850)->addText($item->unit ?? '-', $this->cellFontStyle(), $this->numericParagraphStyle());
+                $table->addCell(3600)->addText($item->description ?? '-', $this->cellFontStyle());
+                $table->addCell(1500)->addText('₱ ' . number_format((float) $item->price, 2), $this->cellFontStyle(), $this->numericParagraphStyle());
+                $table->addCell(1650)->addText('₱ ' . number_format((float) $batch->quantity * (float) $item->price, 2), $this->cellFontStyle(), $this->numericParagraphStyle());
+                $table->addCell(1700)->addText(number_format((float) $item->reorder_level, 0), $this->cellFontStyle(), $this->numericParagraphStyle());
+                $table->addCell(1980)->addText($batch->expiration_date?->format('M d, Y') ?? '-', $this->cellFontStyle());
+            }
         }
 
         if ($inventory->isEmpty()) {
@@ -663,13 +694,13 @@ class ReportController extends Controller
         $this->addSignatory($section);
     }
 
-    private function addExpiringSection(PhpWord $phpWord, $inventory): void
+    private function addExpiringSection(PhpWord $phpWord, $inventory, Carbon $start, Carbon $end): void
     {
         $section = $phpWord->addSection($this->sectionStyle());
         $this->addMasthead($section, 'Expiring Inventory Report');
         $this->addModuleFooter($section, 'Inventory');
         $expiringItems = $inventory;
-        $this->addMetaLine($section, [['label' => 'Date Generated', 'value' => now()->format('M d, Y g:i A')], ['label' => 'Expiring Items', 'value' => (string) $expiringItems->count(), 'emphasize' => true],]);
+        $this->addMetaLine($section, [['label' => 'Date Generated', 'value' => now()->format('M d, Y g:i A')], $this->periodField($start, $end), ['label' => 'Expiring Items', 'value' => (string) $expiringItems->count(), 'emphasize' => true],]);
         $table = $section->addTable($this->tableStyle());
         $columns = [['Name', 3100], ['Type', 1400], ['Quantity', 1100], ['Description', 2700], ['Unit', 900], ['Price (₱)', 1800], ['Value (₱)', 2000], ['Reorder Level', 2000], ['Expiration', 2280],];
         $table->addRow(400);
