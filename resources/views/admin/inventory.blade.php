@@ -755,7 +755,8 @@
 						</div>
 					</div>
 
-					<form method="POST" :action="`{{ url('inventory') }}/${editForm.id}`" enctype="multipart/form-data">
+					<form method="POST" :action="`{{ url('inventory') }}/${editForm.id}`" enctype="multipart/form-data"
+						data-unit-validation-form>
 						@csrf
 						@method('PUT')
 
@@ -822,8 +823,12 @@
 
 										<div>
 											<label class="block text-xs font-semibold text-slate-600 mb-1.5">Unit</label>
-											<input type="text" name="unit" x-model="editForm.unit" required
+											<input type="text" id="edit_unit" name="unit" x-model="editForm.unit" required data-unit-validation
+												aria-describedby="edit_unit_error"
 												class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+											<p id="edit_unit_error" data-unit-error class="mt-1.5 text-xs text-red-600 hidden" role="alert">
+												Enter a unit label, not a number.
+											</p>
 										</div>
 										<div class="sm:col-span-2">
 											<label class="block text-xs font-semibold text-slate-600 mb-1.5">Description</label>
@@ -938,7 +943,7 @@
 					</div>
 
 					<form action="{{ route('inventory.addProduct') }}" method="POST" enctype="multipart/form-data"
-						id="addProductForm">
+						id="addProductForm" data-unit-validation-form>
 						@csrf
 						<div class="p-6 grid grid-cols-1 sm:grid-cols-[220px_1fr] gap-6">
 							<div>
@@ -986,8 +991,12 @@
 										</div>
 										<div>
 											<label class="block text-xs font-semibold text-slate-600 mb-1.5">Unit of Measurement</label>
-											<input type="text" name="unit" placeholder="e.g. bags, liters, kg" required
+											<input type="text" id="add_unit" name="unit" placeholder="e.g. bags, liters, kg" required
+												data-unit-validation aria-describedby="add_unit_error"
 												class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+											<p id="add_unit_error" data-unit-error class="mt-1.5 text-xs text-red-600 hidden" role="alert">
+												Enter a unit label, not a number.
+											</p>
 										</div>
 										<div class="sm:col-span-2">
 											<label class="block text-xs font-semibold text-slate-600 mb-1.5">Description</label>
@@ -1093,7 +1102,38 @@
 		</script>
 
 		<script>
+			function validateUnitInput(input) {
+				const numericOnly = /^[+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?$/.test(input.value.trim());
+				const error = input.parentElement.querySelector('[data-unit-error]');
+
+				input.setCustomValidity(numericOnly ? 'Enter a unit label, not a number.' : '');
+				input.setAttribute('aria-invalid', numericOnly ? 'true' : 'false');
+				error.classList.toggle('hidden', !numericOnly);
+
+				return !numericOnly;
+			}
+
+			document.querySelectorAll('[data-unit-validation]').forEach(input => {
+				input.addEventListener('input', () => validateUnitInput(input));
+			});
+
+			document.querySelectorAll('[data-unit-validation-form]').forEach(form => {
+				form.addEventListener('submit', function(event) {
+					const invalidInput = [...form.querySelectorAll('[data-unit-validation]')]
+						.find(input => !validateUnitInput(input));
+
+					if (invalidInput) {
+						event.preventDefault();
+						invalidInput.reportValidity();
+					}
+				});
+			});
+
 			document.getElementById('addProductForm').addEventListener('submit', function(e) {
+				if (e.defaultPrevented) {
+					return;
+				}
+
 				const btn = document.getElementById('addProductSubmitBtn');
 				const icon = document.getElementById('addProductBtnIcon');
 				const text = document.getElementById('addProductBtnText');
