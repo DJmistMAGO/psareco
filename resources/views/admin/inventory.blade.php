@@ -827,7 +827,7 @@
 												aria-describedby="edit_unit_error"
 												class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
 											<p id="edit_unit_error" data-unit-error class="mt-1.5 text-xs text-red-600 hidden" role="alert">
-												Enter a unit label, not a number.
+												Enter a unit label without numbers.
 											</p>
 										</div>
 										<div class="sm:col-span-2">
@@ -995,7 +995,7 @@
 												data-unit-validation aria-describedby="add_unit_error"
 												class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
 											<p id="add_unit_error" data-unit-error class="mt-1.5 text-xs text-red-600 hidden" role="alert">
-												Enter a unit label, not a number.
+												Enter a unit label without numbers.
 											</p>
 										</div>
 										<div class="sm:col-span-2">
@@ -1103,14 +1103,14 @@
 
 		<script>
 			function validateUnitInput(input) {
-				const numericOnly = /^[+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?$/.test(input.value.trim());
+				const containsNumber = /\d/.test(input.value);
 				const error = input.parentElement.querySelector('[data-unit-error]');
 
-				input.setCustomValidity(numericOnly ? 'Enter a unit label, not a number.' : '');
-				input.setAttribute('aria-invalid', numericOnly ? 'true' : 'false');
-				error.classList.toggle('hidden', !numericOnly);
+				input.setCustomValidity(containsNumber ? 'Enter a unit label without numbers.' : '');
+				input.setAttribute('aria-invalid', containsNumber ? 'true' : 'false');
+				error.classList.toggle('hidden', !containsNumber);
 
-				return !numericOnly;
+				return !containsNumber;
 			}
 
 			document.querySelectorAll('[data-unit-validation]').forEach(input => {

@@ -52,14 +52,14 @@ class InventoryController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'type' => ['required', 'in:Fertilizer,Pesticide'],
             'quantity' => ['required', 'numeric', 'min:0'],
-            'unit' => ['required', 'string', 'max:50', 'not_regex:/^[+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?$/'],
+            'unit' => ['required', 'string', 'max:50', 'not_regex:/\d/'],
             'description' => ['nullable', 'string', 'max:255'],
             'price' => ['required', 'numeric', 'min:0'],
             'reorder_level' => ['required', 'numeric', 'min:0'],
             'expiration_date' => ['nullable', 'date'],
             'image_path'     => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ], [
-            'unit.not_regex' => 'The unit must be a descriptive label, not a number.',
+            'unit.not_regex' => 'The unit must be a descriptive label without numbers.',
         ]);
 
         if ($request->hasFile('image_path')) {
@@ -98,13 +98,13 @@ class InventoryController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'type' => ['required', 'in:Fertilizer,Pesticide'],
-            'unit' => ['required', 'string', 'max:50', 'not_regex:/^[+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?$/'],
+            'unit' => ['required', 'string', 'max:50', 'not_regex:/\d/'],
             'description' => ['nullable', 'string', 'max:255'],
             'price' => ['required', 'numeric', 'min:0'],
             'reorder_level' => ['required', 'numeric', 'min:0'],
             'image_path' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
         ], [
-            'unit.not_regex' => 'The unit must be a descriptive label, not a number.',
+            'unit.not_regex' => 'The unit must be a descriptive label without numbers.',
         ]);
 
         if ($request->hasFile('image_path')) {

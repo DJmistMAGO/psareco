@@ -56,7 +56,23 @@ class InventoryUnitValidationTest extends TestCase
         ]);
     }
 
-    public function test_create_accepts_a_descriptive_unit_containing_a_quantity(): void
+    public function test_create_rejects_numbers_after_unit_text(): void
+    {
+        $this->actingAsOfficer();
+
+        $this->post(route('inventory.addProduct'), [
+            'name' => 'Urea',
+            'type' => 'Fertilizer',
+            'quantity' => 5,
+            'unit' => 'bags5',
+            'price' => 20,
+            'reorder_level' => 2,
+        ])->assertSessionHasErrors(['unit']);
+
+        $this->assertDatabaseCount('inventories', 0);
+    }
+
+    public function test_create_accepts_a_descriptive_unit_label(): void
     {
         $this->actingAsOfficer();
         Storage::fake('public');
@@ -65,13 +81,13 @@ class InventoryUnitValidationTest extends TestCase
             'name' => 'Urea',
             'type' => 'Fertilizer',
             'quantity' => 5,
-            'unit' => '250 ml bottle',
+            'unit' => 'bottle',
             'price' => 20,
             'reorder_level' => 2,
             'image_path' => UploadedFile::fake()->image('urea.png'),
         ])->assertRedirect(route('inventory.index'));
 
-        $this->assertDatabaseHas('inventories', ['unit' => '250 ml bottle']);
+        $this->assertDatabaseHas('inventories', ['unit' => 'bottle']);
     }
 
     private function actingAsOfficer(): void
