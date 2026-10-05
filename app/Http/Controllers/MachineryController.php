@@ -51,13 +51,14 @@ class MachineryController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'machinery_name' => 'required|string|max:255',
+            'machinery_name' => 'required|string|max:255|not_regex:/[<>]/',
             'model'          => 'required|string|max:255',
             'serial_number'  => 'required|string|max:255|unique:machineries,serial_number',
             'price'          => 'required|numeric|min:0',
             'image_path'     => 'required|image|mimes:jpeg,png,jpg|extensions:jpg,jpeg,png|max:2048',
             'status'         => 'required|in:Available,Reserved,In Use,Under Maintenance,Unavailable',
         ], [
+            'machinery_name.not_regex' => 'The machinery name may not contain HTML syntax.',
             'image_path.image' => 'Please upload a valid JPG, JPEG, or PNG image.',
             'image_path.mimes' => 'Please upload a valid JPG, JPEG, or PNG image.',
             'image_path.extensions' => 'Please upload a valid JPG, JPEG, or PNG image.',
@@ -85,7 +86,7 @@ class MachineryController extends Controller
         $machinery = Machinery::findOrFail($id);
 
         $validatedData = $request->validate([
-            'machinery_name' => 'required|string|max:255',
+            'machinery_name' => 'required|string|max:255|not_regex:/[<>]/',
             'model'          => 'required|string|max:255',
             'serial_number'  => [
                 'required',
@@ -97,6 +98,7 @@ class MachineryController extends Controller
             'image_path'     => 'nullable|image|mimes:jpeg,png,jpg|extensions:jpg,jpeg,png|max:2048',
             'status'         => 'required|in:Available,Reserved,In Use,Under Maintenance,Unavailable',
         ], [
+            'machinery_name.not_regex' => 'The machinery name may not contain HTML syntax.',
             'image_path.image' => 'Please upload a valid JPG, JPEG, or PNG image.',
             'image_path.mimes' => 'Please upload a valid JPG, JPEG, or PNG image.',
             'image_path.extensions' => 'Please upload a valid JPG, JPEG, or PNG image.',

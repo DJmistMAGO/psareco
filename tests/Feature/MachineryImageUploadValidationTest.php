@@ -61,6 +61,48 @@ class MachineryImageUploadValidationTest extends TestCase
         ]);
     }
 
+    public function test_store_rejects_html_syntax_in_machinery_name(): void
+    {
+        $this->actingAsOfficer();
+
+        $this->post(route('machinery.store'), [
+            'machinery_name' => '<script>alert(1)</script>',
+            'model' => 'TX-1',
+            'serial_number' => 'TX-001',
+            'price' => '100.00',
+            'image_path' => UploadedFile::fake()->image('tractor.png'),
+            'status' => 'Available',
+        ])->assertSessionHasErrors(['machinery_name']);
+
+        $this->assertDatabaseCount('machineries', 0);
+    }
+
+    public function test_update_rejects_html_syntax_in_machinery_name(): void
+    {
+        $this->actingAsOfficer();
+        $machinery = Machinery::create([
+            'machinery_name' => 'Test Tractor',
+            'model' => 'TX-1',
+            'serial_number' => 'TX-001',
+            'price' => '100.00',
+            'image_path' => 'machinery/original.png',
+            'status' => 'Available',
+        ]);
+
+        $this->put(route('machinery.update', $machinery), [
+            'machinery_name' => 'Tractor <b>Plus</b>',
+            'model' => 'TX-1',
+            'serial_number' => 'TX-001',
+            'price' => '100.00',
+            'status' => 'Available',
+        ])->assertSessionHasErrors(['machinery_name']);
+
+        $this->assertDatabaseHas('machineries', [
+            'id' => $machinery->id,
+            'machinery_name' => 'Test Tractor',
+        ]);
+    }
+
     private function actingAsOfficer(): void
     {
         $role = Role::create(['name' => 'officer', 'guard_name' => 'web']);
