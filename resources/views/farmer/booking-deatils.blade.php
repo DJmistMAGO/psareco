@@ -322,7 +322,7 @@
                             <p class="text-xs font-bold text-red-700">
                                 Booking Declined
                             </p>
-                            <p class="text-[11px] text-red-600 mt-0.5">
+                            <p class="text-[11px] text-red-600 mt-0.5 break-words whitespace-pre-wrap">
                                 <span class="font-semibold">Remarks:</span>
                                 {{ $booking->remarks ?? 'No remarks provided.' }}
                             </p>
@@ -338,7 +338,7 @@
                         <!-- Show Remarks if present for statuses other than Declined -->
                         @if ($booking->remarks && $booking->status !== 'Declined')
                             <p
-                                class="text-[11px] text-slate-600 mt-1.5 italic bg-white/60 p-2 rounded-lg border border-slate-200/60">
+                                class="text-[11px] text-slate-600 mt-1.5 italic bg-white/60 p-2 rounded-lg border border-slate-200/60 break-words whitespace-pre-wrap">
                                 <span class="font-semibold not-italic text-slate-700">Remarks:</span>
                                 {{ $booking->remarks }}
                             </p>
