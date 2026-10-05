@@ -40,7 +40,7 @@ class Booking extends Model
 
     public function machine(): BelongsTo
     {
-        return $this->belongsTo(Machinery::class, 'machine_id');
+        return $this->belongsTo(Machinery::class, 'machine_id')->withTrashed();
     }
 
     public function slots(): HasMany
