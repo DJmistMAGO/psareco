@@ -64,7 +64,7 @@
 
 		<div class="bg-white rounded-2xl shadow-sm border border-slate-100/80 overflow-hidden" x-data="reportsPage()">
 			<div class="p-5 border-b border-slate-100 print:hidden">
-				<form method="GET" action="{{ route('reports.generate') }}" id="reportForm" @submit="loading = true">
+				<form method="GET" action="{{ route('reports.generate') }}" id="reportForm" @submit.prevent="generate($event)">
 					<div class="flex flex-col lg:flex-row lg:items-end gap-4 lg:gap-6 pb-5 border-b border-slate-100">
 						<div class="grid grid-cols-2 gap-4 w-full lg:w-auto lg:min-w-[340px]">
 							<div>
@@ -269,17 +269,17 @@
 					</div>
 
 					<div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mt-6 pt-5 border-t border-slate-100">
-						<button type="button" @click="preview()" :disabled="loading"
+						<button type="button" @click="preview()" :disabled="previewLoading"
 							class="inline-flex items-center justify-center gap-2 bg-white hover:bg-slate-50 disabled:opacity-50 text-slate-700 font-semibold text-xs py-2.5 px-5 rounded-xl border border-slate-200 shadow-sm transition sm:min-w-[160px]">
-							<i class="fa-solid" :class="loading ? 'fa-spinner fa-spin' : 'fa-eye'"></i>
+							<i class="fa-solid" :class="previewLoading ? 'fa-spinner fa-spin' : 'fa-eye'"></i>
 
-							<span x-text="loading ? 'Loading...' : 'Preview Reports'"></span>
+							<span x-text="previewLoading ? 'Loading...' : 'Preview Reports'"></span>
 						</button>
 
-						<button type="submit" :disabled="types.length === 0"
+						<button type="submit" :disabled="types.length === 0 || generating"
 							class="inline-flex flex-1 items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-semibold text-xs py-2.5 px-5 rounded-xl shadow-sm transition">
-							<i class="fa-solid fa-file-word"></i>
-							Generate Selected Reports (.docx)
+							<i class="fa-solid" :class="generating ? 'fa-spinner fa-spin' : 'fa-file-word'"></i>
+							<span x-text="generating ? 'Generating...' : 'Generate Selected Reports (.docx)'"></span>
 						</button>
 					</div>
 
@@ -586,7 +586,8 @@
 				startDate: '',
 				endDate: '',
 				types: [],
-				loading: false,
+				previewLoading: false,
+				generating: false,
 				previewed: false,
 				dateError: '',
 				machinery: [],
@@ -655,6 +656,49 @@
 					return true;
 				},
 
+				async generate(event) {
+					if (this.types.length === 0) {
+						return;
+					}
+
+					this.generating = true;
+
+					try {
+						const params = new URLSearchParams(new FormData(event.target));
+						const response = await fetch(`${event.target.action}?${params.toString()}`, {
+							headers: {
+								'Accept': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+								'X-Requested-With': 'XMLHttpRequest'
+							}
+						});
+
+						if (!response.ok) {
+							throw new Error('Report generation failed.');
+						}
+
+						if (!response.headers.get('Content-Type')?.includes('application/vnd.openxmlformats-officedocument.wordprocessingml.document')) {
+							throw new Error('The server did not return a Word report.');
+						}
+
+						const blob = await response.blob();
+						const disposition = response.headers.get('Content-Disposition') ?? '';
+						const filename = disposition.match(/filename="?([^";]+)"?/i)?.[1] ?? 'psareco-report.docx';
+						const downloadUrl = URL.createObjectURL(blob);
+						const link = document.createElement('a');
+						link.href = downloadUrl;
+						link.download = filename;
+						document.body.appendChild(link);
+						link.click();
+						link.remove();
+						setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
+					} catch (error) {
+						console.error(error);
+						alert('Could not generate the report. Please try again.');
+					} finally {
+						this.generating = false;
+					}
+				},
+
 				async preview() {
 					if (!this.startDate || !this.endDate) {
 						alert('Please select a start date and end date.');
@@ -670,7 +714,7 @@
 						return;
 					}
 
-					this.loading = true;
+					this.previewLoading = true;
 
 					const params = new URLSearchParams();
 
@@ -713,7 +757,7 @@
 						console.error(error);
 						alert('Could not load the report preview. Please try again.');
 					} finally {
-						this.loading = false;
+						this.previewLoading = false;
 					}
 				}
 			};
