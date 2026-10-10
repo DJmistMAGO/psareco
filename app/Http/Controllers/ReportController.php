@@ -585,7 +585,8 @@ class ReportController extends Controller
 
         $table = $section->addTable($this->tableStyle());
 
-        $columns = [['Date and Time', 2800], ['Product', 3900], ['Quantity', 1100], ['Unit Price', 1900], ['Total', 1900], ['Buyer', 5680],];
+        $buyerColumnWidth = 17280 - (2600 + 3900 + 550 + 1900 + 1900);
+        $columns = [['Date and Time', 2600], ['Product', 3900], ['QTY', 550], ['Unit Price', 1900], ['Total', 1900], ['Buyer', $buyerColumnWidth],];
 
         $table->addRow(400);
 
@@ -595,12 +596,12 @@ class ReportController extends Controller
 
         foreach ($sales as $sale) {
             $table->addRow(100, ['exactHeight' => false]);
-            $table->addCell(2800)->addText($sale->sale_date?->format('M d, Y g:i A') ?? '-', $this->cellFontStyle());
+            $table->addCell(2600)->addText($sale->sale_date?->format('M d, Y g:i A') ?? '-', $this->cellFontStyle());
             $table->addCell(3900)->addText($sale->product_name ?? $sale->product?->name ?? 'N/A', $this->cellFontStyle());
-            $table->addCell(1100)->addText(number_format((int) $sale->quantity), $this->cellFontStyle());
+            $table->addCell(550)->addText(number_format((int) $sale->quantity), $this->cellFontStyle(), ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
             $table->addCell(1900)->addText('₱ ' . number_format((float) $sale->price, 2), $this->cellFontStyle(), $this->numericParagraphStyle());
             $table->addCell(1900)->addText('₱ ' . number_format((float) $sale->total, 2), $this->cellFontStyle(), $this->numericParagraphStyle());
-            $table->addCell(5680)->addText($sale->buyer_name ?? 'N/A', $this->cellFontStyle());
+            $table->addCell($buyerColumnWidth)->addText($sale->buyer_name ?? 'N/A', $this->cellFontStyle());
         }
 
         if ($sales->isEmpty()) {
@@ -613,13 +614,13 @@ class ReportController extends Controller
         } else {
             $table->addRow();
 
-            $totalLabelCell = $table->addCell(9700, $this->totalRowStyle());
+            $totalLabelCell = $table->addCell(8950, $this->totalRowStyle());
             $totalLabelCell->getStyle()->setGridSpan(4);
 
             $totalLabelCell->addText('TOTAL SALES', $this->totalFontStyle());
 
             $table->addCell(1900, $this->totalRowStyle())->addText('₱ ' . number_format($salesIncome, 2), $this->totalFontStyle(), $this->numericParagraphStyle());
-            $table->addCell(5680, $this->totalRowStyle());
+            $table->addCell($buyerColumnWidth, $this->totalRowStyle());
         }
 
         $this->addSignatory($section);
