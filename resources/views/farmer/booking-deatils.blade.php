@@ -159,28 +159,27 @@
             <!-- Header / Ticket Top Bar -->
             <div class="{{ $statusConfig['header'] }} text-white px-6 py-4 flex items-center justify-between">
                 <div class="flex items-center gap-3">
-    <!-- Back Button -->
-    <a href="{{ url()->previous() }}"
-       title="Go Back"
-       class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition duration-150 shrink-0 focus:outline-none focus:ring-2 focus:ring-slate-400/20 active:scale-95">
-        <i class="fa-solid fa-arrow-left text-sm"></i>
-    </a>
+                    <!-- Back Button -->
+                    <a href="{{ url()->previous() }}" title="Go Back"
+                        class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition duration-150 shrink-0 focus:outline-none focus:ring-2 focus:ring-slate-400/20 active:scale-95">
+                        <i class="fa-solid fa-arrow-left text-sm"></i>
+                    </a>
 
-    <!-- Status Icon and Title Header -->
-    <div class="flex items-center gap-2">
-        <i class="fa-solid {{ $statusConfig['icon'] }} {{ $statusConfig['iconColor'] }} text-lg"></i>
-        <div>
-            <span class="font-bold text-sm tracking-wide uppercase">
-                Machinery Booking Pass
-            </span>
-            @if ($booking->status === 'Completed')
-                <p class="text-[10px] text-emerald-200 mt-0.5">
-                    Rental successfully completed
-                </p>
-            @endif
-        </div>
-    </div>
-</div>
+                    <!-- Status Icon and Title Header -->
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid {{ $statusConfig['icon'] }} {{ $statusConfig['iconColor'] }} text-lg"></i>
+                        <div>
+                            <span class="font-bold text-sm tracking-wide uppercase">
+                                Machinery Booking Pass
+                            </span>
+                            @if ($booking->status === 'Completed')
+                                <p class="text-[10px] text-emerald-200 mt-0.5">
+                                    Rental successfully completed
+                                </p>
+                            @endif
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Status Badge -->
                 <span
